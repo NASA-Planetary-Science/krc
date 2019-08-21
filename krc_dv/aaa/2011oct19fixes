@@ -1,0 +1,66 @@
+[hkieffer@bastion src]
+
+$ diff Makefile /mars/u/hkieffer/build/Dist/src/Makefile
+7c7
+< FFLAGS= -O  -fno-automatic -fno-second-underscore -fargument-alias  -fd-lines-as-comments -fdefault-integer-8
+---
+> FFLAGS= -O  -fno-automatic -fno-second-underscore -fargument-alias  -fd-lines-as-comments 
+17c17,18
+< CLIB=-L. -lk_krc
+---
+> #CLIB=-lkrc_c
+> CLIB=krc_c.a
+31c32
+<         binf5.o catime.o datime.o rndex.o rotmsp.o rterp.o sigma.o \
+---
+>         binf5.o catime.o idarch.o  datime.o rndex.o rotmsp.o rterp.o sigma.o \
+92,93c93
+< clean:   
+<       rm -f krc *.o
+---
+> clean:  unalias rm; rm -f *.o
+
+-rw-r--r-- 1 randy   1495 Oct 18 11:14 rndex.f
+
+have the proper krccom
+
+include PIO
+
+My Build:
+
+
+-rw-r--r-- 1 hkieffer  12061 Oct 19 08:12 binf5.F
+-rw-r--r-- 1 hkieffer  41016 Oct 19 08:18 krc_c.a
+-rw-r--r-- 1 hkieffer   1497 Oct 19 08:45 rndex.f
+-rw-r--r-- 1 hkieffer   2928 Oct 19 09:16 Makefile
+lrwxrwxrwx 1 hkieffer     11 Oct 19 09:24 krccom.inc -> krccom2.inc
+
+http://gcc.gnu.org/onlinedocs/gcc-3.3.6/g77/Continuation-Line.html
+
+A continuation character is any character of the GNU Fortran character set other
+than space (<SPC>) or zero (`0') in column 6, or a digit (`0' through `9') in
+column 7 through 72 of a line that has only spaces to the left of that digit.
+
+http://www.fortran.com/F77_std/rjcnf0001-sh-3.html#sh-3.2.3
+
+A continuation line is any line that contains any character of the FORTRAN
+character set other than the character blank or the digit 0 in column 6 and
+contains only blank characters in columns 1 through 5.
+
+http://www.cs.mtu.edu/~shene/COURSES/cs201/NOTES/chap01/continue.html
+
+If a line is ended with an ampersand, &, it will be continued on the next line. 
+
+http://folk.uio.no/steikr/doc/f77/tutorial/basics.html
+... and use the continuation mark in position 6.
+ 
+Any character can be used [] as a continuation character. It is considered good
+programming style to use either the plus sign, an ampersand, or numbers (2 for
+the second line, 3 for the third, and so on).
+
+
+http://www.delorie.com/gnu/docs/emacs/emacs_307.html  paraphrased
+Any non-space character in col. 6 (1-based)  
+Or a tab followed by anything except 0
+Or if the text on a line starts with the conventional Fortran continuation 
+ marker `$',

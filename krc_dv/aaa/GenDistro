@@ -1,0 +1,43 @@
+Cookbook to generate a KRC distribution
+
+2013 Nov 13 06:52:24
+
+Once:
+Decide on directory that will be the top of a distribution (distro)
+Edit step1: RTOP
+Run step1
+
+Go through the parts of step 2 to ensure all the documentation is up to date
+   For each document, check that the .tex is older than its derivatives
+
+Run step3
+
+If doing BIG file, run step3b
+
+Run step4
+
+If doing BIG file, run step4b
+
+cd  /work2
+mv  krcdist.tar.gz ~/cop/krc222f.tar.gz  # used the current version 
+
+cd
+
+gp p cop/krc222f.tar.gz asu    # takes a few sec
+
+in another window[yellow] callasu
+   cd cop
+   lt          make sure .gz is there
+
+Send notification email to Ken
+
+------------ to generate big files
+
+1) edit ~/krc/tes/VerTest.inp to update names on output files
+e.g.  V222 --> V230
+run krc: input VerTest.inp, output e.g. V230.prt
+   Total time [s]=   6.0060863 
+
+2) if any changes to default parameters, make them
+ and update output file names, e.g.,  V230  --> V230b
+

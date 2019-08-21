@@ -1,0 +1,59 @@
+#! /usr/bin/csh
+###################################
+# Script and comments for add-on items for KRC distribtuion
+# Combines actions step 3 and step 4
+# For new distribution, transfer all links out of this file to step3
+# Send this file along with the tar output so folks will know where things go
+# 2011oct18 HK  emptied 2013jan25
+###################################
+
+set FAM='/home/hkieffer/krc'    # family to be distributed
+set RT1='/work2/'		# one level above distribution constuction area
+set RT2='Dist'			# distribution construction area
+set NAME='KRCup' 			# name for this distribution
+set SKEL='Aug25.tar'        # <<<<< EDIT  last part of tar file name 
+set DIRB='addon'
+
+# use names relative to location when doing the tar
+
+set RTOP=$RT1$RT2		# Top of the distribution tree
+set IN=$RT1$RT2/$DIRB		# construction area
+set OUT=$RT1$NAME$SKEL 		# output tar file
+
+echo "RTOP="$RTOP
+echo "IN="$IN
+echo "OUT="$OUT
+
+cd $RTOP
+mkdir $DIRB
+
+cd $DIRB
+rm -f * # clean out the directory
+# vvvvvvvvv  files to be added 
+# 2013 Aug 25 begin clean
+
+# to go in /aaa
+
+# to go in /doc
+
+
+# to go in /src
+
+# to go in /run
+
+# to go to /run/output
+
+# special for test of bigend
+ln -s /home/hkieffer/krc/src/testrou.f .
+ln -s /home/hkieffer/krc/src/bigend1.f
+
+#^^^^^^^^^^ files to be added
+
+echo "Done copy to "$DIRB
+
+cd $RT1
+echo "ready for: tar -cvhf "$OUT  " "   $IN
+tar -cvhf  $OUT " " $IN		 # tar following all links
+
+echo "Done tar"
+exit

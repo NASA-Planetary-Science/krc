@@ -1,0 +1,23 @@
+#====================================
+# Script and comments for making a distribution package of the KRC thermal
+# model file system, Version 3
+# See the file aaa/AAREADME for additional description.
+# This is a file of soft links used by Hugh to allow source-code files to
+# be updated without having to rename to older versions
+# Run this step in the build source directory just before the Make process
+#
+# In general, Version 3.3 
+#_Hist 2016mar07  Hugh Kieffer Original version for KRC v3.3.0
+#====================================
+
+ ln -s  krc33.f   krc8.f   
+ ln -s  tlats33.f tlats8.f 
+ ln -s  tday33.f  tday8.f  
+ ln -s  tcard33.f tcard8.f  
+ ln -s  tprint33.f tprint8.f
+ ln -s  tdisk33.f tdisk8.f
+ ln -s  ksubsa8.f ksubs8.f 
+ ln -s  units.inc uni33c.f
+ ln -s  Makefile33  Makefile
+
+exit 0

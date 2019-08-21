@@ -1,0 +1,29 @@
+KRC depth zone table. Zones specified from surface down. Columns white-separated.
+Each line specifies a zone of uniform material properties.
+KRC may convert a zone to multiple layers as allowed by stable convergence.
+
+Col 1: zone thickness, m.        Value for last row ignored; KRC fills out layers
+Col 2: density, kg/m^3.     -1=upper material DENS,   -2=lower material DENS2
+Col 3: Conductivity, SI Units.  || If negative, then col 4 is a pointer
+Col 4: Specific heat, SI Units. || 1,2=Tcon: 1=upper material, 2=lower material
+                                || 3,4=Tdep: 3=upper material, 4=lower material
+
+3 or more valid lines are required. Comments may follow the 4 numeric columns
+A non-positive first column (of 4 numeric columns) ends the input 
+
+This version meant to be close to the Version 3.3 master input
+C_END                 This required beginning should be line 20 or less; may be 1
+.0039 1600. 0.03864  647.   Zone 1, fixed properties
+.0093 1600.  -1.       1.   Invokes the T-constant upper material 
+.0116  -1   0.03864  647.   zone 3 uses input DENS density
+.047   928.  -1.       2.   Invokes the T-constant lower material
+.1    -2    2.77    1711.   Last zone,  will use to fill to implied total depth
+ 0  0  0  0  -------- A non-positive first column (of 4 numeric) STOPs the input.
+ .01  1500  1.e-3 600   optional lines can be kept below the STOP
+Text lines may follow the STOP line 
+.0246 1600   -1  3    Invokes T-dependent Upper material.
+.0961  928   -1  4    Tdep Lower material.   Any thickness and density allowed
+
+3.3 master, With IC2=7 upper material has total thickness of 0.02476 m
+
+With IC2=7, layers above and below the contact are 0.0061 and  0.0470 m thick

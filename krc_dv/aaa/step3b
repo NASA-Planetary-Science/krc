@@ -1,0 +1,34 @@
+#!/bin/bash
+#====================================
+# Script and comments for making a distribution package of the KRC thermal
+# model file system. See the file AAREADME for additional description
+# Run after step 2 and before step 4b
+#
+# 2013sep03 HK Update to 2.2.4  Separate tar file for large output files.
+# 2013sep28 HK Make a separate command file for BIG files
+# 2017mar01 HK Convert to bash and undate files included
+# 2017oct06 HK Add the test file and results
+#====================================
+
+RTOP='/work2/DistKRC'	# Top of the distribution tree 
+#echo "RTOP="$RTOP 
+# Large output files
+
+rm -f $RTOP/big/*     # ensure directory is empty
+cd $RTOP/big
+pwd
+
+ln -s /home/hkieffer/krc/tes/master.inp .        # the input file. Mars std.
+ln -s /home/hkieffer/krc/tes/master.prt .        # the print file
+ln -s /home/hkieffer/krc/tes/out/master34.t52 .  # the binary file
+
+ln -s /home/hkieffer/krc/tes/354Test.inp .        # 5 lats, try 9 variations
+ln -s /home/hkieffer/krc/tes/354Test.prt .        # the print file
+ln -s /home/hkieffer/krc/tes/out/354Test.t52 .  # the binary file
+# execution time on H3: 9.727 sec
+
+echo "Done links to BIG files.  Now run step4b"
+
+cd ~/krc/aaa   # return to parent directory
+
+exit #---------------------------------------------------

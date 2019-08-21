@@ -1,0 +1,178 @@
+#!/bin/bash
+###################################
+# Script and comments for making a distribution package of the KRC thermal
+# model file system. See the file AAREADME for additional description
+#  This step to ensure documentation products up to date by checking if
+#  source .tex files are newer than the .pdf file
+# 2012 Nov 21 Hugh Kieffer 
+# 2013nov13, 2014mar03   HK Update
+# 2017feb24 HK Try using bash and testing if .tex is newer
+# Note:  must be space on inside of [ and ] 
+
+# .tex containing .eps  must use latex and  dvipdf
+# .tex with .png but no .eps  should use pdflatex
+# .tex with no figs can use either
+# but with my commands, cannot tell from source file.
+
+###################################
+
+cd ~/krc/Doc/DV3 ; pwd
+
+QQ='V34UG' ; Q2='farg' ; Q3='fard' ; Q4='v34p' # has citations and figures
+ if [ $QQ'.tex' -nt $QQ'.pdf' ] || [ $Q2'.tex' -nt $QQ'.pdf' ] || [ $Q3'.tex' -nt $QQ'.pdf' ] || [ $Q4'.tex' -nt $QQ'.pdf' ]; then
+    echo 'some .tex  was newer'
+    latex $QQ			# has references
+    bibtex $QQ
+    read -rsp $'Next is 2x pdf Press any key to continue...\n' -n1 key
+    pdflatex $QQ
+    pdflatex $QQ
+#-    read -rsp $'Next is tth Press any key to continue...\n' -n1 key
+#-    tth < $QQ'.tex' > $QQ'.html' 	# and to html  2014mar03 does not find .bbl
+    echo '-------- Done '$QQ
+    read -rsp $'Press any key to continue...\n' -n1 key
+else
+    echo $QQ'.pdf  was current'
+fi
+
+QQ='slopes'                   #   has png  no cit
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    pdflatex $QQ
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+cd ~/krc/Doc/v35 ; pwd   #  figs  and citations
+QQ='eclipse'
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ			# has references
+    bibtex $QQ
+    pdflatex $QQ
+    pdflatex $QQ
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+cd ~/krc/Doc ; pwd   # no figs  no citations
+QQ='helplist'
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    pdflatex helplist
+#-    tth < $QQ'.tex' > $QQ'.html' 		
+    echo '-------- Done '$QQ
+    read -rsp $'Press any key to continue...\n' -n1 key
+else
+    echo $QQ'.pdf  was current'
+fi
+
+QQ='hporb'    # no figures   has citations
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ		
+    latex $QQ
+    dvipdf $QQ'.dvi'		# and to pdf
+    echo '-------- Done '$QQ
+    read -rsp $'Press any key to continue...\n' -n1 key
+else
+    echo $QQ'.pdf  was current'
+fi
+
+QQ='PUG'	# has cites  no figs
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ		
+    bibtex $QQ
+    pdflatex $QQ
+    pdflatex $QQ
+#-  read -rsp $'Next is tth Press any key to continue...\n' -n1 key
+#-    tth <$QQ'.tex' >$QQ'.html' 	# and to html  2014mar03 does not find .bbl
+    echo '-------- Done '$QQ
+    read -rsp $'Press any key to continue...\n' -n1 key
+else
+    echo $QQ'.pdf  was current'
+fi
+
+QQ='thin'    # many eps    1 citations
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ		
+    bibtex $QQ		
+    latex $QQ		
+    latex $QQ
+    dvipdf $QQ'.dvi'		# and to pdf
+    echo '-------- Done '$QQ
+    read -rsp $'Press any key to continue...\n' -n1 key
+else
+    echo $QQ'.pdf  was current'
+fi
+
+#exit #^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+cd ~/krc/VER/ ; pwd    # has .eps  no cites
+QQ='Vtest'
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ
+    dvipdf $QQ'.dvi'	# and to pdf
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+cd ~/xtex/themis/ ; pwd
+QQ='cement'
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ			# process the .tex file	
+    latex $QQ			#   twice to resolve references
+    dvipdf $QQ'.dvi'	# and to pdf
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+cd ~/krc/Doc/old ; pwd
+QQ='mkrc'                   # no figs
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    pdflatex $QQ
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+QQ='HeatOfT'
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ 			# process the .tex file	
+    latex $QQ			#   twice to resolve references
+    dvipdf $QQ'.dvi'		# and to pdf
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+cd ~/xtex/AGU/ ; pwd
+QQ='krc'        # many figs and refs.  one monster fig 
+if [[ $QQ'.tex' -nt $QQ'.pdf' ]]; then
+    echo $QQ'.tex  was newer'
+    latex $QQ 			# process the .tex file	
+    bibex $QQ 			# resolve the bibliograhy
+    latex $QQ 			# process the .tex file	
+    latex $QQ 			#   twice to resolve references	
+    dvipdf $QQ'.dvi'		# and to pdf
+    echo '-------- Done '$QQ
+else
+    echo $QQ'.pdf  was current'
+fi
+
+pwd
+exit #========================================================
+
+### obsolete
+cd ~/krc  
+latex port 
+dvipdfm port.dvi

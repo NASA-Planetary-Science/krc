@@ -1,0 +1,73 @@
+ 0 0 1 / KOLD: season to start with; KEEP: continue saving data in same disk file
+ 0 0 0 0 0 0 / six debug flags
+V355 test cases   5 lat, 40 seas with 2 yr spinup  First cases Compat with 321
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .25      0.95     200.0      2.77     928.0    1.0275      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5  27.95460     546.0      .055      200.     180.0     1711.
+      TAUD     DUSTA    TAURAT     TWILI  Hen-Gren ARC3/Safe     SLOPE    SLOAZI
+       0.3       .90      0.25       0.0       0.5     0.801       0.0       90.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET      PHOG       GGT     DTMAX
+    1.2000     .1800    2.0000       0.0       0.0       0.0       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+   151.293 17.174822      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24        IB        IC
+        20       384        15         5       120        48         0         7
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+         3        24         0        81         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -2         0        20         0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+ -60.00 -30.00   0.00  30.00  60.00      0      0      0      0      0
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7
+   1.22   1.17   0.17  -1.99  -4.08      0      0      0      0      0
+ 2013 Jul 24 11:28:09=RUNTIME.  IPLAN AND TC= 104.0 0.10000 Mars:Mars
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586    
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373    
+   5.544402       0.000000       0.000000       686.9929       3397.977    
+   24.62296       0.000000      -1.240317       0.000000       0.000000    
+   0.000000      0.3244965      0.8559126      0.4026359     -0.9458869    
+  0.2936298      0.1381285       0.000000     -0.4256703      0.9048783 
+1 34  .2160 'FLAY' / match first physical layer of older versions
+1 35 3 'CONVF' / attempt to match V2 run
+8 5 0 './out/355Test.t52' / Type 52 file to write
+3 2 1 'LP2' / turn on printing parameters and layer table
+2 17 -3 'K4OUT' / file type
+8 21 0 './out/355flat.tm3' / Direct-access file to write one case
+0/ 
+3 2 0 'LP2' / turn on printing parameters and layer table 
+3 10 1 'LkofT' / T-dependent properties 
+0/  
+3 10 0 'LkofT' / reset
+3 8 1 'LVFA' / use variable frost albedo 
+3 9 1 'LVFT' / use variable frost temperature 
+0/ 
+1 12 .5 'PTOTAL' / no atm
+0/
+1 38 0.15 'PhotoF' / set to Kheim-like 
+0/ 
+3 10 1 'LkofT' / T-dependent properties
+0/  
+12 0.038640 0.0  0.0 0.0  2.77 0.0 0.0 0.0    /  constant Conductivity
+13 647.0 0.0 0.0 0.0  1711.  0.0 0.0 0.0      / constant Specific heat
+0/ 
+12 0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291/ reset Cond
+13 646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532 / reset SpecHeat
+3 10 0 'LkofT' / reset
+1 12 546. 'PTOTAL' / reset to Mars
+1 23 33. 'SLOPE'    / dune slip face
+1 24 45. 'AZIMUTH'  / facing north-east  self-heating
+0/
+8 3 0 './out/355flat.tm3'   / Far-field input
+0/
+0/  ======================= end of run

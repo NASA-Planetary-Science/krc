@@ -1,0 +1,156 @@
+% newcom.sty   LaTex commands for OLI report, Used by [UPPERCASE].tex
+% 2015may23 HK Include define.sty without its page sizes
+% 2016apr29 HK Comment both \ql; choose one to put in source .tex
+
+% Figure inclusion and order:
+% Figs are numbered in the order the captions appear, not their first reference
+% Fig \ref without corresponding \label: prints as ??
+% Fig \label without corresponding  \ref: Fig is included.
+%  fgrep -in '.png'     will list all captions
+
+% Print size:  the following for normal margins lp q.ps
+%\textheight=10.0in \topmargin=-1.in % a little tight 
+%\textheight=9.6in % \topmargin=-0.9in % 2016feb25
+
+\textwidth=7.70in  \oddsidemargin=-0.7in \evensidemargin=-0.7in
+\parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
+%       modes, spacing, size
+\newcommand{\qb}{\begin{displaymath}}    % begin & end un-numbered equations
+\newcommand{\qe}{\end{displaymath}}
+\newcommand{\qbn}{\begin{equation}}      % begin & end numbered equations
+\newcommand{\qen}{\end{equation}}
+\newcommand{\p}{\vspace{0.08in} \\ } % new flush paragraph
+
+% 1 of next 2 used in place of \qen for development to identify equation labels 
+%\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+\newcommand{\qr}[1]{Eq. \ref{eq:#1}}  % refer to Eq.: both dev and final
+
+\newcommand{\qi}{\\ \hspace*{2.em}}      % indent 1
+\newcommand{\qii}{\\ \hspace*{4.em}}     % indent 2
+\newcommand{\qiii}{\\ \hspace*{6.em}}    % indent 3
+\newcommand{\qiiii}{\\ \hspace*{8.em}}   % indent 4
+
+%commented commands retired 2015apr23
+\newcommand{\qst}{\tiny}
+\newcommand{\qsT}{\scriptsize}  %\newcommand{\qnn}{\scriptsize} 
+\newcommand{\qsf}{\footnotesize}
+\newcommand{\qss}{\small}       %\newcommand{\qsm}{\small}  
+\newcommand{\qsn}{\normalsize}  %\newcommand{\qno}{\normalsize}  % end note
+\newcommand{\qsl}{\large }      %\newcommand{\qn}{\Large }   % begin note
+\newcommand{\qsL}{\Large }      %\newcommand{\qn}{\Large }   % begin note
+
+%\newcommand{\qx}{ \qn MORE \qq }  % large MORE
+%\newcommand{\bq}{ \qn ??? \qq }   % big question marks
+\newcommand{\ec}{\hspace{1cm} \equiv \mathtt } % == code name within math mode
+%\newcommand{\qomit}[1]{\hspace{0.0mm}} % omit the material
+
+\def\qm{\vspace{-1.0mm}} % close up rows
+\def\qp{\vspace{1.0mm}}  % open  up rows
+%       individual symbols.  Keep alphabetic   \qc... are chemical symbols
+\newcommand{\at}{\textbf{@}}       % bold at sign, for code sections
+%^^^ \at conflicts with AAS something
+\newcommand{\qd}{$^\circ$}        % degree symbol
+\newcommand{\qtf}{\qss $_\circ$ \qno $ \! ^\circ \! $ \qss $_\circ$ \qno } % therefore
+\newcommand{\mm}{\sharp} % symbol for matrix multiply 
+\newcommand{\mr}{\otimes} % symbol for rotation
+\newcommand{\mc}[1]{\hspace{7mm} \mathrm{#1} \hspace{7mm}} % word between equations
+\newcommand{\ppt}{\%$_0$ } % part per thousand
+
+\newcommand{\qab}{\langle}    % begin average value
+\newcommand{\qae}{\rangle}    %  end  average value
+\newcommand{\abs}[1]{\mid \! #1  \! \mid }  %  Absolute value: only in Math mode
+
+\newcommand{\np}{\textbf}  % name of program or routine
+\newcommand{\nf}{\textit}  % name of file
+\newcommand{\nv}{\texttt}  % name of code variable in text
+\newcommand{\nvf}{\mathtt} % name of code variable in equation
+\newcommand{\nj}{\textsf}  % name of input parameter in text
+\newcommand{\njf}{\mathsf} % name of input parameter in equation
+
+%            vector algebra
+\newcommand{\qv}{\overline}  % magnitude (distance) of vector in math mode
+\newcommand{\qf}{\overleftarrow}  % to from vector in math mode
+%\newcommand{\qo}[1]{\overleftarrow{#1}} % vector to:from  within math == above
+%\newcommand{\qrc}[2] {\widetilde {\mathbf{ {#1} \hspace{-0.5mm} {#2} }} } % rotation matrix within math
+\newcommand{\qrm}[1] {\widetilde {\mathbf{ #1 }}} % rotation matix within math
+\newcommand{\trm}[1] {$ \widetilde {\mathbf{#1}} $} % `` in text
+\newcommand{\qct}[1] {\widehat {\mathcal{#1}}} % coordinate transform within math
+\newcommand{\tct}[1] {$ \widehat {\mathcal{#1}} $}  % `` in text
+
+\newcommand{\qq}{\leftrightarrow}  % equivalence between symbol and code, math
+\newcommand{\qt}{$ \leftrightarrow $}  % equivalence between symbol and code, text
+
+%       general definitions with parameters
+\newcommand{\hmm}[1]{\hspace{#1mm}}     % horizontal space # mm.
+\newcommand{\hcm}[1]{\hspace{#1cm}}     % horizontal space # cm.
+\newcommand{\vcm}[1]{\vspace{#1cm}}     % vertical space # cm.
+\newcommand{\E}[1]{$10^#1$}             % 10^#  (not inside equation)
+\newcommand{\Em}[1]{$10^{-#1} $}        % 10^-#   ditto
+\newcommand{\xEm}[1]{$\times 10^{-#1}$} % x10^-#  ditto
+\newcommand{\xE}[1]{$\times 10^#1$}     % x10^#   ditto
+\newcommand{\Pm}[1]{$^{-#1}$} % Power minus: negative exponent, as on units
+\newcommand{\sx}[1]{$^{-#1}$} % exponent -n  for use in units
+\newcommand{\kgm}[1]{kg/m$^{#1}$}  % kilogram / m2
+\newcommand{\qcite}[1]{#1=\cite{#1}}  % show my .bib name
+
+\newcommand{\qlabel}[1]{\label{#1}  \hspace{1cm} #1}    % show label in title
+
+%\newcommand{\bs} {\Large {\sigma} } %  symbol for Standard deviation
+\newcommand{\bs} {\mathcal{S} } %  symbol for Standard deviation
+
+\newcommand{\pp}{ \ \textsc{code: } \ }  % omit rest of this line { \ } or short space as include it
+% with editor \pp <-> %%  to include <-> omit rest of the line
+% should have no other %% in the file
+
+% Mars / KRC related
+\newcommand{\qcc}{CO$_2$}         % CO2 symbol, use in text as  \qcc ~more text
+\newcommand{\qch}{H$_2$O}         % H2O symbol
+\newcommand{\ls}{$L_s$}           % L-sub-s
+\newcommand{\lse}{$L_s \! =$}     % L-sub-s =
+\newcommand{\um}{$\mu$m}          % micrometer
+\newcommand{\quti}{J\,m$^{-2}$s$^{-1/2}$K$^{-1}$} % SI units for Thermal inertia
+\newcommand{\qush}{J\,kg$^{-1}$K$^{-1}$}        % SI units for specific heat
+\newcommand{\quc}{W\,m$^{-1}$K$^{-1}$}        % SI units for thermal conductivity
+
+\ifpdf
+\usepackage{graphicx} % should allow jpeg or png
+\topmargin=-0.8in
+%\newcommand{\igq}[1]{\includegraphics[width=150mm,natwidth=6,natheight=6]{#1.png}}
+\newcommand{\igq}[1]{\includegraphics[width=190mm,natwidth=6,natheight=6]{#1.png}}
+\else
+\topmargin=-0.5in
+\newcommand{\igq}[1] { \fbox{ \itshape { Figure: #1 }  NOT INCLUDED }} % 
+\fi
+
+%\newcommand{}[1]{}
+\newcommand{\url}{\texttt}          %\url occurs in mars.bib
+\newcommand{\qsa}{\section}
+\newcommand{\qsb}{\subsection}
+\newcommand{\qsc}{\subsubsection}
+%\newcommand{\qsd}[1]{\vspace{1.mm} \large  \textbf{--\S  \ #1 } \\ \normalsize}
+\newcommand{\qsd}[1]{\vspace{1.mm} \textbf{--\S  \ #1 } }
+
+\newcommand{\qref}{?} % unidentified Section
+
+% \input{[.tex]} incorporates file with no break.     \include starts a new page
+% \ninput  Skip input, with subsubsection small box notice. 
+% \sinput  Skip input, with small box notice  Reserves a section number
+% \cinput  Material encased between begin and end statements
+% \xinput  Input material, with artifical start/stop subsubsections
+% \xinclude   ``   `` 
+%    Put two blank lines at end of the file being included
+% \qinput Input as subsubsection
+
+\newcommand{\ninput}[1]{\subsubsection{IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII SKIPPED  #1 .tex} } % if not to be printed
+%\newcommand{\ninput} [1] { \fbox{ \itshape { Input: #1 }  NOT INCLUDED }} % if not to be printed
+
+\newcommand{\sinput} [1] {  \section{Reserved for: #1} \begin {center} \fbox{ \itshape { Skipped: #1 } }  \end{center} }
+
+\newcommand{\cinput} [1] {\begin {center} \fbox{ \itshape { Input: #1 } } \end{center} \input{#1} \hrulefill\ \textit {End of input: #1 } \hrulefill\ }
+
+\newcommand{\xinput} [1] { \subsubsection{-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W input / #1}  \input{#1}  \subsubsection{-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M end / #1} } % with notice in Index
+
+\newcommand{\xinclude} [1] { \subsubsection{--------------include  #1}  \include{#1} \subsubsection{---------------end  #1} } % with notice in Index
+
+\newcommand{\qinput}[1]{\subsubsection{==================== input  #1 .tex} \input{#1}}

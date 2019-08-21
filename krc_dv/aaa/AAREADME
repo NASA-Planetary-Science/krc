@@ -1,0 +1,81 @@
+        GUIDE TO BUILDING THE KRC DISTRIBUTION TAR FILE
+History: 2006 Hugh Kieffer
+2011oct23  2013jan25  HK Update
+
+------------ Begin  ONLY FOR THE FIRST DISTRIBUTION  Begin------------
+
+Decide on the top directory of the distribution files.   /work2/DistKRC
+Decide on the directory structure below this. The directory tree is 
+descibed in aaa/step1
+
+Create the distribution system scripts:  stepN  where N is 1,2,3...
+Put all these in krc/aaa/  Edit in semi-permanent fashion
+Any other files that must be edited: copy them into krc/aaa and edit there
+
+Script files: 
+step1  Creates the directory structure
+
+step2  Updates any documentation files, such as running latex and ps2pdf
+
+step3  Script file to build accumulate all the source code and files needed to
+ make and run the executable application.
+
+ - Makefile  The make file to build the shared object library system. 
+   May need to edit for your local system environment
+
+step3b  Big files rarely changed
+
+step4  Script to make the tar file
+step4b  " Big files
+
+step61 Run at new institution to copy files that will need editing into 
+       a unique area. Normally run only for  the first distribution
+
+step6  Copy edited versions of files unique to specific installation on top 
+        of the distribution version.
+
+---------------  End  ONLY FOR THE FIRST DISTRIBUTION  End ----------------
+
+For a new release:
+If any new routines or new input files:
+  Add these to the soft links in step3
+  Update the Make file
+
+
+Execute the /home/hkieffer/krc/aaa/step3 script[3], which empties the build
+area, creates directories and copies files into the build area. 
+Then step3b if needed.
+
+  RENAME the prior distribution tar file to archive it
+
+Execute the /home/hkieffer/krc/aaa/step4 script, which will move to one
+directory above the construction directory and Tar the entire code set,
+following the symbolic links. Then step4b if needed. 
+
+Send  AAinstall krcdist.tar  to the customer
+
+	TESTING 
+
+Test the build:
+ cd ~/krc/impl
+untar the Dist file
+Follow the directions of AAinstall
+
+Once all works well, copy or link-to the executable krc into  -/run 
+
+Final:  Delete the intermediate LaTeX files
+	Delete all the *.o files
+
+
+       TRANSFER
+
+callasu   to login to ASU
+~/bin/gp G /work2/krcdist.tar   to pull from hulk to ASU
+
+if does not work, may need to edit gp on hulk, then 
+
+gp p bin/gp asu  to push new version of gp to ASU
+
+bastion will not repond to pings.
+
+scp /work2/krcdist.tar

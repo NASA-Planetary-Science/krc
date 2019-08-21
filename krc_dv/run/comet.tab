@@ -1,0 +1,54 @@
+comets.tab   was
+BOWELL.INP  COMET ELEMENTS FROM TED BOWELL AND LOWELL OBSERVATORY
+Blank line followed by 9 of values for each object
+C_END
+
+'Tempel 2' /  1 title
+1983  6 1.5355444 / TPER = time of perihelion; IYEAR, Imonth, day.decimal
+190.921967 / ARGP = argument of perihelion [degrees]
+119.1578879 / ODE = longitude of the node [degrees]
+12.4374891 / i = inclination [degrees]
+1.381403639 / q = perihelion distance [A.U.]
+0.544892994 / e = eccentricity
+147. 55. / RA and DEC of north pole [degrees] Sekanina via Weissmann 87mar25
+24.0 / siderial day [hours]  " something near one day"
+
+'Kopff' / 2 title
+1983  8 10.33901 / tper 
+162.81426 / argp
+120.30735 / ode
+4.72448 / i
+1.5762734 / q
+0.5445433 / e
+280. 70. / pole (~ normal to orbit)
+24.0 / day 
+
+'Wild 2' / 3 title
+1984  8 20.1882 / tper
+40.046 / argp
+136.0399 / ode
+3.2737 / i
+1.494014 / q
+.55611 / e
+275. 69. / pole ~ normal to orbit
+24.0 / day
+
+'Halley ' / 4 title. Yomans IHW 26
+1986   2 9.46045 / tper
+111.84345  / argp
+58.14250  / ode
+162.24010 / i
+.5871556 / q
+.9672618 / e
+19.0  -27.0 / Sekenina pole       41.74286 -69.67708 / zero-obliquity pole
+24.0 / day 
+
+'Gaspra' / 6 title.  from Weissmann 1992 may 28
+1992 7 19.52985 / TPER = time of perihelion; IYEAR, Imonth, day.decimal
+129.12909 / ARGP = argument of perihelion [degrees]
+252.65713 / ODE = longitude of the node [degrees]
+4.09891 / i = inclination [degrees]
+1.8254967 / q = perihelion distance [A.U.]
+0.1738608 / e = eccentricity
+10.2  26.2 / RA and DEC of north pole [degrees] Sekanina via Weissmann 87mar25
+7.0421 / siderial day [hours]  " something near one day"

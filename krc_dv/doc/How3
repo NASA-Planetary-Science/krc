@@ -1,0 +1,11 @@
+IR returned by TSEAS may be from any of: 
+TLATS returns: 1 is normal.  2 is  TDAY(2 numerical blowup 
+TCARD   GE 4 returns: 4=Switch to "one-point" mode. 5= end of data
+TDAY(1  NE 1 returns 2, unstable layer.
+
+IR returned by TCARD(
+1= normal
+2= starting from prior run
+3= continue same case after changes (reading rows at J5=IDOWN)
+4= flag to switch to onePoint mode
+5= error reading a row, or end of data file 

@@ -1,0 +1,164 @@
+ IDB1:6=           0           0           0           0           0           0
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   1  34  0.2160           FLAY    FLAY    
+ Changed>>   1  35   3.000          CONVF    CONVF   
+ Changed>>   8   5   0.000     ./out/355T
+           1 =Run. New T52 file name= ./out/355Test.t52
+ Changed>>   3   2   1.000            LP2      LP2   
+ Changed>>   2  17  -3.000          K4OUT      K4OUT 
+ Changed>>   8  21   0.000     ./out/355f
+V355 test cases   5 lat, 40 seas with 2 yr spinup  First cases Compat with 321      
+KRCv3.5.5    RUN-CASE  1- 1   2018 Feb 22 17:19:33  PAGE=  1
+ Input file: 355Test.inp                                                                     
+ Print file: 355Test.prt                                                                     
+ Save file: ./out/355Test.t52                                                               
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.2500    0.9500  200.0000    2.7700  928.0000    1.0275  647.0000 1600.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546  546.0000    0.0550  200.0000  180.0000 1711.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      90.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.2000    0.2160    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+    151.293   17.1748    0.0000   1.46500    0.0000 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0386   -0.0021    0.0023   -0.0008    2.7667   -1.2990    0.6292   -0.5273
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   646.6275  246.6678  -49.8216    7.9520 1710.6480  721.8740   57.4487   24.3753
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         20       384        15         5       120        48         0         7
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        81         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3         0        20         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    1.22   1.17   0.17  -1.99  -4.08
+LZONE,LALCON,JJH, IK1:4=  F  T     7     1     0     0     0
+ Time-doubling fraction:  0.23725329    
+ 1.035E+06=Dens*Cp   3.733E-08=Diffu.      0.0325=Scale      200.00=Inertia
+ Beginning at layer   7  At      0.0522 m.
+ 1.588E+06=Dens*Cp   1.745E-06=Diffu.      0.2220=Scale     2097.20=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.1800    0.0058   -0.0900   -0.0029 0.3864E-01  1600.00  647.00     0.000   0.000
+    2    0.2160    0.0070    0.1080    0.0035 0.3864E-01  1600.00  647.00    11.224   2.851
+    3    0.2592    0.0084    0.3456    0.0112 0.3864E-01  1600.00  647.00    24.693   4.106
+    4    0.3110    0.0101    0.6307    0.0205 0.3864E-01  1600.00  647.00    40.856   5.913
+    5    0.3732    0.0121    0.9729    0.0316 0.3864E-01  1600.00  647.00    60.251   4.257
+    6    0.4479    0.0145    1.3834    0.0449 0.3864E-01  1600.00  647.00    83.525   3.065
+    7    0.5375    0.1193    1.8761    0.1119  2.770       928.00 1711.00   194.270   4.414
+    8    0.6450    0.1432    2.4673    0.2431  2.770       928.00 1711.00   327.163   3.178
+    9    0.7740    0.1718    3.1768    0.4007  2.770       928.00 1711.00   486.635   4.576
+   10    0.9288    0.2062    4.0282    0.5897  2.770       928.00 1711.00   678.001   3.295
+   11    1.1145    0.2475    5.0498    0.8165  2.770       928.00 1711.00   907.641   4.745
+   12    1.3374    0.2969    6.2758    1.0887  2.770       928.00 1711.00  1183.208   3.416
+   13    1.6049    0.3563    7.7469    1.4154  2.770       928.00 1711.00  1513.889   4.919
+   14    1.9259    0.4276    9.5123    1.8073  2.770       928.00 1711.00  1910.706   3.542
+   15    2.3111    0.5131   11.6308    2.2777  2.770       928.00 1711.00  2386.887   5.100
+   16    2.7733    0.6158   14.1730    2.8421  2.770       928.00 1711.00  2958.304   3.672
+   17    3.3279    0.7389   17.2235    3.5195  2.770       928.00 1711.00  3644.004   5.288
+   18    3.9935    0.8867   20.8842    4.3323  2.770       928.00 1711.00  4466.844   7.615
+   19    4.7922    1.0640   25.2771    5.3076  2.770       928.00 1711.00  5454.252  10.965
+   20    5.7506    1.2768   30.5485    6.4780  2.770       928.00 1711.00  6639.141  15.790
+ Bottom                     33.4238    7.1164
+ Lower layer of time doubling:   4  5  7  9 11 13 15 20
+ IDX= 4  JJJ=    5   48    7    5   41    0    0    5   25    0
+ MMM=          48         336        1680       67200           0           0
+ KOMMON,KASE=    10000000       68880
+ RASE,MASE,MTOT=   145.18002             145     9987600
+     0.275 seconds at end of season  120 of  120
+ Case  1  DTIME: total, user, system=    0.2750    0.2740    0.0010
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   3   2   0.000            LP2      LP2   
+ Changed>>   3  10   1.000          LkofT      LKofT 
+     0.600 seconds at end of season  120 of  120
+ Case  2  DTIME: total, user, system=    0.5999    0.5999    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   3  10   0.000          LkofT      LKofT 
+ Changed>>   3   8   1.000           LVFA      LVFA  
+ Changed>>   3   9   1.000           LVFT      LVFT  
+     0.281 seconds at end of season  120 of  120
+ Case  3  DTIME: total, user, system=    0.2810    0.2810    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   1  12  0.5000         PTOTAL    PTOTAL  
+     0.186 seconds at end of season  120 of  120
+ Case  4  DTIME: total, user, system=    0.1860    0.1860    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   1  38  0.1500         PhotoF    PhotF   
+     0.201 seconds at end of season  120 of  120
+ Case  5  DTIME: total, user, system=    0.2020    0.2020    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   3  10   1.000          LkofT      LKofT 
+     0.564 seconds at end of season  120 of  120
+ Case  6  DTIME: total, user, system=    0.5639    0.5629    0.0010
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 8-Cond.   0.38640E-01   0.0000       0.0000       0.0000    
+                   2.7700       0.0000       0.0000       0.0000    
+ TCARD: 8-SpHt.    647.00       0.0000       0.0000       0.0000    
+                   1711.0       0.0000       0.0000       0.0000    
+     0.560 seconds at end of season  120 of  120
+ Case  7  DTIME: total, user, system=    0.5599    0.5599    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 8-Cond.   0.38640E-01 -0.21450E-02  0.23470E-02 -0.75000E-03
+                   2.7667      -1.2990      0.62922     -0.52729    
+ TCARD: 8-SpHt.    646.63       246.67      -49.822       7.9520    
+                   1710.6       721.87       57.449       24.375    
+ Changed>>   3  10   0.000          LkofT      LKofT 
+ Changed>>   1  12   546.0         PTOTAL    PTOTAL  
+ Changed>>   1  23   33.00          SLOPE    SLOPE   
+ Changed>>   1  24   45.00        AZIMUTH    SLOAZI  
+     0.277 seconds at end of season  120 of  120
+ Case  8  DTIME: total, user, system=    0.2770    0.2770    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   8   3   0.000     ./out/355f
+
+TFAR:  Opened direct access file = ./out/355flat.tm3
+ NWTOT & NRECL used=   3552  28416  Now=2018 Feb 22 17:19:33
+     0.271 seconds at end of season  120 of  120
+ Case  9  DTIME: total, user, system=    0.2710    0.2690    0.0020
+
+
+     END OF DATA ON INPUT UNIT
+ Closed direct access file. Type=           0
+ IDX= 4  JJJ=    5   48    7    5   41    9    0    5   25    0
+ Wrote bin5 file type 52: iret=            0
+   File name=./out/355Test.t52
+      END KRC   Total time [s]=      3.216

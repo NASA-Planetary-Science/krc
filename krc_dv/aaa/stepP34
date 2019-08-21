@@ -1,0 +1,119 @@
+#====================================
+# Script and comments for making a distribution package of the KRC PROB
+#    Planetary ORB file system, Version 3
+# See the file aaa/AAREADME for additional description.
+# Run after creating RTOP and its subdirs
+#
+#_Hist 2014jun09 Hugh Kieffer Modify from step3 for version 2
+#====================================
+
+set FAM='/home/hkieffer/krc'    # location of the source aaa DIR
+set RT1='/work2/'               # one level above distribution constuction area
+set RT2='DistPORB'               # distribution construction area
+set NAME='porb'                  # name for this distribution
+set SKEL='dist.tar.gz'          # last part of tar file name
+  
+# name construction
+set IN=$RT1$RT2                 # construction area
+set OUT=$RT1$NAME$SKEL          # output tar file
+
+echo "IN="$IN
+echo "OUT="$OUT
+
+unalias rm
+
+cd $IN/aaa
+rm -Rf *
+cp -p $FAM/aaa/* . 	# copy the entire source aaa directory
+rm -f *~                # eliminate old versions
+
+cd $IN/doc		# check dates on all .pdf versus .tex
+rm -f * 		# latex x      la4 x     ps2pdf q.ps x.pdf
+ln -s /home/hkieffer/krc/Doc/hporb.tex . 	# source for PORB doc
+ln -s /home/hkieffer/krc/Doc/hporb.pdf . 	# PORB documentation
+ln -s /home/hkieffer/krc/Doc/PUG.tex .
+ln -s /home/hkieffer/krc/Doc/PUG.pdf .   # PORB USers Guide
+ln -s /home/hkieffer/krc/Doc/PUG.html .
+ln -s /home/hkieffer/krc/porb/PORBguide . 	# Guide to running PORB
+ln -s /home/hkieffer/xtex/definc.sty .  # Latex shorthand
+ln -s /home/hkieffer/krc/Doc/evolve.txt .     # evolution of changes to KRC
+ln -s /home/hkieffer/krc/Doc/flow.txt .
+echo "Done copy to doc"
+
+cd $IN/run      # for input files and many print files
+rm -Rf *
+ln -s /home/hkieffer/krc/porb/comet.tab .    # OLD Orbit Elements for some comets
+ln -s /home/hkieffer/krc/porb/minor.tab .    # OE for some Asteroids
+ln -s /home/hkieffer/krc/porb/small.tab .    # New: asteroids and comets
+ln -s /home/hkieffer/krc/porb/spinaxis.tab .  # Poles for planets and satellites
+ln -s /home/hkieffer/krc/porb/standish.tab . # Standish planetary orbit elements
+ln -s /home/hkieffer/krc/porb/exoplan.tab .  # sample exoPlanets
+ln -s /home/hkieffer/krc/porb/PORBCM.mat .   # set of geometry matrices
+ln -s /home/hkieffer/krc/tes/Bennu.inp .     # OSIRIS-REX target body
+echo "Done copy to run"
+
+cd $IN/src       # Most source code and Makefile
+rm -f *
+ln -s /home/hkieffer/krc/aaa/MakeP3 Makefile    # may need to edit
+ln -s /home/hkieffer/krc/porb/porbcm.inc .
+ln -s /home/hkieffer/krc/porb/porbc8m.f .
+ln -s /home/hkieffer/krc/porb/porbx8m.f .
+#ln -s /home/hkieffer/krc/src/bigend.f .
+#ln -s /home/hkieffer/krc/src/binf5.F .
+ln -s /home/hkieffer/krc/porb/caldate4.f .
+ln -s /home/hkieffer/krc/porb/caldate.f .
+ln -s /home/hkieffer/krc/src/datime.f .
+ln -s /home/hkieffer/krc/porb/eccanom.f
+ln -s /home/hkieffer/krc/porb/eccanom8.f  .
+ln -s /home/hkieffer/krc/porb/ephemr4.f .
+ln -s /home/hkieffer/krc/porb/ephemr.f .
+# ln -s /home/hkieffer/src/for/util/idarch.F .
+#ln -s /home/hkieffer/krc/porb/mprint.f .
+ln -s /home/hkieffer/krc/porb/orbit.f .
+ln -s /home/hkieffer/krc/porb/orbit8.f .
+#ln -s /home/hkieffer/krc/porb/porb1.f .
+ln -s /home/hkieffer/krc/porb/porbel4.f .
+ln -s /home/hkieffer/krc/porb/porbel.f .
+ln -s /home/hkieffer/krc/porb/porbig4.f .
+ln -s /home/hkieffer/krc/porb/porbig.f .
+ln -s /home/hkieffer/krc/porb/porbio4.f .
+ln -s /home/hkieffer/krc/porb/porbio.f .
+ln -s /home/hkieffer/krc/porb/porbit4.f .
+ln -s /home/hkieffer/krc/porb/porbit.f .
+ln -s /home/hkieffer/krc/porb/porbmn4.f .
+ln -s /home/hkieffer/krc/porb/porbmn.f .
+#ln -s /home/hkieffer/krc/porb/porbqq.f .
+ln -s /home/hkieffer/krc/src/porb0.f .
+ln -s /home/hkieffer/krc/src/porb08.f .
+ln -s /home/hkieffer/krc/porb/prtpcom4.f .
+ln -s /home/hkieffer/krc/porb/prtpcom.f .
+ln -s /home/hkieffer/krc/porb/spcrev.f .
+ln -s /home/hkieffer/krc/porb/ymd2j2.f .
+echo "done copy from krc"
+
+#ln -s /home/hkieffer/src/for/math/ang360.f .
+ln -s /home/hkieffer/src/for/util/b2b.f .
+ln -s /home/hkieffer/src/for/NumRec/caldat.f .
+ln -s /home/hkieffer/src/for/util/catime.f .
+ln -s /home/hkieffer/src/for/math/cocosp.f .   # many routines.
+ln -s /home/hkieffer/src/for/mathdp/cocodp8.f .   # many routines.
+ln -s /home/hkieffer/src/for/util/julday.f .
+ln -s /home/hkieffer/src/for/util/r2r.f . 
+ln -s /home/hkieffer/src/for/math/rotmsp.f .   # many routines
+ln -s /home/hkieffer/src/for/mathdp/rotmdp8.f .   # many routines
+ln -s /home/hkieffer/src/for/char/upcase.f .
+ln -s /home/hkieffer/src/for/math/vaddsp.f .  # many routines
+ln -s /home/hkieffer/src/for/mathdp/vadddp8.f .  # many routines
+echo "done copy from src/for"
+
+#-------------- STEP 4 ----------------------
+
+cd $IN
+tar -chzf  $OUT aaa doc run src      # tar following all links
+
+pwd
+cd ~/krc/aaa   # return to parent directory
+
+exit #---------------------------------------------------
+
+

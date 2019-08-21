@@ -1,0 +1,134 @@
+#!/bin/bash -f
+#_Titl buildKRC   Build a KRC distribution
+# See the text file   BuildGuide  for discussion
+#   Any line with a comment that starts with '#t' is only to print information.
+#_Use
+# Move to a directory one level above where a KRC version is to be installed
+# Copy or link the distribution tar file into that directory.
+#   The tar file must be named krc123.tar.gz where 123 is replaced with a 
+#   3-digit version number.
+# Copy or link this script into that directory. 
+# Enter something like the following command
+#    buildKRC  /work2/KRC/ 123 0   
+#       Where 123 is replaced with the 3-digit version number.
+#
+# There are a number of steps which must be executed sequentially. If a step 
+# fails, after a fix the script can be run again by replacing the '0' with the 
+# number of the last step that was successful. 
+# 2016mar21 Hugh Kieffer
+# 2016may22 HK Add comments  
+# 2017feb24 HK Drop V2C from name of krc executable
+#_End #########################################################################
+
+#echo "4. argv==$#="$#
+# if [[ $#argv < 3 ]] ; then                 # If too few arguments, print help.
+#EXCESS=$(( $#-3 )) 
+#echo "excess="$EXCESS
+
+if [[ $# -ne 3 ]] ; then                 # If wrong Num. arguments, print help.
+    echo "Build a KRC distribution from a tar file "
+    echo "Usage: buildKRC  <dir containing tar file>  <version>  step"
+    echo "  where version is without the decimal points"
+    echo "  and step is the last step successfully accomplished: "
+    echo " 0=none  1=make Dir  2=untar  3=good Makefile"
+    echo " 4=make C library  5=make IDL SOL  6=make PORB  7=make KRC"
+    echo "e.g.         buildKRC /work2/KRC 341 3"
+    echo "Number of arguments you used is off by "$(( $#-3 )) 
+    exit 0
+fi
+
+TARD=$1            # dir containing tar file
+VER=$2             # version, e.g. 232
+STEP=$3            # steps done so far
+TOP=$TARD'/'$VER'/'   # path to the new installation
+echo "TOP="$TOP"    VER="$VER"    STEP="$STEP
+
+#    VR=${VER:I:J}    # Starting at 0-based byte I, get 1-based J characters
+V3C=${VER:0:3} # get first three characters 
+echo "V3C="$V3C #t
+
+if [[ V3C -ge 330 ]] ; then  # 330 is first to use this system
+    V2C=${VER:0:2}    # get first two characters to use for make name in step 7
+    WANT='KRCLIB'  # library needed in Make
+else 
+    echo "Old system"   #t
+    V2C=''
+    WANT='HHKLIB'
+fi
+echo "V2C="$V2C"    WANT="$WANT #t
+
+cd $TOP           # cd to the directory containing the tar file
+
+if [[ $STEP -lt 1 ]] ; then  #  1 ---------------------- make Dir
+    mkdir $VER         # make a new directory 
+    cd $VER
+    ln -s  /home/hkieffer/krc/src/buildKRC .  # link to this script
+fi                         #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+if [[ $STEP -lt 2 ]] ; then  #  2 ---------------------- untar
+    ls -l              # see if anything is already there
+
+    echo -n "Does above listing already contain: aaa doc idl run src ?"
+    read -p  " y/n > " resp 
+    echo "resp= "$resp   #t display what was obtained
+
+    if [[ $resp != 'y' ]]; then  # if sub-dirs not there, make them by untar
+        ACT='tar -xf ../krc'$VER'.tar.gz'  # construct the expansion
+        echo "ACT="$ACT                      #t
+        $ACT            # untar the file
+    fi
+fi                         #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+# Check which library the  active Makefile uses 
+
+if [[ $STEP -lt 3 ]] ; then  #  3 ---------------------- check/edit makefile
+    if [[ -e src/Makefile ]]; then # file exists
+#        grep -in  $WANT'=' src/Makefile   # check for old paths
+#        echo -n "Does above contain   ---LIB=.? same as "$WANT
+#        read -p  " y/n > " resp 
+#        echo "resp= "$resp          #t display what was obtained  
+#        if [[ $resp != 'y' ]]; then
+#            echo "Must edit src/Makefile.  quitting"
+#            exit 0
+#        else
+            echo "step 3 OK"
+#        fi
+    else
+        echo " Did not find Makefile. quitting" 
+        exit 0
+    fi
+fi                         #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+pwd
+if [[ $STEP -lt 4 ]] ; then  #  4 ------------------ Make C library
+    cd $TOP'src/cfiles'   # low-level I/O routines, 
+    pwd                   #t
+    make all              # build the C library, required before a Fortran build
+fi                         #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+if [[ $STEP -lt 5 ]] ; then  #  5 ------------------Make IDL library
+    cd $TOP'idl/extern'   # Move to area for Shared Object Library (SOL)
+    pwd                   #t
+    make ftnwrap64.so                       # build the SOL 
+#  Must restart IDL to access any new shared object library
+fi                         #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+cd $TOP'src'          # cd to the Dir with all the FORTRAN source code
+pwd                  #t
+if [[ $STEP -lt 6 ]] ; then # 6 ------------------- Make PORB
+    make porbmn 
+fi                          #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+if [[ $STEP -lt 7 ]]; then  # 7 -----------------  Make KRC 
+#    make krc$V2C
+    make krc
+fi                          #^^^^^^^^^^^^^^^^^^^^^^^^^^ end
+
+cd $TOP'run'          # move to directory in which normally run KRC
+pwd                   #t
+#ln -s ../src/krc$V2C krc              # soft link to KRC executable
+ln -s ../src/krc .              # soft link to KRC executable
+ln -s ../src/porbmn .           # " " to PORB program 
+mkdir out              # create a place for output
+
+exit 

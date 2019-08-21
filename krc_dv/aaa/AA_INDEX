@@ -1,0 +1,44 @@
+This is a top-level index to files in a KRC distribution  2016may22
+
+A complete build script was generated 2016 march. Anything about installation older than that is obsolete.
+
+
+
+
+
+
+in the   aaa  directory --------------------------------------
+
+ 2245 Oct 23  2011 2011oct19fixes  Notes on compiler options and FORTRAN standards
+ 5592 Oct  4  2013 AAinstall       Guide to installing and using the KRC distribution. 
+ 2447 Oct  2  2013 AAREADME        Guide to building the KRC distribution tar file
+                                   Of little use to users
+  955 Jan 27  2014 GenDistro       Cookbook to generate a KRC distribution
+ 7124 Jun 10  2014 HKquick         Keystroke guide to build of new version KRC on H3
+ 1392 Oct  3  2013 idlPath         Sets the path for IDL to include KRC routines
+                                   Would need to be edited at each installation
+ 4800 Aug  5  2013 Make2013aug05   Makefile for KRC distribution
+ 1728 May  6  2014 Makec           make KRC C routine library
+ 1492 Oct 25  2011 Makec2011oct25  make KRC C routine library 
+ 1653 May  6  2014 MakefileASU241c early version of full Make
+                   makeNotes       comments on compilation warnings
+ 2524 Jun 10  2014 MakeP3          Makefile for PORB distribution
+ 3263 Feb 25  2014 Makext          Makefile for IDL externals
+
+Scripts run is sequence to generate and install a KRC distribution
+ 1740 Mar  1  2014 step1*
+ 1605 Mar  4  2014 step2*
+19460 Mar 22 16:29 step3*
+18165 Jun 19  2014 step3_16jun19*
+ 1429 Aug 28  2013 step34*
+ 1448 Mar  3  2014 step3b*
+ 8442 Oct 17  2011 step3i*
+ 1051 Jun 19  2014 step4*
+  789 Oct  3  2013 step4b*
+  980 Oct  3  2013 step6*
+  994 Oct  3  2013 step61*
+  796 Mar  7 17:32 step7
+ 4825 Jun 10  2014 stepP34*
+18295 Apr 29  2014 v2step3*
+======================
+

@@ -1,0 +1,35 @@
+Values from Report of the IAU Working Group on Cartographic
+Coordinates and Rotational Elements: 2009, Archinal et al.
+Celest. Mech. Dyn. Astr. (2011) 109:101-135
+http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA538254
+ Cut/paste/edited by hand  Hugh Kieffer  2013feb04 2017mar15 
+Pluto from Seidelman2006
+Columns (0-based)
+ 0: Object name
+ 1: RA at epoch
+ 2: RA/cent.
+ 3: Dec at epoch
+ 4: Dec/cent.
+ 5: Prime meridian at epoch  
+ 6: Rotation rate, degrees per day
+[7] indicates if higher order terms are defined, but omitted here
+Sun      286.13     0.      63.87     0.       84.176 14.1844000
+C_END
+Mercury  281.0097  -0.0328  61.4143  -0.0049  329.5469  6.1385025   higher
+Venus    272.76     0.      67.16     0.      160.20    1.4813688
+Earth      0.00    -0.641   90.00   -0.557    190.147 360.9856235
+Mars     317.68143 -0.1061 52.88650 -0.0609   176.630 350.89198226
+Jupiter  268.056595 -0.006499 64.495303  0.002413 284.95  870.536 higher
+Saturn    40.589    -0.036  83.537 -0.004  38.90  810.7939024
+Uranus   257.311     0.  -15.175  0.     203.81   501.1600928
+Neptune  299.334     0.   42.95   0.     253.16   536.3128492  Eval at T=0
+Pluto    312.993     0.    6.163  0.     237.305   56.3625225
+Moon     269.9949  .0031  66.5392 0.0130 38.3213   13.17635815 higher
+Phobos   317.68    -0.108  52.90  -0.061   35.06  1128.8445850 higher
+Deimos   316.65    -0.108  53.52  -0.061   79.41   285.1618970 higher
+Io       268.05    -0.009  64.50   0.003  200.39   203.4889538 higher
+Europa   268.08    -0.009  64.51   0.003  36.022   101.3747235 higher
+Ganymede  268.20   -0.009  64.57   0.003  44.064    50.3176081 higher
+Callisto 268.72    -0.009  64.83  +0.003  259.51    21.5710715 higher
+InvPla   273.85     0.     66.99   0.       0.       0.        Invariable Plane
+lastLine

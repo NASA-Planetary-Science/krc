@@ -1,0 +1,30 @@
+#! /usr/bin/csh
+###################################
+# Script for copying KRC defaults into a safe area for local edit
+# Typically run only once at an institution
+#_Hist 2011oct25  Hugh Kieffer
+# 2013oct01 HK Update
+################################### 
+
+# Edit the next 2 lines for local paths
+set FAM='/work1/build'	# Top of KRC distribution
+set LOC='~/krc/uniq'	# Area outside distro untar to hold locally-edited files
+#^^^^^^^^^^^^^^^^^^^^^^ firm code
+echo "FAM= " $FAM
+echo "LOC= " $LOC
+
+pwd
+cd $LOC		# dir to hold files which may need to be edited
+pwd
+
+cp -p $FAM/src/Makefile .		# Makefile for FORTRAN KRC
+cp -p $FAM/src/cfiles/Makefile Makec  		# Makefile for C library
+cp -p $FAM/idl/extern/Makefile Makeso	# Makefile for shared object library
+cp -p $FAM/aaa/idlPath .		# Script to set IDL path
+cp -p $FAM/idl/kirin.pro . 		# Procedure to initialize IDL 
+cp -p $FAM/aaa/step6 . 			# Script for copying edited files back
+
+
+cd $FAM		# dir to hold files which may need to be edited
+pwd
+exit

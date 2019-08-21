@@ -1,0 +1,825 @@
+ 0 0 1/ KOLD: start season;  KEEP: continue saving data in same disk file 
+0 0 0 0 0 0 / 6 IDBx debug flags Present IFF 3rd value above ne 0 
+Asteroid Bennu Beaming set  19 equal-area zone latitudes Kheim Photom
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+       .03      1.00     100.0    0.0223     1600.  0.178667     630.0      900.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+  0.000001      43.5   27.9546       0.5      .055      200.     200.0      630.
+      TAUD     DUSTA    TAURAT     TWILI  ARC2/Pho ARC3/Safe     SLOPE    SLOAZI
+  0.000001       .90       0.5       0.0       0.0       1.0       0.0        0.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+      10.0   589944.       .65      0.95      0.54    . 0009       50.       0.0
+      RLAY      FLAY     CONVF     DEPTH     DRSET       DDT       GGT     DTMAX
+    1.1500     .1200    2.0000       0.0       0.0     .0020       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+    4455.0   10.9106      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.149858  0.042111  0.035592  0.000366      3.40       0.0       0.0       0.0
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  577.4365  199.0392  -36.4975   18.4841     1300.       0.0       0.0       0.0
+        N1        N2        N3        N4        N5       N24        IB        IC
+        37      1536        10        19       161        48         0       999
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN/Flx15     KPREF
+         3        24         1       121         0        45        65         0
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -1         0        60        -0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  Lzone  LOCAL  Prt76 LPTAVE  Ltabl  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+ -71.33 -57.36 -47.46 -39.17 -31.76 -24.90 -18.41 -12.15  -6.04   0.00
+   6.04  12.15  18.41  24.90  31.76  39.17  47.46  57.36  71.33    0.0
+Elevations: in 10F7.2 _____7 _____7 _____7 _____7 _____7 _____7 _____7
+   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00
+   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00    
+ 2013 Aug 23 08:11:19=RUNTIME.  IPLAN AND TC= 405.0 0.00000 Bennu
+   405.0000       0.000000      0.3564448E-01  0.1053292       1.156605    
+  0.2037319       1.126004      0.4090926       0.000000      -1.504474    
+  -1.185079       0.000000       0.000000       436.4232       4767.211    
+  0.1790608       0.000000       2.001070       0.000000       0.000000    
+   0.000000     -0.4171197      0.7619694     -0.4953924      0.9088515    
+  0.3497078     -0.2273616       0.000000     -0.5450751     -0.8383872
+1 21 0.25 'ARC2/PHT' / set to Keihm
+8 5 0  '/work1/krc/beam/BeamK00.t52' / Disk file name
+8 21 0 '/work1/krc/beam/BeamKflat.tm3' / Type -3 output file name for flat
+0/  1
+8 5 0  '/work1/krc/beam/BeamK02.t52' / Disk file name
+8 3 0  '/work1/krc/beam/BeamKflat.tm3' / Type -3 file to read for flat far field
+3 2 0 'LP2' / turn off printing parameters and layer table
+1 23 2. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK04.t52' / Disk file name
+1 23 4. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+3 2 0 'LP2' / turn off printing parameters and layer table
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK06.t52' / Disk file name
+1 23 6. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK08.t52' / Disk file name
+1 23 8. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK10.t52' / Disk file name
+1 23 10. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK12.t52' / Disk file name
+1 23 12. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+3 2 0 'LP2' / turn off printing parameters and layer table
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK14.t52' / Disk file name
+1 23 14. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK16.t52' / Disk file name
+1 23 16. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK18.t52' / Disk file name
+1 23 18. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK20.t52' / Disk file name
+1 23 20. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK22.t52' / Disk file name
+1 23 22. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK24.t52' / Disk file name
+1 23 24. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK26.t52' / Disk file name
+1 23 26. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK28.t52' / Disk file name
+1 23 28. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK30.t52' / Disk file name
+1 23 30. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK32.t52' / Disk file name
+1 23 32. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK34.t52' / Disk file name
+1 23 34. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK36.t52' / Disk file name
+1 23 36. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK38.t52' / Disk file name
+1 23 38. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+8 5 0  '/work1/krc/beam/BeamK40.t52' / Disk file name
+1 23 40. 'SLOPE' /  --------------------------------
+1 24  0. 'SLOAZI' / 
+0/ 
+1 24 20. 'SLOAZI' / 
+0/ 
+1 24 40. 'SLOAZI' / 
+0/ 
+1 24 60. 'SLOAZI' / 
+0/ 
+1 24 80. 'SLOAZI' / 
+0/ 
+1 24 100. 'SLOAZI' / 
+0/ 
+1 24 120. 'SLOAZI' / 
+0/ 
+1 24 140. 'SLOAZI' / 
+0/ 
+1 24 160. 'SLOAZI' / 
+0/ 
+1 24 180. 'SLOAZI' / 
+0/ 
+1 24 200. 'SLOAZI' / 
+0/ 
+1 24 220. 'SLOAZI' / 
+0/ 
+1 24 240. 'SLOAZI' / 
+0/ 
+1 24 260. 'SLOAZI' / 
+0/ 
+1 24 280. 'SLOAZI' / 
+0/ 
+1 24 300. 'SLOAZI' / 
+0/ 
+1 24 320. 'SLOAZI' / 
+0/ 
+1 24 340. 'SLOAZI' /  ^^^^^^ last of azi set
+0/
+0/  END OF RUN =====================================================
+
+8 5 0  '/work1/krc/beam/RQ36p.t52' / Disk file name
+0/
+1 3 200 'INERTIA' / 
+0/
+
+year is 436.443481 days
+with default convf
+default convf: Bottom layers for time doubling:      2    4    6    8   10   21
+convf=8        Bottom layers for time doubling:      6    8   10   12   14   21
+
+ encounter  about 2018 sept. sep 1 is MJD 6818
+
+0/ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

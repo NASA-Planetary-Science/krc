@@ -1,0 +1,36 @@
+#!/bin/bash
+#################################################################
+# Script to write distribution tar file of KRC system large files
+#  step3b  script MUST be executed first
+#_Hist 2011oct17 Hugh Kieffer Separate from step4
+# 2017mar01 HK Convert to bash
+#################################################################
+
+RT1='/work2/'		# one level above distribution constuction area
+RT2='DistKRC'		# distribution construction area
+NAME='krc' 		# name for this distribution
+SKEB='big.tar'          # last part of BIG tar file name
+
+read -p  "Version number ? " RESP
+echo "RESP= "$RESP   # display what was obtained
+
+  
+# name construction
+IN=$RT1$RT2		# construction area
+OBIG=$RT1$NAME$RESP$SKEB 	# output tar file
+
+echo "IN="$IN
+echo "OBIG="$OBIG
+
+cd $IN	
+pwd
+tar -chf  $OBIG big	 # tar following all links	
+
+echo "Done the tar. Returning to /aaa "
+cd ~/krc/aaa   # return to parent directory
+
+echo "Push the big tar file to ASU"
+
+pwd
+
+exit

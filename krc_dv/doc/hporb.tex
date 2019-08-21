@@ -1,0 +1,1033 @@
+\documentclass[draft]{article}
+% can do:  latex porb    OR   pdflatex porb 
+% to make into html: 
+% hyperlatex  tth  LaTeXML+post TeX4ht   NOPE:  mathjax
+%
+% 1) include definc.sty directly and comment the usepackage  
+%       remove or comment the  page margins lines
+% 2) run latex and bibtex
+% 3) comment the bibliography lines and include the .bbl file  DOES NOT WORK
+ %   replace any \qcite with \cite   STILL DOES NOT PRODUCE BIB
+% 4) /work2/apps/tth_linux/tth <porb.tex >porb.html
+ %  \ref works only for earlier \label
+ 
+% see definc.sty for other page format settings
+%\usepackage{epsfig}
+%\usepackage{definc}  % Hughs conventions
+
+% definc.sty   Hughs  LaTex style and shorthand
+% 2010jan25 move in many things from KRC paper %x << %y is replace y with x
+% 2013may19 extract Mars-related to defmar.syt
+
+\textheight=10.in \topmargin=-1.in         %  hulk printer extreme limits centos 5.3
+\textwidth=7.80in  \oddsidemargin=-0.7in \evensidemargin=-0.7in % 2012jan20 printest.tex
+\topskip=0.0in  \footskip=0.2in
+
+% the following for normal margins lp q.ps
+%\textheight=9.3in  \topmargin=-0.4in
+%\textwidth=7.0in  \oddsidemargin=0.0in \evensidemargin=-0.0in 
+%\parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
+
+%       modes, spacing, size
+\newcommand{\qb}{\begin{displaymath}}    % begin & end un-numbered equations
+\newcommand{\qe}{\end{displaymath}}
+\newcommand{\qbn}{\begin{equation}}      % begin & end numbered equations
+\newcommand{\qen}{\end{equation}}
+
+% Used in place of  \qen for development to identify equation labels 
+%\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+\newcommand{\qr}[1]{Eq. \ref{eq:#1}}  % refer to Eq.: both dev and final
+
+  %- \newcommand{\qs}{\sqrt}           % squareroot
+  %- \newcommand{\ql}{\left(}          %  left (
+  %- \newcommand{\qr}{\right)}         %  right )
+% \nv << \newcommand{\ct}{\texttt}         % code variable names in text
+% \nvf << \newcommand{\cf}{\mathtt}         % code variable names in formulae (math mode)
+  %\def\cfm{\mathtt}                % code variable names in math mode
+  %\def\code{\texttt}               % code variable names
+%np << \newcommand{\pname}{\textbf}      % program names
+
+\newcommand{\qi}{\\ \hspace*{2.em}}      % indent 1
+\newcommand{\qii}{\\ \hspace*{4.em}}     % indent 2
+\newcommand{\qiii}{\\ \hspace*{6.em}}    % indent 3
+\newcommand{\qiiii}{\\ \hspace*{8.em}}   % indent 4
+\newcommand{\qnn}{\scriptsize}    % \tiny } % begin note to me
+\newcommand{\qsm}{\small}  
+\newcommand{\qno}{\normalsize}
+\newcommand{\qq}{\normalsize}     % end note
+\newcommand{\qn}{\Large }         % begin note
+\newcommand{\qv}{\overline}       % vector. must be in math mode
+%\newcommand{\qx}{ \qn MORE \qq }  % large MORE
+%\newcommand{\bq}{ \qn ??? \qq }   % big question marks
+\newcommand{\ec}{\hspace{1cm} \equiv \mathtt } % == code name within math mode
+\newcommand{\qomit}[1]{\hspace{0.0mm}} % omit the material
+
+\def\qm{\vspace{-1.0mm}} % close up rows
+\def\qp{\vspace{1.0mm}}  % open  up rows
+%       individual symbols.  Keep alphabetic   \qc... are chemical symbols
+\newcommand{\at}{\textbf{@}}       % bold at sign, for code sections
+%^^^ \at conflicts with AAS something
+\newcommand{\qd}{$^\circ$}        % degree symbol
+\newcommand{\qtf}{\qsm $_\circ$ \qno $ \! ^\circ \! $ \qsm $_\circ$ \qno } % therefore
+\newcommand{\um}{$\mu$m}          % micrometer
+\newcommand{\mm}{\sharp} % symbol for matrix multiply 
+\newcommand{\mr}{\otimes} % symbol for rotation
+\newcommand{\mc}[1]{\hspace{7mm} \mathrm{#1} \hspace{7mm}} % word between equations
+
+\newcommand{\qab}{\langle}    % begin average value
+\newcommand{\qae}{\rangle}    %  end  average value
+\newcommand{\abs}[1]{\mid \! #1  \! \mid }  %  Absolute value: only in Math mode
+
+\newcommand{\np}{\textbf}  % name of program or routine
+\newcommand{\nf}{\textit}  % name of file
+\newcommand{\nv}{\texttt}  % name of code variable in text
+\newcommand{\nvf}{\mathtt} % name of code variable in equation
+\newcommand{\nj}{\textsf}  % name of input parameter in text
+\newcommand{\njf}{\mathsf} % name of input parameter in equation
+
+%       general definitions with parameters
+\newcommand{\hmm}[1]{\hspace{#1mm}}     % horizontal space # mm.
+\newcommand{\hcm}[1]{\hspace{#1cm}}     % horizontal space # cm.
+\newcommand{\vcm}[1]{\vspace{#1cm}}     % vertical space # cm.
+\newcommand{\E}[1]{$10^#1$}             % 10^#  (not inside equation)
+\newcommand{\Em}[1]{$10^{-#1} $}        % 10^-#   ditto
+\newcommand{\xEm}[1]{$\times 10^{-#1}$} % x10^-#  ditto
+\newcommand{\xE}[1]{$\times 10^#1$}     % x10^#   ditto
+\newcommand{\Pm}[1]{$^{-#1}$} % Power minus: negative exponent, as on units
+\newcommand{\sx}[1]{$^{-#1}$} % exponent -n  for use in units
+%\newcommand{\qcite}[1]{#1=\cite{#1}}  % show my .bib name
+
+% \cinput include material encased between begin and end statements
+% \sinput skip input, with small box notice  Reserves a section number
+% \xinput include material, with artifical start/stop subsubsections in index
+
+%    Put two blank lines at end of the file being included
+
+\newcommand{\cinput} [1] {\begin {center} \fbox{ \itshape { Input: #1 } } \end{center} \input{#1} \hrulefill\ \textit {End of input: #1 } \hrulefill\ }
+
+%\newcommand{\ninput} [1] { \fbox{ \itshape { Input: #1 }  NOT INCLUDED }} % if not to be printed
+
+\newcommand{\sinput} [1] {  \section{Reserved for: #1} \begin {center} \fbox{ \itshape { Skipped: #1 } }  \end{center} }
+
+\newcommand{\xinput} [1] { \subsubsection{---------------input  #1}  \input{#1}   \subsubsection{---------------end  #1} } % notice in Index
+
+\newcommand{\xinclude} [1] { \subsubsection{--------------include  #1}  \include{#1} \subsubsection{---------------end  #1} } % notice in Index
+%\textheight=9.80in  \topmargin=-0.5in    %  hobo normal=final
+%\textwidth=7.5in  \oddsidemargin=-0.3in \evensidemargin=-0.3in  % hobo final
+%\parindent=0.em \parskip=1.ex % paragraph spacing
+
+\title{The KRC Planetary ORBit (PORB) System}
+\author{Hugh H. Kieffer  \ \ File=~/krc/Doc/hporb.tex 2014jan24 jun05}
+
+% local definitions
+%\newcommand{\short}{full}    % begin & end un-numbered equations
+\newcommand{\qdp}{$. \! ^\circ \! $} % degree over decimal point NOT in math mode 
+
+%\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+\newcommand{\cf}{$\Leftarrow$} % comes from  
+
+\begin{document}
+\maketitle
+\tableofcontents
+\hrulefill .\hrulefill
+%\listoffigures
+%\listoftables
+
+This file largely documents the design of PORB. It should not be needed by
+the general KRC user. A separate document \nf{PUG.tex} and its derivatives are a
+Users Guide to the PORB system.
+
+
+
+\section{Introduction} The modernization of the PORB system to use J2000 dates and orientation and to address a wide range of objects has required several revisions, primarily is how $L_S$ is calculated. To avoid confusion in Version 2 with version 1 routines that did similar things, some routine names have been changed:
+\qi PORB1 $\Rightarrow$ PORBIG: create the geometry arrays for a KRC input file 
+\qi PORB $\Rightarrow$ PORBIT: compute values at a specific date 
+
+The main program \np{porbmn} is basically a pre-processor to generate the
+geometry matrix used by KRC. The default output of \np{porbmn} is a file
+\nf{PORBCM.mat} which concatonates new 7-lines matricies on the bottom; any
+7-line set can be pasted into a KRC version 2.2.1 or later KRC input file.
+
+There are several coordinate orientation systems involved, listed in \S \ref{code}. To minimize repetative calculations, the version 2 PORB system works largely in the F (orbital plane) coordinate system. 
+
+\section{Source files} %------------------------------------------------
+Files that can be read by the PORB system cover four catagories, each file has its own format:
+\qi Planets:  One file for orbits and another for spin-axes
+\qi Minor (or small) bodies: Orbits and spin-axis direction for each object. Two versions.
+\qi Comets: Orbit size specified by perihelion distance. 
+\qi ExoPlanets: Orbit specified by semi-major axis, period and eccentricity. Relative orientation of the body spin axis specified by obliquity and Ls at periapsis.
+
+All these files are read by \np{porbel.f} 
+
+\subsection{Planets} 
+
+\begin{description} 
+ \item [\textit{standish.tab}] \ \cite{Standish06} Keplerian elements and rates of change for 9 planets in mean ecliptic and equinox of J2000 valid for 1800 to 2050.
+
+ \item [\textit{spinaxis.tab}] \ \cite{Archinal11} Planets: Direction of the pole and rates of change in ICRF, which differs from J2000 equatorial system by less than 0.1 arcsecond.
+\end{description}
+
+\subsection{Minor planets / asteroids} 
+
+\subsubsection{Web sources} %.........................................
+
+There are several sources on the web. Some I found did not have unambiguous definition of the coordinate systems used; these were established through email exchanges
+\begin{description}  % labeled items   \item [] \item [] \end{description}
+
+\item [PDS Small Bodies Node] \  http://pdssbn.astro.umd.edu/
+\\ Primary source for spin axis. 
+ \qii ecliptic coordinates of equinox 1950\vspace{-3.mm} 
+\begin{verbatim}
+ PDS Small Bodies Node http://pdssbn.astro.umd.edu/ 
+ DATA ARCHIVES> Archived at SBN> by target > Asteroids
+   > orbital date   or > Physical properties > Spin Vectors
+Downloaded data files stored in : /work2/ephem/SmallBodies/ 
+   AstSpinVector/  Version 12: obsolete
+     EAR-A-5-DDR-PROPER-ELEMENTS-V1.0 ->     see orbit/num70pro.tab
+      EAR-A-5-DDR-ASTEROID-SPIN-VECTORS-V5.0  see document/spin.pdf
+   LightcurveV13/ version 13, current.  See  Guides  for aligned column labels
+     data/lc_spinaxis.tab
+In: catalog/dataset.cat                                                        
+    Kryszcznska, A., A. La Spina, P. Paolicchi, A.W. Harris, S.               
+    Breiter, and P. Pravec, New findings on asteroid spin-vector              
+    distributions, Icarus 192, 223-237, 2007."   
+  I have as /work2/Reprints/Ephem/Krys07AsteroidSpin.pdf 
+
+Found web note by Bill Owen (JPL): the obliquity in 1950 was 23 deg 26' 44.836".     
+\end{verbatim}
+
+\item [Minor Planet Center]  \  http://www.minorplanetcenter.net/iau/info/OrbElsExplanation.html 
+\\ ArgPeri, Node and Inclin are in J2000.0,  must be ecliptic
+
+\item [JPL Small-Body Database Browser]  \ http://ssd.jpl.nasa.gov/sbdb.cgi
+\\ heliocentric ecliptic J2000. \ No spin-axis data.
+
+\item [Ted Bowells massive database]   \ ftp://ftp.lowell.edu/pub/elgb/astorb.html
+\\ ArgPeri, Node and Inclin are in J2000.0,  must be ecliptic
+\\ Frequent updates.  \ No spin-axis data.
+
+\end{description}
+
+\subsubsection{PORB input files} %.........................................
+There are two PORB-system ASCII files that differ slightly in format. Both
+contain one element per line and include spin-axis.
+
+\begin{description} 
+ \item [\textit{minor.tab}] One value per line. Items are: 
+\qii (this is the order for \nf{minor.tab}, the order in \nf{small.tab} is slightly different)
+ \qi Object name. May be within single quotes
+ \qi Epoch in full Julian date     2000.0= 2451545.D0 
+ \qi Semi-Major axis in A.U.: $a$
+ \qi Eccentricity: $e$ or $\epsilon$
+ \qi Inclination of mean orbit to ecliptic : $i$ [deg]
+ \qi Longitude of the ascending node: $\Omega $ [deg]
+ \qi Argument of perihelion: $\omega$ [deg]
+ \qi Mean anomaly at epoch: $M$ [deg]
+ \qi Right Ascension of Pole, J2000 [deg]
+ \qi Declination of Pole, J2000 [deg]
+ \qi Prime meridian at epoch [deg]
+ \qi Sideral rotation period, [days]
+
+ \item [\textit{small.tab}] Newer format designed to allow cut-and-paste of
+   elements 'a' through 'M' from the JPL Small-Body Database Browser.  The last
+   four items relate to the spin-axis, the rotation period in hours, the
+   spin-axis direction, and zero meridian( which is rarely known); must get
+   these data from other sources or set a dummy values.
+ \end{description}
+
+\subsection{Comets}
+
+\textbf{\textit{comet.tab}} \  Some comets: orbit and spin. 
+Originally developed for the comet version of KRC, which included sublimation with a moving depth coordinate system, development of a coma, and non-gravitational accelleration terms. None of these are in the current version of KRC.
+
+Format nearly the same as \nf{minor.tab} except for use of perihelion distance $q$ rather than semi-major axis $a$. They are related by: $q=a(1- \epsilon)$.
+
+WARNING: Some entries are old. Consistency of source orientation systems uncertain. Use discouraged: Put new commets into \nf{small.tab}. 
+\subsection {ExoPlanets}
+
+Obliquity and season at periastron were chosen as alternatives to the
+conventional three items that specify orbit orientation (node, inclination,
+argument of periapsis) but which are relatively meaningless for planetary system
+without a well-defined reference plane.  The two chosen are easy to understand
+and have direct effect on temperatures.  \np{probel.f} forces planet obliquity to
+be at least 0.1\qd~ because a value of zero causes NAN's.
+
+To implement this, must set J2000 obliquity \nv{OBL} to zero in \np{probig.f} to nullify the conversion from ecliptic to equatorial coordinates. 
+
+The input items include the host star distance in LightYears and Visual Magnitude;  these are used to compute the radiated power from the star in comparison to the Sun and this factor is printed as a convenience for the user.
+\\ factor = 10\^{ }(- 0.4 (VisMag star - AbsMag Sun)) * (Distance/StandardDistance)$^2$ 
+\qi Absolute magnitude of the Sun is 4.83 . The standard distance is 10 parsecs, or 32.616 LightYears
+\\ This calculation ignores the spectral type of the star so is only an approximation.
+
+\vspace{3.mm}
+The synodic day is computed from the siderial day and the length of the year; this value is printed as a convenience for the user.
+\\ SydDay = SidDay(1.+ SidDay/year)
+
+Last part of file has unformatted info on some objects and host stars
+
+\begin{description} 
+ \item [\textit{exoplan.tab}] Contains a few sample concensus exoplanets
+\end{description}
+
+\subsection{Reprints}
+
+Reprints related to PORB are stored at: /work2/Reprints/Ephem/
+
+\subsection{Obsolete}
+\nf{seidel.tab}    \cite{Seidelmann74} 9 planets with Pole
+\\ \nf{sturms.tab} Mercury, Mars, Halley; each with Pole. Must be from \cite{Sturms71}, which is not available. Similar data is in \cite{Melbourne68}
+
+\section{Code names \label{code} }
+Follow the conventions of \nf{matrix.tex} with some additions:
+
+The notation described below promotes straight-forward code generation.  Matrix and vector names indicate precise meaning.
+\\ First letter is ``to'' and second letter is ``from''
+\qi  Rotation matricies have 'RM' as 3rd and 4th letter
+\qi  Matrix products drop the common middle letter;
+\qi  Vectors should 5 or more letters
+\qi  Vector 3rd letter is the orientation system
+\qii Letters 4 and 5:
+\qiii xx (or xxx) indicates elements are X,Y,Z
+\qiii xu means it is a unit-length vector
+\qi  Scalar values usually have 4 letters; 4th is the element
+\qiii X,Y,Z are those elements 
+\qiii A or P is latitude, B or Q is right-hand longitude, C is co-latitude 
+\qi  Vectors should be added or subtracted only if all letters after the first
+  are the same, and only the first two letters change for the result.
+
+Orientation systems used are:
+\qi A = Astronomic: master reference inertial system (J2000, virtually identical to the ICRS or FK5)
+\qii Z toward Earth  mean N. pole at J2000.0; X toward Vernal equnox at J2000.0 
+\qiii Older implementations were EME50 and B1950
+\qi B = Body:       Target body spin axis inertial; 
+\qii Z toward bodies right-hand spin axis, X toward its falling node.
+\qiii i.e., When direction from Planet to Sun is along X, it is the spring equinox 
+\qi E = Ecliptic:  Z toward pole of Earth's orbit;  X toward Vernal Equinox
+\qi F = "focal":  Z toward right-hand pole of body's orbit;  X from focus (central body) to periapsis
+
+Vector ends are:
+\qi H=Sun (Helios) 
+\qi P=Planet or orbiting body
+\qi X,Y,Z unit vectors along those axes
+
+E.g., ZPAXU is unit vector toward body positive spin axis (Z) from the body(P) in the J2000 system (A), all 3 components and of unit length (XU)
+\qi PHEXX is vector from Sun to body in Ecliptic coordinates.
+ 
+\section{What KRC needs}
+
+TCARD calls PORBo to initiate all time-independent quantities
+
+TSEAS increments the date and needs to be able to compute $L_S$. 
+\qi Calls PORBIT to get the current  SDEC, Ls and DAU
+
+TLATS needs the current solar declination and the heliocentric distance in AU.
+\qi Use SDEC and DAU computed in TSEAS 
+
+As of 2013jun17 begin revision of PORB and KRC to use only the following.
+\qi All orbits specified in J2000 ecliptic
+\qi All spin axes specified in J2000 equatorial
+\qii ?? allow flag for others. e.g, B1950 ecliptic
+\qi Primary system for geometry calculation is J2000 equitorial.
+
+Get planet postion at any time in orbital system.
+\qi Convert to ecliptic
+\qi rotate to J2000 
+
+porbcm.inc: see \S \ref{pcom}
+
+% \pagebreak
+\section{PORBEL: get elements} %--------------
+Will read elements and spin-vector data for one object from a (or two) data file, move several values into common and return others.
+
+For planets, reads first the orbital elements and adjusts to the requested epoch. 
+
+Standish tables list the following with respect to the J2000 ecliptic system, in order, at J2000.0 and their derivative in time:
+\qi 1 \ \ $a$: semi-major axis [au, au/century]
+\qi 2 \ \ $e$: eccentricity [radians, radians/century]
+\qi 3 \ \ $I$ : inclination [degrees, degrees/century]
+\qi 4 \ \ $L$ : mean longitude [degrees, degrees/century]
+\qii   $L=\Omega +\omega + M$  is a compound angle measured in two planes: 
+\qiii From VE to node in plane of reference
+\qiii then to periapsis and on to mean anomaly in orbital plane
+\qi 5 \ \ $\varpi$ : longitude of perihelion [degrees, degrees/century] ($\varpi= \Omega+ \omega    $ ) 
+\qii   $\varpi$ is a compound angle measured in two planes:
+\qiii $\omega$, the argument of periapsis, measured in the plane of orbit 
+\qi 6 \ \ $\Omega$:  longitude of the ascending node [degrees, degrees/century]
+\qii  measured in the reference plane.
+
+
+Standish gives his algorithm for getting position vector: which included solveing for eccentric anomaly in degrees. I do things a little differently, 
+
+\begin{enumerate}    % numbered items  
+\item  Compute the value of each element at the requested epoch: =base$+T\ast$rate
+\qii E.g. $a_t=a_0+ T\dot{a}$  \ \ $T$ is time from J2000.0 in Julian centuries;
+\qii  $T=\left( T_\mathrm{eph}-2451545.0 \right)/36525. $ I ignore the difference between ephemeris time and UTC. 
+\item Compute the requested epoch in days: $ t=T*36525.$
+\qi Below omit the $_t$ subscript.
+\item Compute the orbit period in days: $P_o= Y_s a^{3/2}$ where $Y_s$ is the siderial year for Earth; 365.256363004
+\item NOPE Compute argument of perihelion: $ \omega=\varpi-\Omega$
+\item Compute the mean anomaly at epoch: $M=L-\varpi $ in degrees
+\item Compute a time at periapsis: $t_p=   t-P_o*M/360.$
+\item Compute $Ls$ at periapsis $L_{Sp}$. This is the angle from the planets spring equinox to periapsis in the orbital plane.
+\item Compute rotation matrix from ecliptic to seasonal system $\mathbf{BF}$
+
+ THEN, FOR EACH TIME:
+
+\item Mean anomaly: $  M=(t-t_p)* 360/P_o $
+\item Obtain the eccentric anomaly $E$ by iterating Kepler's equation for $M$:
+\qiii $M= E- e \sin E $ \ where $e$ is the eccentricity
+\qi Standish does this in degrees, PORB does this in radians
+\item Compute the heliocentric coordinates in the orbital plane (F)
+\qi $x =a(cos E-e)$ and $ y=a \sqrt{1-e^2} sin E$ and PHFxx=[x,y,0]
+\qi True anomaly: $ \nu =\arctan (y,x)$ and $L_S = L_{Sp}+\nu $
+\qi Heliocentric distance is $a( 1.-e \cos E )$ or $\sqrt{x^2 + y^2}$.
+\item Rotate HPF into the seasonal coordinate system to get the sub-solar latitude
+\qi HPBxx= $\mathbf{BF} \cdot $ (-PHFxx)
+
+%\item Compute the coordinates in the J2000 ecliptic plane 
+%\qi  $r_{ecl} \equiv $ PHEXX $= \mathcal{M}r' \equiv 
+% \mathcal{R}_z(-\Omega) \mathcal{R}_x(-I) \mathcal{R}_z(-\omega)r' $
+%\item Compute the coordinates in the J2000 equitorial plane
+%\qi $r_{eq} \equiv$ PHAXX $= \mathbf{AE}r_{ecl}$
+%\qii $ \mathbf{AE} $ is $\mathcal{R}_x(-\varepsilon)$ where $\varepsilon $ is the obliquity at J2000: 23\qdp 43928
+
+\end{enumerate}
+\subsubsection{Solution working in the orbit-plane (F) system}
+ $t_p=$TJP is independent of coordinate system
+
+Will need $\mathbf{FA}$ to move spin axis into F.
+\qi Create $\mathbf{AF}$ from Kepler elements and transpose it.
+
+Will need  $\mathbf{BF}$ to convert PHF into Sub-solar latitude
+\qi Create from: Z= SpinPole expressed in F system
+\qi  X is toward spring equinox
+\qii spring equinox vector XB is spinAxis-cross-OrbitPole (in any coord sustem)
+\qii in F system, XB = in direction of ZBF cross ZFF;  and  ZFF$\equiv$[0,0,1]
+\qiii normalize to get XBFu
+\qi (ZB cross XB) will generate vector in direction of YB
+\qiii normalize to get YBFu
+\qi XBFu, YBFu, ZBFu make up the three rows of  $\mathbf{BF}$ 
+\qi True anomaly at spring equinox is $ \nu_V=\arctan(y/x)$ 
+\qii  where x,y are the components of XBFu.
+
+At any time $t$, get time from periapsis: $t_f=t-t_P$
+\qi use ORBIT to get vector from Sun to Planet in F system: PHFxx
+\qii Convert to mean anomaly: $M= t_f/P$ in radians, where $P$ is the orbital period
+\qii Convert to Eccentric anomaly by Keplers equation
+\qi Take negative of PHFxx to get vector from planet to SUn: HPFxx
+\qi Convert X and Y components of PHFxx to get true anomaly of Sun $\nu_S$
+\qi Subtract true anomaly of Sun at spring equinox to get $L_S$
+\qii $L_S$ in radians is simply $\nu_S- \nu_V$
+
+\subsubsection{ Inverse: Ls to date}
+Need mean anomaly
+\qi Convert Ls to True anomaly of planet from sun: $ \nu= L_S-180. + \nu_V  $
+\qi Convert True anomaly $\nu$ to eccentric anomaly E:
+\qii $\cos E =(e+ \cos \nu)/(1+ e\cos \nu) $ and $\sin E = \sqrt{1-e^2} \sin \nu /(1+ e\cos \nu)$
+\qiii Because denominators are the same, $\tan E = (\sqrt{1-e^2} \sin \nu) /(e+ \cos \nu)$
+\qi Convert eccentric anomaly to mean anomaly: Keplers equation: $M=E-e \sin E $
+\qi Convert to days from periapsis: tfp= M[deg] * P/360.
+\qi Add the date at periapsis: t=tfp$+t_p$
+\qi Construct HPFxx, then similar steps as above to get DAU and sub-solar declination
+\qiii $r=a(1-e^2)/(1+e \cos \nu)$
+
+
+\subsubsection{Orbital element manipulation}
+Standish: $M=L-\varpi  \Leftrightarrow M_T=L_0+T\dot{L}- \left( \varpi_0 +T\dot{\varpi} \right) $
+
+KRC: $ M_t= (t-t_p)M'$ where $t$ is Julian days from J2000.0 (thus, $t=T*36525$), $t_p$ is a time of perihelion ($M$ mod 360 =0) and $M'$ is the effective mean anomaly rate.
+
+\qbn  M_T=\left( L_0 - \varpi_0 \right) +T\left( \dot{L}- \dot{\varpi} \right) 
+\ \  \Leftrightarrow  \ \  M_T= \left(T-T_p  \right)  \left( \dot{L}- \dot{\varpi}  \right) \equiv  M_T= \left(t-t_p  \right)  \left( \dot{L}- \dot{\varpi}  \right)/36525 \ql{M}
+
+Yields $ T_p = -\left( L_0 - \varpi_0 \right)  /   \left( \dot{L}- \dot{\varpi}  \right) $
+
+Convert from centuries to days:
+$ M_t=  \left(t-t_p  \right) M'  $ where $M'=  \left( \dot{L}- \dot{\varpi}  \right)/36525 $; $ \dot{L}$ is dominant. 
+ 
+
+User selects a $T$ near the year of interest. Use \qr{M}:middle to get $M_1$; modulo 360 to get the equivalent $M_2$. Then find $t_p = -M_2/M' $ ??
+
+%  $L=L_0+T\dot{L} $ and $L_m=L \ \mathrm{mod} \ 360 $ and $M=L_m-\varpi$
+
+Compute orbital period $P$ from Keplers third law: $P=Y_s \sqrt{a^3}$ 
+\qi where $Y_s$ is the siderial year for Earth
+\\ Compute time of periapsis near the desired date as $t_p= T*36525 -P \cdot M_2/360.$ in Julian Days from J2000
+\qi $t_p \equiv$ \nv{TJO} is effectively the reference time for later orbital calculations.
+
+
+IDL tests (qtev.pro @ 28) of the orbital period $P_a$ derived from semi-major axis $a$ and $P_M$
+derived from the effective anomaly rate $M'$ show fractional differences
+$(P_a-P_M)/P_M$ of up to 5.E-6 for terrestrial planets.   The fractional rate of change of semi-major axis $\dot{a}/a$ is
+$<$1.2E-7 /year for the terrestrial planets and up to 1.3E-6 for the outer
+planets.
+
+Then reads the spin-vector data and adjust the pole direction to the requested epoch. Get the siderial days in hours.
+\section{Coordinate conversions}
+\subsection {Basic principals}
+
+ Coordinate systems are defined by a center and an orientation. Common centers
+ are: barycenter of the solar system, gravitational center of
+ Earth. Orientations are defined relative to another coordinate system or on
+ some physical basis.
+
+Within a coordinate system, a vector $ \qv{PO}$ from the origin $O$ to a point
+$P$ can be rotated around an axis (e.g., the Z axis) by an angle $\theta$
+(positive anti-clockwise) to a new position by $ \qv{P_2O}=
+\mathcal{R}_Z(\theta) \qv{PO} $ where
+
+\qbn  \mathcal{R}_Z(\theta) = \left[ \begin{array}{ccc} 
+  \cos \theta & \sin \theta & 0 \\
+- \sin \theta & \cos \theta & 0 \\  
+        0     &   0         & 1 \\  \end{array} \right] \qen 
+
+The vector $v \equiv \qv{PO}$ can be expressed in a second coordinate system
+whose axes are rotated around the original Z axis by $\theta$ as $v'=
+\mathcal{R}_Z(-\theta) v$
+
+If the axes of coordinate system \textbf{B} are attained by three successive
+rotations beginning with the axes of coordinate system \textbf{A}, typicially in
+the sequence: 1:$Z(\alpha)$, 2:$X(\beta)$, 3:$Z(\gamma)$, then $v_B=\mathcal{M}
+v_A$ where the rotation matrix to \textbf{B} from \textbf{A} is
+
+\qbn \mathbf{BA} \equiv \mathcal{M}=   \mathcal{R}_Z(-\gamma) \ast \mathcal{R}_X(-\beta)  \ast \mathcal{R}_Z(-\alpha)  \ast \mathbf{I} \qen 
+
+where \textbf{I} is the identity matrix and the operations are performed from right to left.
+
+Rotation from the \textbf{B} to the \textbf{A} system is simply 
+\textbf{AB}$=\mathcal{M}^{-1} $ 
+\qi The inverse of a rotation matrix is its transpose:
+    $\mathcal{M}^{-1}= \mathcal{M}^{\mathrm{T}}$ . 
+
+Also, \textbf{AB} can be generated by reversing the sequence of axial rotations
+and not negating the angles.
+
+\subsection{From orbit plane F  to J2000=A}
+Defining angles:
+\qi $\Omega$: argument of the node: \nv{ODE} radians
+\qi $i$: inclination of the orbit: \nv{CLIN} radians
+\qi $\omega$: argument of perihelion: \nv{ARGP} radians
+\qbn \mathbf{AF} =   \mathcal{R}_Z(-\Omega) \ast 
+\mathcal{R}_X(-i)  \ast \mathcal{R}_Z(-\omega)  \ast \mathbf{I} \qen 
+This is done in the routine \np{ROTORB}
+
+\subsection{From J2000=A to seasonal=B (Body)}
+Z axis of the B systen is the right-hand spin axis of the body e.g., planet).
+\\ X axis is the body's Vernal equinox: where the Sun (in the planet's orbit) rises above the planets equator. This occurs when the direction from the planet to the Sun is along the direction of: Spin-axis cross orbit-normal  
+
+Defining angles: those for the orbit, plus:
+\qi Right Ascension of spin axis in J2000 equitorial, $\alpha$,  \nv{ZBAB} radians
+\qi Declination of spin axis in J2000 equitorial,  $\delta$. \nv{ZBAA} radians
+
+ \np{COCOSC}: Convert  $\alpha$ and  $\delta$  to Cartesian vector: $Z_{bA}$,\nv{ZBAXU}
+\\ pole of orbit plane in J2000 is the Z axis of the B system expressed in the A system, or, the last row of the $ \mathbf{AF} $ matrix
+\qi  \np{ROTCOL}: extract  $Z_{FA}$, \nv{ZFAXU}
+\\ Get vector to Body vernal equinox: $\gamma$, \nv{BV}
+\qi $\gamma \equiv X_{bA} = Z_{bA} \times Z_{fA}$ , normalised to unity, \nv{XBAXU}
+\qi $ Y_{bA}Y = Z_{bA} \times X_{bA}$ , Y axis of B system in J2000
+
+$\mathbf{BA} =\left[ \begin{array}{c}  X_{bA} \\ Y_{bA}  \\ Z_{bA} \end{array}  \right] $
+
+Finally: $\mathbf{BF} = \mathbf{BA} \ast \mathbf{AF} $ will convert the Sun to Planet vector in the orbital system to the season system.
+
+\section{$L_S$, the planetocentric longitude of the Sun}
+$L_S$ (`''L sub S'') is the planet's ``season'' measured as the angle from the planets Vernal Equinox to the planet-to-Sun vector in the orbital plane. As such, it is linear with the True Anomaly of the Planet around the Sun. The term is commonly used for Mars but rarely for other bodies.
+
+\subsection{Generic (any body) Ls algorithm}
+
+Vernal Equinox is toward the intersection of body equator and body orbit at
+which the Sun rises into the ``North' hemisphere. Thus VE is along
+spinAxis-cross-OrbitPole .
+
+Do once: Using body orbital elements and spin axis in the same coordinate system; compute the time of periapsis, the angle from the VE to periapsis, and the rotation matrix from the F to the B system
+
+Each time: Calculate the true anomaly, get the HP vector in the F system, rotate it into the B system to get the sub-solar declination; the magnitude of the vector is the heliocentric distance. Offset the true anomaly to get $L_S$.
+
+My IDL routine LSUBSGEN does this in two steps:
+\\ Kode=0: Given the Keplerian elements (and the central body gravitational
+constant), compute a set of intermediate constants
+\\ Kode=1: for a single or vector of request dates (MJD, relative to J2000.0):
+\qi Compute the mean anomaly (radians)
+\qi Subtract the true anomaly at the Vernal Equinox and convert to degrees.
+
+The SPICE Fortran version lspcn.f accommodates aberrations; its implementation of
+coordinate systems seems peculiar.
+
+
+\subsection{Approximation to Ls for Mars}
+\subsubsection{Summary} 
+Major innovations of Allison and McEwen are the revised pole position and
+inclusion of the major planetary perturbations (PBS). However, once the PBS are
+averaged out so that there is a single relation between days from $L_S=0$ and
+$L_S$, the difference between my older routines and new versions are quite small.
+
+\subsubsection{Introduction} %------------------------------------------------
+ Allison and McEwen \cite{Allison00} developed $L_S$ as a function of date based
+ on Mars pole orientation derived from Pathfinder data (which agrees with IAU
+ 2009) and the VSOP87 ephemerides (which is within \Em4 \ \qd ~heliocentric
+ position of the latest JPL ephemeris for Mars [page 221.8 left]).  They
+ evaluated these data for a period of $\pm 67$ Mars Years (MY) from 2000.0;
+ 1874:2127.  They provide as Equation 14 the generation of MJD4 $\equiv$
+ JD-2400000.5 as a function of $L_S$ and MY.
+
+Equations 16 to 20 give relations for the mean anomaly, the Fictitious Mean Sun,
+pertubations by the planets, $L_S$ and the equation of time (EOT)
+
+The IDL routine \np{lsam.pro} impliments all these relations, along with the
+obliquity of Mars, Heliocentric range and sub-solar latitude. LSAM operates in
+MJD $\equiv$ JD-2451545.0 corresponding to the IAU J2000 system.
+
+LSAM also impliments the reverse relation, from MJD to MY and $L_S$, including
+an optional empirical correction I developed for 1985 to 2026. It reduces the
+mean absolute closure from 0.0187 to .0023\qd.
+
+$\Delta t_{J2000}$ is in TT;  222.4b and Eq. 15
+ 
+\subsubsection{Prior Ls routine} 
+The IDL routine \np{l\_s.pro} in use from 1997 (or earlier) to 2011 was the
+basis for $L_S$ calculations in KRC. It was derived from tables of $L_S$ based
+on USNO MICA runs of every 5 days that had 0.01\qd~ resolution.
+
+
+l\_s.pro has forward and reverse in form of:
+\qbn L_S= a_0 + a_1 x + a_2 \cos(x-a_3)+a_4 \cos (2x-a_5) + a_6 \cos(3x-a_7) \ql{cos3}
+where $x$ is the fractional Mars year.
+%\clearpage
+\subsubsection{Conversion from non-linear to linear fit}
+
+Convert \qr{cos3} to a linear set of basis functions by the relation
+\qbn \cos(A-B)= \cos A \cos B +\sin A  \sin B  \mc{OR} 
+ c_1 \cos A +c_2 \sin A  \qen
+where the right side holds when $B$ is constant. E.g., 
+
+\qbn a_6  \cos(A-B)= a_6 \left[\cos A \cos B +\sin A  \sin B \right] \mc{Fit} 
+ c_1 \cos 3x  +c_2 \sin 3x  \qen
+
+ Then have:
+
+\qbn l_s= a_0 + a_1 x + c_2 \cos x + c_3 \sin x +c_4 \cos 2x + c_5 \sin 2x +c_6 \cos 3x +c_7 \sin 3x \qen
+
+E.g., \qbn + a_6 \cos(3x-a_7)=  c_6 \cos 3x +c_7 \sin 3x  \qen
+
+\qbn  a_6 \cos B =  c_6 \mc{AND}  a_6 \sin B =  c_7 \qen
+
+\qbn \tan B \equiv \frac{\sin B}{\cos B} \mc{Thus} B=\arctan \frac{c_7}{c_6}  \qen
+\qbn  a_6= c_6 / \cos B   \mc{AND}   a_7= B \qen
+All implimented in \np{qlsam.pro} @27.
+
+ \np{qlsam} can use four different time periods, set by parameters
+\qi 0:1 Check on TT-UTC
+\qi 2:4 Evaluation of the closure function
+\qi 5:7 Find mean Mars tropical year and mean-anomaly rate at $L_S=0$
+\qii Using 40 MY to each side of J2000 yields  686.97053 and  0.49925897
+\qiii the year is .00203 smaller than AM list in Table 3
+\qi 8:10 Fit annual cosine function 
+\qiii is must fall within the 5:7 range 
+
+FTO make the annual approximation: for a set of MY, convert JD uniformly spaced
+and offset so as to never cross a MY boundary; compute the $L_S$ using LSAM.
+Fit $L_S$ as function of days from start of year
+
+\subsubsection{Find mean martian year length and MJD of Ls=0}
+
+AM give mean motion as meanmo=0.52402075D0, with tropical orbit period  686.97256, or m=0.52403840 
+
+Pick a time range, and compute Ls for at least 6 times each Mars' year 
+\\ print,25+[-67,67]
+
+SVD fit minimizes RMS, whereas the AMOEBA minimization can used either RMS or MAR.   
+
+\subsection{Sub-solar latitude} 
+Calculate Sun to Planet vector in the orbit plane, this is simply the true
+anomaly as a vector: $\qv{PHF} $. Rotate the negative of this to get vector from
+the planet to the Sun in the season system, $ \qv{HPB}= \mathbf{BF} \ast
+-\qv{PHF} $. The latitude is the sub-solar latitude.
+
+\subsection{Form for KRC system}
+Running PORBMN produces the geometry block as text:
+\qi calls PORBIG which
+\qii calls PORBEL to read orbital elements file and convert \nv{DSJA}  to period.
+\qiii Fundamental constant used is: SIDYR=365.256363004  ! siderial year in days
+\qii Calculations done in REAL*8 but returned in REAL*4
+\qii PORBEL has no access to common, returns all values as arguments
+\qi  PORBIG fills common 
+\qi  PORBIO writes common as a block of text into a file
+\qii Default file name is PORBCM.mat
+
+\vspace{2.mm}
+
+Within KRC, Ls is computed in TSEAS based on true anomaly derived from PORB
+planet position and the Ls at periapsis; TSEAS uses the day of each season and
+does not consider convergence days. Because KRC version 2 uses modern pole
+direction and mean orbit, these should be within the magnitude of planetary
+perturbations of the full Allison and McEwen version in LSAM.
+
+KRC program: normal mode:
+\\ KRC calls PORB0 to read the geometry matrix into common
+\\ TSEAS call PORBIT with DJU5 to produce $L_S \equiv $ SUBS, SDEC, DAU
+\qi PORBIT accesses porbcm and converts DJU5 to Time from periapsis  
+\qii then calls ORBIT with TPER and PERIOD to get heliocentric radius and Cartesian coord. in the orbital plane. 
+\qiii Calls ECCANOM to solve Kepler's equation for eccentric anomaly
+\qii  ORBIT uses SMA to compute the position in the orbital plane
+\qi PORBIT uses the Cartesian coordinates to get the true anomaly in radians, TAR
+\qii $L_S$ is angle from True anomaly at spring equinox,TAV, converted to degrees
+
+The onePoint mode calls PORBIT to convert $L_S$ to a modified Julian date, then computes the starting date.
+
+\subsubsection{Preparation }
+There are several coordinate orientation systems involved, listed in \S \ref{code}. 
+
+Derive Year $\equiv$ Mars mean tropical year from
+separation of the extreme $L_S=0$ times from Allison for whatever period is
+chosen.
+
+\section{Common porbcm.inc \label{pcom}}  %____________________________
+
+porbcm.inc will contain
+\qi PORB version number, object name, epoch. source table[s]
+\qi Orbit constants (6+) spin axis direction (2), rate and base (2)
+\qi rotation matricies (9 words each) and values needed to convert between systems
+\qi Values for the current MJD: SDEC, DAU, Lsubs
+\qi For eccentric objects, want time (or fraction of period) from perihelion.
+\qii But this is simply (MJD-TJP)/OrbitPeriod
+
+Example of the geometry matrix expanded to show variable names
+\vspace{-3.mm} 
+\begin{verbatim}
+<--VERSION---> <--generation date->           IPLAN      TC orbit:pole    
+PORB:2014jun10 2014 Jun 10 18:22:58 IPLAN,TC= 104.0 0.10000 Mars:Mars
+     PLANUM             Tc           RODE           CLIN           ARGP
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586  
+       XECC            SJA           EOBL          SFLAG           ZBAA
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373 
+       ZBAB           WDOT             W0        OPERIOD            TJP 
+   5.544402       0.000000       0.000000       686.9928       3397.977 
+      SIDAY          spare            TAV           BLIP           PBUG 
+   24.62296       0.000000      -1.240317      0.4397026       7.000000  
+      spare         BFRM 1              2              3              4
+   0.000000      0.3244966      0.8559125      0.4026360     -0.9458869 
+          5              6              7              8         BFRM 9  
+  0.2936299      0.1381286       0.000000     -0.4256704      0.9048783   
+\end{verbatim} 
+
+PLANUM and IPLAN are the same. Description below extracted from \nf{porbc8m.f}
+\vspace{-3.mm} 
+\begin{verbatim}
+       PLANUM    ! 1 Body number. 100*fileNumber+itemNumber
+     &,TC        ! 2 Time in centuries from reference date (2000.0)
+     &,RODE      ! 3 Longitude of the rising node, radian
+     &,CLIN      ! 4 Inclination, radian
+     &,ARGP      ! 5 Argument of periapsis, radian
+     &,XECC      ! 6 eccentricity
+     &,SJA       ! 7 Semi-major axis (Astronomical Units)
+     &,EOBL      ! 8 Obliquity of the Earth's axis, radians
+     &,SFLAG     ! 9 Input system flag 0:default, +1: pole=ec +10:orb=eq
+     &,ZBAA      ! 10 Body pole: declination, radian in J2000 eq.
+     &,ZBAB      ! 11  "     "       Right Ascension, radian in J2000 eq.
+     &,WDOT      ! 12 Siderial rotation rate;/ degrees/day  
+     &,W0        ! 13 Position of prime meridian at 2000.0, degree
+C Above are from orbital element tables  Below are derived    
+      REAL*8 OPERIOD ! 14 Period of the orbit (days)
+     &,TJP       ! 15 J2000 Date of perihelion
+     &,SIDAY     ! 16 Siderial rotation period of body (hours)
+     &,spar17    ! 17 unused
+     &,TAV       ! 18 True anomaly at spring equinox, radians
+     &,BLIP      ! 19 Body obliquity, radians
+     &,PBUG      ! 20 Debug Flag   
+     &,spar21    ! 21 Unused    
+     &,BFRM(9)   ! 22 Rotation matrix from orbital to seasonal
+\end{verbatim}
+
+File number is: 
+\vspace{-3.mm} 
+\begin{verbatim}
+1: standish.tab  http://iau-comm4.jpl.nasa.gov/XSChap8.pdf Table 8.10.2
+2: spinaxis.tab  IAU Working Group on Cartographic Coordinates and Rotational Elements
+3: small.tab     Minor planets, several with spin axis defined
+4: minor.tab     Asteroids, minor-planets, comets based on JPL Horizon cut/paste
+5: comet.tab     Comet elements [from Ted Bowell 1985sep07]
+6: exoplan.tab   ExoPlanets
+\end{verbatim} 
+
+ \section{FORTRAN routine list}
+\vspace{-3.mm} 
+\begin{verbatim}
+CALDATE convert julian date (base 2440000) to year,month,day,day-of-week
+ECCANOM iterative solution of  Kepler's equations for eccentric orbit.
+EPHEMR  prints orbital position and date table.  PORB system
+J2000   Rotation matrix from J2000 to other epochs
+JDATE   convert julian date (base 2440000) to year,month,day,day-of-week
+KEPLER  compute orbiting body position from classic elements and time.
+MPRINT  Print a 3x3 matrix with ID;  E format
+MPROD3  Matrix product (hard-coded for size=3).
+OBLIP   Obliquity of a planet.  Default precision
+ORBIT   Compute radius and coordinates for elliptical orbit. DefPrec.
+PORB    computes planetary angles and location for specific time.
+PORB0   Planetary orbit. Read pre-computed matrices and do rotation; minimal for KRC
+PORBEL  read planetary orbital element file, compute basic constants 
+PROBIG  Read orbital elements from disk files. Initiate porbcm
+PORBIO  read/write porb common to disk file with name = porbcm.dat 
+PORBIT  Converts between date and Ls. Also returns DAU and Sdec
+PORBSA  Read file of planetary spin axes and return values for one object
+RECONC 	C-kernel reconcilliation for tri-axial ellipsoids (worst case)
+ROTAX   Change rotation matrix to include additional rotation 'R'
+ROTDIA  Form diagonal matrix of magnitude  R.
+ROTORB  construct rotation matrix from classic orbital elements
+SPCREV  returns spacecraft revolution number for Viking
+TRUEANOM iterative solution of keplers equations for eccentric orbit
+YMD2J2  convert year, month, day to Julian date offset from J2000
+ cocosp.f
+  COCOSP  General coordinate conversion package, many routines.
+  COCOCM  Coordinate conversion: cartesian to mapping
+  COCOMC  Coordinate conversion: mapping to cartesian
+  COCOSC  Coordinate conversion: spherical to cartesian
+  COCOCS  Coordinate conversion: cartesian to spherical.
+  COCOMS  Coordinate conversion: mapping to spherical angles
+  COCOSM  Coordinate conversion: spherical to mapping angles
+  COCEMC  Coordinate conversion: ellip. mapping to cartesian
+  COCECM  Coordinate conversion: cartesian to ellip. mapping
+ rotmsp.f
+  ROTMSP  General 3-dimension rotation matrix geometry package.
+  ROTORB  Construct rotation matrix from classic orbital elements 
+  ROTMAT  Derive rotation matrix from pointing triple.
+  ROTATE  Rotate a vector 	!  U =  B *  V
+  ROTAX   Change rotation matrix to include additional rotation 'R'
+  ROTDIA  Form diagonal matrix of magnitude  R.
+  ROTRIP  Converts rotation matrix to pointing triple.
+  ROTCOL  Extract  N'th column from a 3x3 matrix. Consecutive in 9-vector
+  ROTROW  Extract  N'th row    from a 3x3 matrix. Spaced by 3 in 9-vector
+  ROTSHO  Print a 3x3 rotation matrix with ID. 
+  ROTV    Rotate a vector about a Cartesian axis
+  VROTV   Vector rotation about another vector
+  ROTZXM  Make rotation matrix from vectors along Z-axis, and in X-Z plane
+  TRANS3  Transpose a 3x3 matrix,  A and  B may be same array.
+  ROTEXM  Modify rotation matrix to new system with axes interchanged
+  ROTEST  Tests deviation of matrix from a rotation matrix
+  ROTEXV  Rotate a vector to system with axes interchanged
+  MEQUAL  Equate one 3x3 matrix to another.
+  MPROD3  Matrix product (hard-coded for size=3).
+ vaddsp.f
+  VADD    Add two vectors of dimension 3.   single precision
+  VCROSS  Cross product of two vectors of dimension 3.
+  VDOT    Calculates the dot product of two vectors of dimension 3.
+  VEQUAL  Equate one vector of dimension 3 to another.
+  VMAG    Get magnitude (length) of a vector of dimension 3.
+  VNEG    Negate each element of a vector of dimension 3.
+  VNORM   Normalize a vector of dimension 3.
+  VPRF    Print a vector of dimension 3 in user format.
+  VSCALE  Multiply a vector of dimension 3 by a constant.
+  VSHOW   Print a vector of dimension 3 as cartesion and spherical angles
+  VSUB    Find difference of two vectors of dimension 3
+  VSUBR   Find reduced-precision difference of two vectors of dimension 3
+  VUNIT   Construct unit vector of dimension 3 along one axis 
+
+Call sequence: extract from -/krc/flow.txt
+
+PORBMN  Main program. Includes 'porbcm.inc'
+  DATIME   Returns current date and time
+ may call the following in any order. All INCLUDE 'porbcm.inc'
+  PORBIG    Read orbital elements, compute matrices
+    PORBEL    Read any of 4 orbital element files, compute basic constants
+      YMD2JD    Convert year, month, day to Julian date offset from 2,440,000
+    OBLIQ     Compute Planets poles in ecliptic coord and nodes
+    OBLIP     Compute obliquity of a planet  
+    Vector, cordinateConversion, RotationMatix routines
+  PORBIO   Read/write Common to file as text or binary
+  EPHEMR   Print ephemeris == geometry versus time
+    PORB     Computes planetary angles and location for specific time
+      ORBIT    Compute location of body in its orbital plane
+      ROTVEC    Apply rotation matrix to rotate a vector
+      VNEGS
+      COCOCS
+    CALDATE
+    SPCREV
+    ANG360
+  PORBQQ   Test computation of matrices
+    ROTDIA 2x
+    ROTAX  4x
+    MPRINT 3x
+    MPROD3 2x 
+Vpkg consists of:
+  VADDSP  Vector operations
+  ROTMSP  Rotation matrix generation and use
+  COCOSP  Cordinate conversions between Cartesian, various forms of spherical/ellip
+
+PORBIT
+  ORBIT
+    ECCANOM
+  Vpkg
+
+PORBIG Read orbital elements from disk file. Initiate porbcm
+  User interaction
+  PORBEL   read planetary orbital element file, compute basic constants
+      Firm-coded four file names
+      Reads elements. Converts to R*4 radians
+    UPCASE
+  Vpkg  with options for display
+\end{verbatim}
+
+\section{Test program qlsam.pro: notes}
+\vspace{-3.mm} 
+\begin{verbatim}
+Float values
+       0      10000.0  @21 Days before/after j2000
+       1      200.000   " delta day
+       2      1500.00  @22 Num days INT
+       3     -5500.00   " first day
+       4      10.0000   " delta day
+       5     0.100000  @26 ls of each year
+       6     -20.0000   " Start Delta MY from j2000
+       7      30.0000   " End "
+       8      12.0000  @27 times per year
+       9     -20.0000   " Start Delta MY from j2000
+      10      30.0000   " End "
+
+Generate LS for set of days after Date of Ls=0, based on 
+mean Mars yr=  686.97122   jpm0 151.28721
+MAR of SVD fit  0.0213669  
+cca=[-10.329222,57.293064,10.691792,-0.15049282,-0.62572111,1.2711097,-0.05001682,-0.41212631]
+ AMOEBA yields  686.9728932  151.2994586  MAR= 0.021764502 so actually worse
+
+Fit reverse
+Mean,SD for Abs SVD residual    0.0388522    0.0318471
+cca=[19.726299,109.33483,-20.425055,-0.33039734,-0.71641655,0.9093619,0.029254431,-0.9966046]
+ AMOEBA yields         1.000079834  0.01697570801  MAR= 0.039837902 worse
+
+
+vvvvv OLDER vvvv
+
+From date/year to Ls Mean Absolute Residual (MAR)=  0.0183329
+cca=[-10.327384,57.292118,10.690188,-0.15174407,-0.62669644,1.2677819
+,-0.050847963,-0.40253532]
+
+from Ls/360. to days from start of year  MAR= 0.0329554
+cca=[19.727741,109.3347036,-20.423396,-0.33147164,-0.71622357,0.90714352 
+,0.029221122,-1.002307]
+
+qlsam Enter selection: 99=help 0=stop 123=auto> 27
+ 0   const -10.3338651   0.0000196
+ 1  linear  57.2930678   0.0000059
+ 2    cos1  10.5684773   0.0000043
+ 3    sin1  -1.6134259   0.0000049
+ 4    cos2  -0.1859014   0.0000051
+ 5    sin2  -0.5974615   0.0000051
+ 6    con3  -0.0457721   0.0000050
+ 7    sin3   0.0201688   0.0000048
+dell=[-10.333865,57.293068,10.568477,-1.6134259,-0.18590144,-0.5974615,-0.045772095,0.020168757]
+Mean,SD for SVD residual    0.0185023    0.0170166
+
+mean Mars yr=       686.97053
+Mean Mdot at ls=0:      0.49917967
+    FORWARD
+Mean,SD for SVD residual  4.60042e-13    0.0251578
+Mean,SD for Abs SVD residual    0.0183557    0.0171841
+cca=[-10.279889,57.292076,10.690189,-0.15257164,-0.62670167,1.2661439,-0.050841373,-0.40489779]
+Mean,SD for SVD residual  4.63891e-13    0.0251578
+Mean,SD for Abs SVD residual    0.0183557    0.0171841
+    REVERSE
+Mean,SD for SVD residual -6.40863e-13    0.0433527
+Mean,SD for Abs SVD residual    0.0329746    0.0281055
+cca=[19.637114,109.3347,-20.423396,-0.33147169,-0.71622305,0.907144,0.029221461,-1.0022922]
+Mean,SD for SVD residual -6.42476e-13    0.0433527
+Mean,SD for Abs SVD residual    0.0329746    0.0281055
+
+qlsam Enter selection: 99=help 0=stop 123=auto> 28
+L_s  -LSAM mean.Std:    0.0188621    0.0488719
+Lsubs-LSAM mean.Std:    0.0203785    0.0242276
+
+Above with 12/year. WIth 19/yr, but using LSUBS based on 12. 
+cca=[-10.282388,57.293034,10.690925,-0.15239109,-0.62571515,1.2673568,-0.050011825,-0.41772512]
+Any key to go
+Mean,SD for SVD residual  9.65577e-13    0.0252099
+Mean,SD for Abs SVD residual    0.0185286    0.0170818
+cca=[19.636891,109.33478,-20.423395,-0.33147983,-0.71612938,0.90714254,0.029221834,-0.99989311]
+Any key to go
+Mean,SD for SVD residual -9.91491e-13    0.0434017
+Mean,SD for Abs SVD residual    0.0332932    0.0278180
+
+qlsam Enter selection: 99=help 0=stop 123=auto> 28
+L_s  -LSAM mean.Std:    0.0188071    0.0488767
+Lsubs-LSAM mean.Std:    0.0673968    0.0257574
+\end{verbatim}
+
+\bibliography{mars}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev 
+\end{document} %===============================================================
+
+\begin{thebibliography}{Seidelmann74ww}
+
+\bibitem{Allison00}
+M.~{Allison} and M.~{McEwen}.
+\newblock {A post-Pathfinder evaluation of areocentric solar coordinates with
+  improved timing recipes for Mars seasonal/diurnal climate studies}.
+\newblock {\em Plan. Space Sci.}, 48:215--235, February 2000.
+
+\bibitem{Archinal11}
+B.~A. {Archinal}, M.~F. {A'Hearn}, E.~{Bowell}, A.~{Conrad}, G.~J.
+  {Consolmagno}, R.~{Courtin}, T.~{Fukushima}, D.~{Hestroffer}, J.~L. {Hilton},
+  G.~A. {Krasinsky}, G.~{Neumann}, J.~{Oberst}, P.~K. {Seidelmann},
+  P.~{Stooke}, D.~J. {Tholen}, P.~C. {Thomas}, and I.~P. {Williams}.
+\newblock {Report of the IAU Working Group on Cartographic Coordinates and
+  Rotational Elements: 2009}.
+\newblock {\em Celestial Mechanics and Dynamical Astronomy}, 109:101--135,
+  2011.
+
+\bibitem{Melbourne68}
+W.G. Melbourne, J.D. Mulholland, W.J. Sjogren, and Jr. F.M.~Sturms.
+\newblock Constants and related information for astrodynamic calculations,
+  1968.
+\newblock {\em JPL Tech. Rep. 32-106},
+  http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19690001472\_1969001472%
+.pdf:1--68, 1968.
+
+\bibitem{Seidelmann74}
+P.~K. {Seidelmann}, L.~E. {Doggett}, and M.~R. {Deluccia}.
+\newblock {Mean elements of the principal planets}.
+\newblock {\em Astron. Jour.}, 79:57--+, January 1974.
+
+\bibitem{Standish06}
+E.M. Standish and J.G. Williams.
+\newblock Keplerian elements of the approximate positions of the major planets.
+\newblock In {\em Explanatory supplement to the Astronomical Almanac, Section
+  8.10}, pages 1--4. online at
+  http://iau-comm4.jpl.nasa.gov/keplerformulae/kepform.pdf, 2006.
+
+\bibitem{Sturms71}
+F.~M. Sturms~Jr.
+\newblock Polynomial expressions for planetary equators and orbit elements with
+  respect to the mean 1950.0 coordinate system.
+\newblock Jet Propulsion Laboratory Technical Report, 32-1508, 1971.
+
+\end{thebibliography}
+
+
+\end{document} %===============================================================
+% ===================== stuff beyond here ignored =============================
+
+       -dvipspath path
+              (.dvipsPath) Use path as the dvips program to use when printing.
+              The default for this is dvips.  The  program  or  script  should
+              read  the DVI file from standard input, and write the Postscript
+              file to standard output.
+ 
+       dvipsPrinterString
+
+       dvipsOptionsString
+              These can be used to provide default entries for the Printer and
+              the Dvips options text fields, respectively. If no paper size is
+              specified in the DVI file (via e.g. \usepackage[dvips]{geometry}
+              -  this is the preferred method), the input field is initialized
+              with the current value of the command line option/X resource pa-
+              per.   E.g.,  the option -paper a4r is translated into the dvips
+              options -t a4 -t landscape.  Note that  no  check  is  performed
+              whether dvips actually understands these options (it will ignore
+              them if it can’t); currently not all options used  by  xdvi  are
+              also covered by dvips.
+
+ .xdvirc
+
+
+

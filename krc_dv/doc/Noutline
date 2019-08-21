@@ -1,0 +1,72 @@
+     1	Design and Use of the KRC Thermal Model 
+     2	Purpose: Transfer knowledge of KRC
+     3	Outline
+     4	History
+     5	- Major physics
+     6	Basic Surface and Subsurface Treatment   run nl on this file
+     7	Atmosphere: Two stream Delta-Eddington
+     8	2-stream Delta-Eddington for Sunlight
+     9	Method
+    10	- Cartoon of KRC model
+    11	What is in KRC
+    12	Absent Geophysics.     To be included?
+    13	Atmosphere model. 
+    14	KRC atmosphere 
+    15	CO2 gas only thermal radiation absorption
+    16	Energy Balance & Heat Diffusion 
+    17	Equations accomodating T-dependence
+    18	More Equations
+    19	Numerical Approach
+    20	Thermal inertia effect on temperature
+    21	Effective particle size on Mars
+    22	Frost and snow
+    23	How close is KRC to Mars ???
+    24	 - Everything controlled by input file
+    25	 - Meant to be a tool:  Many ways to use it
+    26	 - WHAT DO YOU WANT TO DO?
+    27	 Input File: it's simpler than it looks
+    28	 - Input file, continued
+    29	Input Changes
+    30	Complex Input
+    31	Layer Table
+    32	T-dependent Table
+    33	The one-point mode
+    34	KRC-lite.   The "one-point" interface 
+    35	One-point details
+    36	- Production Mode
+    37	Output 
+    38	Bin5 Binary output arrays 
+    39	Model sets and Determination of Thermal Inertia 
+    40	Installation    and Supporting documentation
+    41	Coding Philosophy
+    42	A few aspects of FORTRAN
+    43	Some bad habits (speedy treachery) in KRC
+    44	Mixed-dimension Cartoon
+    45	Flow:  Loops and Calls
+    46	Latitude Common:  latcom.inc
+    47	krccom.inc   top part
+    48	krccom.inc  Part 1
+    49	Inclusion of commons
+    50	krccom.inc  Lower part
+    51	What makes it fast
+    52	Some Details
+    53	Packing of bin5 files
+    54	Type 52:
+    55	Reading packed bin5 files
+    56	Readkrc52:  lower calls
+    57	PORB: Planetary ORBit calculator
+    58	PORB: Planetary ORBit calculator
+    59	Debug print options
+    60	If an error occurs
+    61	Liens
+    62	Liens: 2 
+    63	Extras
+    64	Evolution of Mars' thermal instruments
+    65	KRC:  Effect of depth to ice
+    66	Bandfield et al. THEMIS mapping of landing region
+    67	Mix of Rocks and fines is common
+    68	Comparison to Ames GCM model: temperatures
+    69	Comparison to Ames GCM model: downward flux
+    70	Comparison to Mellon Models (TES default): diurnal
+    71	Comparison to Mellon Models: seasonal
+    72	Uncertainty of Thermal Inertia

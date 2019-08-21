@@ -1,0 +1,290 @@
+\documentclass{article}  
+%\documentclass[draft]{article}  % See Skeleton.tex for examples of many things
+% see definc.sty for other page format settings
+%\usepackage{epsfig}
+%\usepackage{definc}  % Hughs conventions  
+\usepackage{hyperref}  % hyperlinks
+\textheight=9.3in  \topmargin=-0.4in
+\textwidth=7.0in  \oddsidemargin=0.0in \evensidemargin=-0.0in 
+\parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
+
+\title{The KRC Planetary ORBit (PORB) System Users Guide}
+\author{Hugh H. Kieffer  \ \ File=-/krc/PUG.tex 2014jun10}
+% local definitions
+%\newcommand{\short}{full}    % begin & end un-numbered equations
+\newcommand{\qdp}{$. \! ^\circ \! $} % degree over decimal point NOT in math mode 
+
+\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+%\newcommand{\cf}{$\Leftarrow$} % comes from
+
+% had used  \nf \np \qi \qii \qiii \qcite
+\newcommand{\np}{\textbf}  % name of program or routine
+\newcommand{\nf}{\textit}  % name of file
+\newcommand{\qcite}[1]{#1=\cite{#1}}  % show my .bib name
+\newcommand{\qi}{\\ \hspace*{2.em}}      % indent 1
+\newcommand{\qii}{\\ \hspace*{4.em}}     % indent 2
+\newcommand{\qiii}{\\ \hspace*{6.em}}    % indent 3
+
+\begin{document}
+\maketitle
+\tableofcontents
+\hrulefill .\hrulefill
+%\listoffigures
+%\listoftables
+
+This file is a guide to using PORB and is intended for the general user who
+wants to apply KRC to someplace other than Mars.  A separate document
+\nf{-/krc/porb.tex} describes the design of the PORB system; it should not be
+needed by the general user.
+
+\section{Introduction} 
+This document describes Version 2.2.2 and later; it applies to KRC Version 2.2.1
+and later; 2.2.2 includes additional source files \nf{small.tab} and
+\nf{exoplan.tab}. The intention is to allow a user to create a \textbf{geometry
+  matrix}, 7 ridgely formatted lines of numbers, for inclusion in a KRC input
+file that would apply to any planet, satellite, asteroid, comet or exoplanet the
+user may wish.
+
+Version 2 of KRC uses dates relative to J2000.0 = 2000Jan01 noon UTC. To change
+from version 1 dates, subtract 11545.0
+
+\section{Outline}
+
+Check \nf{PORBCM.mat} to see if it already contains the matrix you want. If so, simply copy that into the KRC input file. Otherwise proceed....
+
+The executable of \np{porbmn} and the elements data files must be in the same directory. Copy them all into a directory of your choice.
+
+Determine if the elements files to be used need any edits for a new object.
+ If so, do the edits.
+
+Run PORBMN to create a geometry matrix, see \S \ref{cook}; cut-and-paste it into your KRC input
+file. Then run KRC.
+
+\section{Files input to PORB} %------------------------------------------------
+Files formatted for the PORB system cover four catagories, each file has its own format:
+\qi Planets and satellites:  one file for orbits and another for spin-axes
+\qi Minor (or small) bodies: orbits and pole direction for each object. Two versions.
+\qi Comets: Orbit size specified by perihelion distance.  
+\qi ExoPlanets: Orbit specified by semi-major axis, period and eccentricity; each commonly known. Relative orientation of the body spin axis specified by obliquity and Ls at periapsis, neither is commonly known.
+
+All files contain adequate information in the header to easily add additional objects.
+
+Reading of these files uses Fortran list-directed format, which uses white-space (blank or tab)
+to separate items and will terminate with a slash '/'. Thus, names and numbers
+must not have any internal space or /.  On each line, anything after the number
+of items in the READ list is ignored, so comments may be entered. The first body in each file has a ``/'' just after the items read on each line to indicate how many items are read. All but the planets files contain a skeleton form for adding objects.
+
+\subsection{Solar system Planets} 
+
+\begin{description} 
+ \item [\textit{standish.tab}] \ \qcite{Standish06} Keplerian elements and rates of change for 9 planets in mean ecliptic and equinox of J2000 valid for 1800 to 2050.
+This file is valid for 1800 to 2050; it should not need any edits
+
+Planet 10 is Mars derived from \qcite{Allison00} Table 2. 
+
+ \item [\textit{spinaxis.tab}] \ \qcite{Archinal11} Planets: Direction of the pole and rates of change in ICRF, which differs from J2000 equatorial system by less than 0.1 arcsecond. The planets and a few satellites are included; more satellites can be added.
+\end{description}
+\subsection{Minor planets / asteroids }
+
+There are two PORB-system ASCII files that differ slightly in format. Both
+contain one element per line and include spin-axis.
+
+\begin{description} 
+ \item [\textit{minor.tab}] Generally older entries.
+
+ \item [\textit{small.tab}]  Format designed to allow cut-and-paste from the JPL Small-Body Database 
+Browser. Rotation period in hours. Must get spin axis from other sources.
+\\ All entries were created 2013Aug 22 or later.
+\qii includes comet Halley.
+\begin{verbatim}
+Look up object with JPL Small-Body Database Browser  
+   http://ssd.jpl.nasa.gov/sbdb.cgi
+Copy the number and name line. There must be no blanks or / within the name
+    Append to this line the epoch
+copy elements lines  e through M
+Click on: Physical Parameters and copy 3 columns for the rotation period. E.g.,
+  rot_per 	7.210 	h
+Append 3 lines for: [data not in the JPL database]
+0. / Right Ascension of Pole, J2000 [deg]   
+0. / Declination of Pole, J2000 [deg]
+0. / Prime meridian at epoch [deg]
+   Then replace the zeros if you have real values.
+\end{verbatim}
+
+\end{description}
+
+\subsubsection{Web sources} %.........................................
+
+There are several sources on the web. Some I found did not have unambiguous definition of the coordinate systems used; these were established through email exchanges
+\begin{description}  % labeled items   \item [] \item [] \end{description}
+
+\item [PDS Small Bodies Node] \  http://pdssbn.astro.umd.edu/
+\\ Primary source for spin axis.  Values are in ecliptic coordinates of equinox 1950
+\vspace{-3.mm} 
+\begin{verbatim}
+ PDS Small Bodies Node http://pdssbn.astro.umd.edu/ 
+DATA ARCHIVES> Archived at SBN > by target > Asteroids(all) 
+  > Photometry and Lightcurves > EAR-A-5-DDR-DERIVED-LIGHTCURVE-V13.0 
+Either download the set or:  > Browse > data >   lc_spinaxis.tab (230 kb)
+      The explanation of this file is in  lc_spinaxis.lbl
+Then scroll through. They are in numerical order with multiple entries per asteroid; 
+the first line is 'summary' of the period (hours) and amplitude of the light curve.
+ 4th and 5th columns to the right of column containing 'summary' contains 
+the 'best guess' of the longitude and latitude of the spin axis for each observer.
+You get to choose your favorite! 
+\end{verbatim}
+
+
+\item [Minor Planet Center]  \  \url{http://www.minorplanetcenter.net/iau/info/OrbElsExplanation.html} 
+\\ ArgPeri, Node and Inclin are in heliocentric ecliptic J2000.0
+\qi Must specify date for elements that is within requested ephemeris range
+
+\item [JPL Small-Body Database Browser]  \ http://ssd.jpl.nasa.gov/sbdb.cgi
+\\ Orbit elements are in heliocentric ecliptic J2000.  Rotation period in hours. \ No spin-axis data.
+
+\item [Ted Bowells database]   \ \url{ftp://ftp.lowell.edu/pub/elgb/astorb.html}
+\\ Enormous; more than 1/2 million objects. Frequent updates. 
+\\ ArgPeri, Node and Inclin are in J2000.0,  must be ecliptic. No spin-axis data.
+
+\end{description}
+
+\subsection{Comets}
+
+\begin{description} 
+ \item [\textit{comet.tab}] \  Some comets: orbit and spin. 
+\\ WARNING: Consistency of source orientation systems uncertain
+\qi Specify perihelion and eccentricity.
+\\ Includes orbit and pole. Mostly compiled in 1980:1992
+\end{description}
+Current values are available at: 
+\qi http://www.minorplanetcenter.net/iau/Ephemerides/Comets/Soft00Cmt.txt
+\vspace{-6.mm}
+\begin{verbatim}
+   Columns   F77            Use
+    1 -   4  i4     Periodic comet number
+    5        a1     Orbit type (generally `C', `P' or `D')
+    6 -  12  a7     Provisional designation (in packed form)
+   15 -  18  i4     Year of perihelion passage
+   20 -  21  i2     Month of perihelion passage
+   23 -  29  f7.4   Day of perihelion passage (TT)
+   31 -  39  f9.6   Perihelion distance (AU)
+   42 -  49  f8.6   Orbital eccentricity
+   52 -  59  f8.4   Argument of perihelion, J2000.0 (degrees)
+   62 -  69  f8.4   Longitude of the ascending node, J2000.0
+                      (degrees)
+   72 -  79  f8.4   Inclination in degrees, J2000.0 (degrees)
+   82 -  85  i4     Year of epoch for perturbed solutions
+   86 -  87  i2     Month of epoch for perturbed solutions
+   88 -  89  i2     Day of epoch for perturbed solutions
+   92 -  95  f4.1   Absolute magnitude
+   97 - 100  f5.1   Slope parameter
+  103 -      a      Name
+\end{verbatim}
+J2000.0 was confirmed to be heliocentric ecliptic.
+
+\subsection{exoPlanets} %--------------------------------- 
+
+\begin{description} 
+\item [\textit{exoplan.tab}] \ Major differences from solar system objects are:
+\qi Need both semi-major axis and orbital period.
+\qi Direction of spin axis is specified by planet obliquity and $L_S$ of periapses
+\qiii Both these are rarely known, variations are illustrative.
+\qi A skeleton for additions is at the bottom of the file.
+\end{description}
+
+\np{porbmn} run will print an estimated factor for the ``solar constant'' . This value times the normal SOLCON in KRC input should replace SOLCON. Currently the PORB system does not make use of the host star spectral type.
+
+The length of the synodic day (assuming prograde motion) is also printed; it should be used as PERIOD in the KRC input. 
+
+
+One list of stars with planets is: 
+\url{http://en.wikipedia.org/wiki/List_of_exoplanetary_host_stars}
+\subsection{Obsolete} %.....................
+
+\textit{sturms.tab} \ \qcite{Sturms71} earliest source
+
+\textit{seidelOld.tab} \ \qcite{Seidelmann74}  without Mars updates
+
+\textit{seidel.tab} \ \qcite{Seidelmann74} Mars updated to 2008
+
+\textit{MPcomets.tab} \ \qcite{} List of 251 objects from 
+\qi http://www.minorplanetcenter.net/iau/Ephemerides/Comets/Soft00Cmt.txt
+\qii Saved 2013 Jun 19 
+% \pagebreak
+\section{PORBEL: get elements} %--------------
+Will read elements and spin-vector data for one object from a (or two) data file, move several values into common and return others.
+
+For planets, reads first the orbital elements and adjusts to the requested epoch. 
+
+Standish tables list the following with respect to the J2000 ecliptic system, in order, at J2000.0 and their derivative in time:
+\qi 1 \ \ $a$: semi-major axis [au, au/century]
+\qi 2 \ \ $e$: eccentricity [radians, radians/century]
+\qi 3 \ \ $I$ : inclination [degrees, degrees/century]
+\qi 4 \ \ $L$ : mean longitude [degrees, degrees/century]
+\qii   $L=\Omega +\omega + M$  is a compound angle measured in two planes: 
+\qiii From VE to node in plane of reference
+\qiii then to periapsis and on to mean anomaly in orbital plane
+\qi 5 \ \ $\varpi$ : longitude of perihelion [degrees, degrees/century] ($\varpi= \Omega+ \omega    $ ) 
+\qii   $\varpi$ is a compound angle measured in two planes:
+\qiii $\omega$, the argument of periapsis, measured in the plane of orbit 
+\qi 6 \ \ $\Omega$:  longitude of the ascending node [degrees, degrees/century]
+\qii  measured in the reference plane.
+
+\bibliography{mars}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev 
+\appendix
+
+\section{Cookbook \label{cook}} %______________________________
+\vspace{-3.mm}
+\begin{verbatim}
+        A Cookbook to running the  KRC Plantary ORBit system: PORB
+
+cd into the directory containing the probmn executable and the *.tab files
+
+> porbmn    To start the main program
+
+Will be asked where to send output; normally enter:  T <CR>
+
+Will be asked which of 5 options:
+ Enter: 1
+
+Will be asked which source data.
+ Normally enter : 1 (planets) or 4 for asteroids or 6 for exoplanets
+
+Will be asked which item in the file. Should have looked at the chosen elements
+file to know this
+ Enter the proper number.   E.g., 4 is Mars
+
+Only if doing planets, will be asked for the epoch in centuries after 2000. 
+E.g., for 2012,  enter 0.12
+
+[ Version 3+ only  Will be asked which Debug print, enter 0 or /  ]
+ 
+At this point, the calculations are done and a brief report will be appear
+If and only if doing Planets, will be asked for which pole position
+   a  /  will use the planet pole, else, enter a satellite name
+      If that is not in the spinaxis table, will use the planets pole.
+
+If doing exoPlanets, then note the solar power factor and the synodic day.
+
+Will be asked which of 5 options:
+  4  will print the values in vector format and come back to this same prompt
+  2  Will begin the required output process: Then
+   Will be asked to read or save.   Enter: 2
+   Will be asked output format.   Enter: 2
+   Will be asked for an output file name: 
+     A single "/" with no leading spaces will use the default "PORBCM.mat" and
+       append the latest set to whatever is already in that file.
+     Else enter a new file name and <CR>
+
+Will be asked which of same 5 options:
+ Enter: 0 to quit  OR to another object.
+
+You then copy the 7 lines in the output file into a KRC input file.
+\end{verbatim}
+
+
+\end{document} %===============================================================
+% ===================== stuff beyond here ignored =============================

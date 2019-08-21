@@ -1,0 +1,176 @@
+flow.txt KRC System Version 3.5: Subroutine Calls and COMMON usage 2016mar30
+
+References to COMMON's  All are ---.f 
+                                                       porbx8m for only KRC8
+        krcc8m  latc8m  dayc8m  hatc8m  unic8m  filc8m porbc8m
+        KRCCOM  LATCOM  DAYCOM  HATCOM  UNITS   FILCOM  PORBCM 
+KRC8      *       *       *               *       *                .
+TSEAS8    *       *               *       *                        .
+TLATS8    *       *       *       *       *       *                .
+TDAY8     *               *       *       *                        .
+TCARD8    *       *       *               *                        .
+TPRINT8   *       *       *               *       *                .
+TDISK8    *       *               *       *       *                .
+TUN8      *               *       *                                .
+ALBVAR8   *                                                        .
+TINT8     *       *                                                .  
+PORBIT8                                                   *        .
+PORB0                                                     *        .
+
+A final "8" in routine name may be omitted
+Call sequence, prepared for slide: crop  left=.22 bot=.72
+.
+KRC           /-> TSEAS        /--------------------->-----TDAY (1 
+  FILLD 3x    ^    CPU_TIME    ^  /-->TLATS                 k EVMONO3  4x  
+  CATIME      ^    PORBIT (2   ^  ^     TFAR                 ~READZONE    
+  TCARD (1    ^    TFAR (2     ^  ^     CUBUTERP8             FLAYER(int) 2x
+  DTIME       ^  ->season      ^  ^     ROTV                k EVMONO3  4x 
+-> case       ^  |  ~TCARD (2  ^  ^     ~VLPRES              ~ECLIPSE 
+                                        ~ECLIPSE             ~TFINE (1   
+|  ~TCARD (2  ^  |  ^TDAY (1 ->/  ^     ~TPRINT (8              ECLIPSE
+|  ~TPRINT (2 ^  |   CPU_TIME     ^  |-> latitude loop          FILLI
+|   TDAY (1   ^  |  ~SEASALB      ^  |    MVD   4x        : always          
+|   FILLL     ^  |  ~SEASTAU      ^  |    CUBUTERP8 2x   +: usually          
+|  ~TDISK (1  ^  |   TFAR (3      ^  |    AVEDAY         ~: if invoked         
+|  ~TDISK (6  ^  |   MVDF 2x      ^  |    VEQUAL         .: if an atmosphere 
+|  ~TUN (1    ^  |   TFAR (3      ^  |    ROTV           k: if T-dependent      
+|  ~TFAR (1   ^  |   MVDA 2x      ^  |    VROTV           : nx Called x times
+1 TSEAS --->--/  2   TLATS--->----/  |   .SIGMA           : (n call with 
+|  ~TPRINT (9    | .~TINT            |  .~CLIMTAU              control code n
+|  ~TPRINT (2    |  ~TPRINT (5       |  .~ALBVAR       
+|   TDAY (3      |  ~TPRINT (6       |  .~CO2PT            /--->TDAY (2    
+|   TDISK (4     |  ~TDISK (5        ||-> timestep         ^  |>-day loop    
+|   TCARD (2     |  ~TDISK (2        ||    ROTV            ^  ||>-timestep loop
+|   DTIME        \<--season          ||    VDOT 2x         ^  || ~TFINE (2 **
+\<-case              CPU_TIME        34   .DEDING2 (cos i  ^  |||>-layer loop   
+  +TDISK (4                          ||   .DEDING2 (cos t  ^  456  k EVMONO3 4x 
+  ~TFAR (4                           |\<-- timestep        ^  ||\<-layer        
+  +TDISK (7                          |    AVEYEAR          ^  |\<-timestep      
+                                     |   ~TPRINT (3        ^  \<-day            
+** TFINE (2                          |    TDAY (2 --->-----/  [only if blowup]  
+     DSPLINE, DSPLINT                |   ~TUN                   TPRINT (7       
+///->EVMONO3D 4x                     |    EPRED 5x              TPRINT (2       
+567  MVD                             |   ~TPRINT (4             TPRINT (4  
+||\<-layer                           \<---latitude      
+|\<-fine-time      
+\<-timestep        
+    BINF5,TPRINT (7 (4
+ 
+Expanded Call map ############################ Obsolete
+see codes above, and       @: calls listed above at prior mention
+                         sys: System routine
+
+                            v- Lower calls
+KRC           
+   R2R  3x                  0       
+   CATIME                   0
+   TCARD8 (1          ~TDISK8 ~PORB08 ~TPRINT8 ~SEASALB ~SEASTAU ~CLIMTAU ~PORBIT 
+  ~TPRINT (1                0
+   DTIME                    sys
+/-> case  Loop 1
+|  ~TCARD8 (2               @ 
+|   TDAY8 (1    
+|     k EVMONO38 4x         0
+|  ~TPRINT8 (2              0
+|  ~TDISK8 (1               0
+|  ~TUN8 (I15,1             0
+|   DATIME                  B2B 3x
+|   TSEAS8  ---->
+|     CPU_TIME              sys
+|    ~PORBIT (2             ~ORBIT8 (calls ECCANOM) ~VNEG  ROTVEC  COCOCS
+|/--> Season  Loop 2
+|^    ~TCARD8 (2            @
+|^     TDAY8 (1
+|^       k EVMONO38 4x      0
+|^    ~CPU_TIME             sys
+|^    ~PORBIT(1             @
+|^    ~SEASALB              READTXT360  FINTERP
+|^    ~SEASTAU              READTXT360  FINTERP
+|^     TLATS8  ---->
+|^       ROTV               0
+|^      ~VLPRES             0
+|^      ~TPRINT8 (8         0
+|^/---> latitude  Loop 3          
+|^|       AVEDAY            0
+|^|       ROTV              0
+|^|       VROTV             VADD VCROS VCROSS VFDOT VEQUAL VFMAG VNORM VSUB 
+|^|      .SIGMA             0               
+|^|     .~CLIMTAU           BINF5              
+|^|     .~ALBVAR            0                  
+|^|     .~CO2PT  2x         0
+|^|/---> timestep  Loop 4a   
+|^|^        ROTV            0
+|^|^        VDOT 2x         0     
+|^|^       .DEDING28 2x     0
+|^|\<-- timestep     
+|^|       AVEYEAR           0
+|^|      ~TPRINT8 (3        0
+|^|       TDAY (2 ---> 
+|^|/---> day  Loop 4          
+|^|^/---> timestep  Loop 5    
+|^|^|/---> layer Loop 6
+123456       k EVMONO38 4x  0
+|^|^|\<----layer 
+|^|^|     ~TUN8 (101,2      0 
+|^|^\<----timestep   
+|^|\<----day           
+|^|    [only if blowup]
+|^|      TPRINT8 (7         0
+|^|      TDISK8 (2          @
+|^|      TPRINT8 (4         0
+|^|  ==return from tday
+|^|  ~TUN8 (102,2           0
+|^|   EPRED8 5x             0
+|^|  ~TPRINT8 (4            0
+|^\<---latitude          
+|^ ==return from tlats 
+|^  .~TINT8                 0
+|^  ~TPRINT8 (5             0
+|^  ~TPRINT8 (6             0
+|^  ~TDISK8 (5              0
+|^  ~TDISK8 (2              R2R nx
+|\<--season    
+|  CPU_TIME                 sys
+| ==return from tseas
+| ~TPRINT (9                0
+|  TCARD8 (2                @
+|  DTIME                    sys
+\<--case  
+  ~TDISK8 (4                BINF5
+
+
+#######################################################
+PORBMN  Main program. Includes 'porbcm.inc'
+   DATIME   Returns current date and time
+ may call the following in any order. All INCLUDE 'porbcm.inc'
+1  PORBIG    Read orbital elements, compute rotation matrices (RMs)
+     PORBEL    Read any of 4 orbital element files, compute basic constants
+       UPCASE    Convert string to Upper Case
+       COCOMC    Convert Mapping coordinates to Cartesian
+       ROTV      Rotate a vector about a Cartesian axis
+       ROTVEC    Apply rotation matrix to rotate a vector
+       COCOCM    Convert Cartesian coordinates to Mapping
+       YMD2J2    Convert year, month, day to Julian date offset from J2000.0
+     ROTORB   Construct rotation matrix from classic orbital elements
+     ROTSHO   Print rotation matrix with label
+     ROTAX    10x Add additional rotation around one axis to a Rotation Matrix
+     ROTCOL   Extract one vector from RM
+     COCOSC   Convert from spherical to Cartesian coordinates
+     VDOT     Dot product
+     TRANS3   Transpose RM
+     VNORM    Normalize a vector to unit magnitude
+     VCROSS   Cross product
+     VSHOW    Print a vector with label
+     ROTEST   Tests deviation of matrix from a RM
+2  PORBIO   Read/write Common to file as text or binary
+3  EPHEMR   Print ephemeris == geometry versus time
+     PORBIT     Computes planetary angles and location for specific time
+       ORBIT      Compute location of body in its orbital plane
+       VNEG       Negative of a bvector
+       ROTVEC     ^^
+       COCOCS     Convert Cartesian coordinates to spherical 
+     CALDATE      Convert Julian date to calendar date (== NumRec routine)
+     SPCREV       Get spacecraft revolution number for Viking
+4  PRTPCOM    Print the PORB system common
+5  ROTSHO
+   ROTEST

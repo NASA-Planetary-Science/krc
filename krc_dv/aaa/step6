@@ -1,0 +1,29 @@
+#! /usr/bin/csh
+###################################
+# Script for moving locally-edited files on top of KRC defaults
+# Local Guru should disable any copy that is not needed
+#_Hist 2011oct25   Hugh Kieffer  Make a skeleton
+# 2012nov22 HK minor edit for C file location
+# 2013oct01 HK Update
+################################### 
+
+# Edit the next 2 lines for local paths
+set FAM='/work1/build'	# Top of KRC distribution
+set LOC='~/krc/uniq'	# Area outside KRC to hold locally-edited files
+#^^^^^^^^^^^^^^^^^^^^^^ firm code
+
+echo "FAM= " $FAM
+echo "LOC= " $LOC
+
+cd $LOC			# area where edited files reside
+
+cp -p Makefile  $FAM/src/	# Makefile for FORTRAN krc
+cp -p Makec     $FAM/src/cfiles/Makefile	# Makefile for C library
+cp -p Makeso    $FAM/idl/extern/Makefile	# Makefile for IDL shared Object Lib
+cp -p idlPath   $FAM/idl/	# Script to set IDL path
+cp -p kirin.pro $FAM/idl/ 	# Procedure to initialize IDL
+
+cd $FAM'/aaa'		# dir to hold files which may need to be edited
+pwd
+
+exit

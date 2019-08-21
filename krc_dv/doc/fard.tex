@@ -1,0 +1,711 @@
+
+\section{Far-field Detailed design \label{fffd}}
+
+Enhancement: Option for sloped models to use temperatures from a far-field model
+(first case, if it was run and stored) for the far ground.
+
+Terminology:
+\begin{description}  % labeled items   
+\item [self mode] Radiation from the far field horizontal surface assumed to be
+  at the same temperature at the sloped surface, and of the same albedo. The
+  atmosphere temperature is calculated based on sloped-surface temperature. This
+  was KRC's only mode until version 3.4
+   
+\item [far mode] Radiation from the far field surface is based on
+  prior KRC run. Atmosphere down-going radiation also based on this prior run.
+
+\item [far-field file == fff] A file that contains the temperatures from a model
+  of the ``remote'' surface and atmosphere as needed by a sloped case. A fff
+  contains the values computed on the last day, not extrapolated to the end of a
+  season
+
+\item [``flat'' case] A zero-slope case that matchs a sloped case in all
+  parameters except slope and azimuth.
+
+\end{description}
+
+Sequence in the software set:
+
+\begin{itemize}      % ticked items  
+
+\item TCARD reads the file name. 
+
+\item LOPN3=true indicates that a fff is available.
+
+\item KRC checks the name length, and can call TFAR(1 to open the file.  If fff
+  open fails, TFAR will write an error message and KRC will stop to prevent a
+  possible long run with the wrong fff.
+
+\item TSEAS calls TFAR*(2) before the first season to get all the size and date
+  information. For each run season, it interpolates the far-field file to that
+  season; if the nearest fff season is within 1\% of a season length, it will
+  use that season only; else it calls TFAR twice to get the bounding
+  seasons. Tsurf, and Tatm if needed, are interpolated to the desired date and
+  stored in COMMON.
+
+\item TLATS extracts the right latitude, and will do cubic interpolation in hour
+  to the N2 times if needed. TLATS converts fff surface temperature to radiance at each
+  time-step and places in COMMON as FARAD. If KRC is using an atmosphere, TLATS
+  interpolates fff Tatm temperature for each time-step and places in COMMON as
+  HARTA.
+
+\item TADY uses LOPN3 as the flag to indicate the fff is being used. When using
+  fff, the atmosphere temperatures and radiation come from fff.  Frost is still
+  calculated.
+
+ \end{itemize}
+
+\subsection{Far-field for sloped surfaces } %----- =============--
+
+Atmosphere and far-field to be based on a no-slope run with all other conditions
+normally the same.
+
+No additional changes are made for pits. 
+
+User should not invoke global frost integration (KPREF=2) for sloped runs.
+
+\vspace{3 mm}
+
+For onePoint mode; more complicated: \textbf{not yet implimented}
+\qi Must specify the name of an appropriate fff; must read it successfully
+\qii fff seasons must cover the range needed by the onePoint master
+\qii fff latitudes must cover the range in the onePoint lines
+\qi Print a stern warning that a single  fff is being used.
+\qi For each onePoint line, need to interpolate: 
+\qii in season; same as for normal run
+\qii in latitude; requires additional code
+\qi Limitation: only allow a single fff for a onePoint run.
+
+\subsection{New Inputs} %.................................................
+Control is by the presence of the file name defined by change line : 8 3 x name
+\qi  
+\subsection{New Outputs} %...............................................
+ No plan for \np{TDISK} to be able to read type 52
+
+Size of fff is set by firm-code sizes, TSF(MAXNH,MAXN4) for each season =
+96*37*8=28416 bytes for each temperature for each season. The first record in
+file contains KRCCOM; season start at record 2. Thus, the file size in bytes is
+28416*(seasons+1)*[1,2 or 3]
+ 
+\subsection{New Common Items} %.........................................
+
+Must set the maximum number of time-steps that can be stored in a fff. To simplify writing records in TDISK,  write the existing arrays, TSF etc., these are (MAXNH,MAXN4). Because direct-access files are not open to write for more than one case at a time, it would be possible to use smaller record sizes and write 
+\qi ((TSF(I,J),J=1,NLAT),I=1,N24) as long as record can hold KRCCOM.
+\qii FORTRAN executes the outer loop first
+\qi However, tests indicate that must write complete arrays to direct-access records
+
+Must also set the maximum number of time-steps that can be interpolated from an fff temperature set.  This couild be smaller than MAXN2=384*4*256=393216
+\qi
+
+
+.
+\\ FILCOM/  CHARACTER*80 FFAR     ! far-field temperatures input
+\\ HATCOM/        INTEGER MAXFF
+      PARAMETER (MAXFF=384*4*4=6144) ! dimension of far-field times of day
+REAL*8  SALB                 ! spherical albedo of the soil
+\qi REAL*8 FARTS(MAXNH,MAXN4,2) ! far-field Tsurf/Tatm for current season
+\qi ``    FARAD(MAXFF) ! far-field radiance for every time-step at current latitude
+\qi  ``  HARTA(MAXFF) ! far-field Tatm for every time-step at current latitude
+\qi  ``  SOLDIF(MAXN2) ! Solar diffuse (with bounce) insolation at each time W/m$^2$
+\\ UNITS/ INTEGER  MINT ! the number of temperature sets in file being handled by IOD3 
+
+Type -n files as 1,2 or 3 arrays each Real*8 (MAXNH,MAXN4)
+\subsubsection{Array size limits} 
+TFAR8: FTS ,FTP,FTA (MAXNH,MAXN4) for one season
+
+TSEAS: same 3
+\qi FARTS(MAXNH,MAXN4,2) ! far-field Tsurf/Tatm for current season
+
+TLATS:  REAL*8 WORK(MAXFP=MAXNH+3)        ! to hold extended hours 
+ CUBUTERP8 outputs into FARAD=KIM*NY=  must be less than MAXFF
+
+KRC runs requires N2 le MAXN2 =384*4*256=393216; runs using fff will limit N2 to MAXFF=384*4*4 = 6144
+\subsection{Implementation} %.........................................
+
+\textbf{ALERT} The use of the output file flag K4OUT has been changed for
+version 3.4 . It now controls only the direct access type being written. Actual
+reading and writing of data file is controlled by the presence and length of
+three file names; all 3 names default to 'no'.  Sees \S \ref{help}.
+
+
+
+ \subsection{ What arrays are available in earlier versions}
+In \np{TLATS} [or \np{TDAY}]:
+\\ for the last day computed, not extrapolated
+\qi TSF(I,J4)=TSFH(I) (hour,lat)
+\qi TPF(I,J4)=TPFH(I) (hour,lat)
+\qi TAF(IH,J4)=TATMJ (hour,lat) saved in \np{TDAY}
+\\ Extrapolated to the end of a season
+ \qi TTS4(J4)=xof TTS , TTB4(J4)=xof TTB  : surface and bottom diurnal average 
+ \qi TTA4(J4), midnight Atm
+ \qi FROST4(J4)=EFP   ! frost amount
+\qi TMN4(I,J4) , predicted TT1(layer,lat) temperature at midnight
+
+\qsc{Self-heating versus Far-field}  %. . . . . . . . . . . . .
+
+Minimize code changes; aim at needing only Tsurf and Tatm from the far-field model.
+ Assume normally will use same atmosphere parameters, although could use different!
+
+from KRC paper: [68]...  \small
+\\ The surface condition for a frost-free level surface is :
+\qbn W=(1.-A)S_{(t)}'  + \Omega \epsilon R_{\Downarrow}
++k \frac{\partial T}{ \partial z}_{(z=0)} - \overbrace{ \Omega \epsilon\sigma}^{FAC5} T^4  \ \ (jgr 13) \qen
+
+where $W$ is the heat flow into the surface, $A$ is the current surface albedo,
+$S_{(t)}'$ is the total solar radiation onto the surface as in Eq. (1), $
+R_{\Downarrow}$ is the down-welling thermal radiation (assumed isotropic), $T$
+is the kinetic temperature of the surface, $k$ is the thermal conductivity of
+the top layer. $\Omega$ is the visible fraction of the sky, $\epsilon$ is the
+surface emissivity and $\sigma$ the Stefan-Boltzmann constant.  In the absence
+of frost, the boundary condition is satisfied when $W=0$. \normalsize
+
+
+from KRC paper: [70]... \small
+\\ The collimated incident
+beam is treated rigorously, intensities of the diffuse solar and thermal fields
+are modified by the fraction of sky visible, and the average reflectance and
+emittance of the surrounding surface (absent in the level case) are approximated
+as: the brightness of level terrain with the same albedo, and material having
+the same temperature as the target surface, respectively; this last
+approximation accentuates the diurnal surface temperature variation with
+increasing slope. Then 
+ \qbn S_{(t)}' = S_M \left[ \underbrace{F_\parallel \cos i_2}_{direct} 
++ \underbrace{ \Omega F_\ominus^\downarrow }_{diffuse} 
++ \underbrace{ \alpha A (G_1 \cos i F_\parallel 
++ \Omega F_\ominus^\downarrow)}_{bounce} \right]   \ \ (jgr 14) \qen
+
+$F_\parallel$ =\nv{COLL} is the collimated beam in the Delta-Eddington model and
+$F_\ominus^\downarrow$=\nv{BOTDOWN} is the down-going diffuse beam. 
+$\Omega$=\nv{SKYFAC}: $\Omega \equiv 1 - \alpha $ here and in
+Eq. (13). $G_1$=\nv{G1} is the fraction of the visible surrounding surface which
+is illuminated. Within the brackets in Eq. (jgr 14),
+\qi the first term is the direct collimated beam, \texttt{DIRECT}
+\qi the second is the diffuse skylight directly onto the target surface, \texttt{DIFFUSE}
+\qii $ F_\ominus^\downarrow)$ does not depended upon slope.
+\qi the third term is light that has scattered once off the
+surrounding surface, \texttt{BOUNCE}
+
+For a sloped surface, $G_1$ is taken as unity. As a first approximation, for
+depressions $G_1=$ $(90-i)/s \ < 1)$ where $s$ is the slope to the lip of the
+depression (the apparent horizon). For the flat-bottom of a depression, $i_2 =
+i_0$ when the sun is above this slope, and $ \cos i_2 =0$ when below. \normalsize
+
+
+ALERT:  $\cos i$ factor in the bounce $F_\parallel$ term is missing in JGR paper.
+It is in the tlats8.f code back to at least 2011aug.
+
+For far-field, need to expands the thermal radiation balance term, and (jgr 13) becomes  
+
+\qbn \underbrace{W}_{POWER}=\underbrace{\overbrace{(1.-A)}^{FAC3} S_{(t)}'  
++ \overbrace{\Omega \epsilon}^{FAC6} R_{\Downarrow}^0 }_{ABRAD}
++ \underbrace{k \frac{\partial T}{ \partial z}_{(z=0)}}_{SHEATF}  
+-  \overbrace{\epsilon \sigma}^{FAC5} T^4  
++ \underbrace{\overbrace{(1-\Omega) \epsilon \sigma \epsilon_x }^{FAC5X} T_x^4}_{FARAD}   \qen
+
+where $R_{\Downarrow}^0$ is for the equivalent no-slope case and $T_x$ is the
+far-field  surface temperature and $\epsilon_x$ its emissivity; $T_x \equiv
+T $ if self-heating.  The next-to-last term is surface emission into a
+hemisphere and the last term is thermal radiation from the far surface. If the
+sloped surface has frost, $T$ becomes fixed at the frost temperature but the
+equation remains the same.
+
+With the ability of albedo to depend upon incidence angle, need to expand $ S_{(t)}'$ and (jgr 13) becomes 
+
+\qb \underbrace{W}_{power}=  S_M \left[(1.-A_{h(i_2)}) \underbrace{F_\parallel \cos i_2}_{direct}
++  (1-A_s ) \left( \underbrace{ \Omega F_\ominus^\downarrow }_{diffuse} 
++  \underbrace{ \alpha A_s (G_1 \cos i F_\parallel 
++ \Omega F_\ominus^\downarrow)}_{bounce} \right)  \right] 
+\qe
+
+\qbn
++ \underbrace{ \Omega \epsilon R_{\Downarrow}^0}_{atm \ IR}
++ \underbrace{k \frac{\partial T}{ \partial z}_{(z=0)}}_{conduction}  
+- \underbrace{\epsilon \sigma T^4}_{emission}  
++ \underbrace{(1-\Omega) \epsilon \sigma \epsilon_x T_x^4}_{back \ radiation} \qen 
+ where all the terms within the square brackets are normalized (are unitless).
+
+Reformulate, under- and overbrace terms indicate FORTRAN variable names 
+\qb \underbrace{W}_{POWER}=  \underbrace{(1.- \overbrace{A_{h(i_2)}}^{ALBJ} )}_{FAC3}
+ \overbrace{ S_M  F_\parallel \cos i_2}^{ASOL}
++  \underbrace{(1-\overbrace{A_s}^{SALB} )}_{FAC3S} \underbrace{ S_M 
+  \left( \overbrace{ \Omega F_\ominus^\downarrow  }^{DIFFUSE}
++ \overbrace{ \alpha A_s (G_1 \cos i F_\parallel
++ \Omega F_\ominus^\downarrow ) }^{BOUNCE}  \right)  }_{SOLDIF} 
+\qe
+
+\qbn
++ \underbrace{\Omega \epsilon}_{FAC6} \underbrace{ R_{\Downarrow}^0}_{ATMRAD}
++ \underbrace{k \frac{\partial T}{ \partial z}_{(z=0)}}_{SHEATF}  
+- \underbrace{\epsilon \sigma}_{FAC5} T^4  
++ \overbrace{\underbrace{(1-\Omega) \epsilon \sigma \epsilon_x }_{FAC5X} T_x^4}^{FARAD}   \ql{wb} 
+where the overbrace items are computed in TLATS and
+transfered in COMMON. All terms up to and including ATMRAD make up the total
+absorbed radiation ABRAD.  When frost is present, its albedo replaces $A_h$ and
+$A_s$ on a time-step basis except the $A_s$ in SOLDIF (from TLATS) is on a
+season basis; however, the $A_S$ term includes the far-ground fraction $\alpha$
+which is small except for steep slopes.
+
+Assumes that normal albedo is the same for the sloped and the flat surfaces.
+
+The fraction of solar flux reflected ALBJ$\equiv A_h =$ALB*AHF is composed of
+two factors, ALB$\equiv A_0$ and AHF$=A_h(i)/A_h(0)$, a hemispherical
+reflectance function.  Likewise, the spherical albedo is $A_s=$ ALB*PUS where
+the second factor is $P_s$.
+
+The floor of a ``pit'' does not see the flat terrain, but rather the same slope
+at all azimuths, and therefor different temperatures. The most practical
+assumption is that the average radiation temperature of the pit walls is the
+same as flat terrain. This will be an under-approximation. In a later version of
+KRC with more input parameters, a radiation scale factor could be included; if
+practical, code to include a constant factor, initally unity for v 3.4.
+
+Because \nv{FARAD} is not dependent upon the calculation of $T$, it can
+pre-computed for a given day. $T_x$ is interpolated to the proper season in
+\np{TSEAS}; \np{TLATS} selects the proper latitude, multiplies by \nv{FAC5X} for
+each of its stored hours, and interpolates to each time-step to form
+\nv{FARAD}$_t$ transfered to \nv{TDAY}. However, to then accomodate variable
+frost emission, need to multiply by $\epsilon_f/\epsilon$ for the frost case
+(relatively rare).
+
+\vspace{0.2cm}
+Because frost temperature changes only with pressure, it does not need to change with Hour.
+\pagebreak
+\subsubsection{Equilibrium temperature  \label{eqT} }
+The equilibrium temperature $T_e$ is that value of $T$ that would make the diurnal average of $W$  in \qr{wb} zero. Or: 
+
+\qbn FAC5 \ast T_e^4 = \langle \overbrace{FAC3 \ast ASOL  + FAC2S \ast SOLDIF}^{\Delta AVEI} \rangle  + \ FAC6 \ast \langle ATMRAD \rangle  + H_g  + \langle FARAD \rangle \ql{Te}
+
+where $ \langle \  \rangle $ represents the diurnal average.
+
+To reach the equivalent of JRG Eq. (12), need to modify JGR Eq. (11) by allowing angle[time]-variable albedo $A$ and adding the geothermal heat-flow term $H_g$ to become 
+\qbn \epsilon \sigma  \langle T_s^4 \rangle =\langle (1.-A) S_{(t)}' \rangle  
++ H_g + \epsilon \sigma  \beta_e \langle T_a^4 \rangle \ql{sbal} 
+
+JRG Eq. (12) then becomes:
+
+ \qbn \langle T_a^4 \rangle = \frac{ \overbrace{\langle H_V \rangle / \beta_e}^{QS} + \overbrace{\langle (1-A) S_{(t)}' \rangle}^{AVEI}  +\overbrace{ H_g}^{GHF} } 
+{ \sigma (2- \epsilon \beta_e) }  \ql{Ta4} 
+
+ Then ATMRAD (= FAC9*TATMJ**4) $= \sigma \beta_e  \langle T_a^4 \rangle $  
+
+JGR eq. (2) remains the same:
+
+\qbn \overbrace{H_V}^{HUV} = \overbrace{S_M}^{SOLR}\overbrace{ \left( \mu_0 - F_\ominus^\uparrow(0)-(1-A_h(t)) 
+\left[ \mu_0  \ F_\parallel + F_\ominus^\downarrow(\tau_v) \right] \right) }^{ATMHEAT}\ql{aheat} 
+
+
+Atmosphere IR heating is the average of $H_R$ in JGR Eq. (5): 
+$ \langle H_R \rangle = \sigma \beta_e \left( \epsilon  \langle T_s^4 \rangle - 2 \langle T_a^4 \rangle \right) $
+
+\subsubsection{code in TLATS}
+Snippits of code in TLATS for radiation values placed in COMMON; omitting all the logical tests.  Minor edits for clarity.
+
+.
+\qi  SOLR=SOLCON/(DAU*DAU)     ! solar flux at this heliocentric range
+\qi  call DEDING28 (omega,g0,avea,COSI,opacity, bond,COLL,deri)
+\qi  DIRECT=COS2*COLL     ! slope is in sunlight  or =0
+ \\ ASOL(JJ)=QI=DIRECT*SOLR         ! collimated solar onto slope surface
+
+.
+\qi  AHF= (1.D0+COS2*DLOG(COS2/(1.D0+COS2)))/2. ! Lommel-Seeliger, e.g.
+\qi  HALB=ALB*AHF/AH0     ! normalized hemispherical albedo
+\\ ALBJ(JJ)=MIN(MAX(HALB,0.D0),1.D0) ! current hemispheric albedo
+
+.
+\\ SKYFAC = (1.D0+ DCOS(SLOPE/RADC))/2.D0 ! effective isotropic radiation.
+\qii   call DEDING28 (omega,g0,avea,COS3,opacity, bond,COL3,deri)
+\qii   BOTDOWN=PIVAL*(DERI(1,2)+F23*DERI(2,2))  or 0 ! diffuse down at surf
+\qi  DIFFUSE=SKYFAC*BOTDOWN ! diffuse flux onto surface
+\qii   PUS=1.3333333    ! e.g. Lommel-Seeliger  $P_S$
+\qii   SALB=PUS*ALB              ! spherical albedo, for diffuse irradiance
+\qii   G1=DMIN1 (1.D0,(90.D0-AINC)/SLOPE) ! (90-i)/slope   or 1.
+\qii   DIRFLAT=COSI*COLL ! or COSI if no atm. collimated onto regional flat plane
+\qi   BOUNCE=(1.D0-SKYFAC)*SALB*(G1*DIRFLAT+DIFFUSE)   
+\qi         QI=DIRECT*SOLR         ! collimated solar onto slope surface
+\\ SOLDIF(JJ)=(DIFFUSE+BOUNCE)*SOLR ! all diffuse, = but the direct.
+\\ AVEI=AVEI+(1.d0-ALBJ(JJ))*QI+(1.-SALB)*SOLDIF(JJ) !
+.
+\qi  ATMHEAT=COSI-TOPUP-(1.-AVEA)*(BOTDOWN+COSI*COLL) ! atm. heating
+\\ ADGR(JJ)=QA=ATMHEAT*SOLR        ! solar flux available for heating of atm.
+
+.
+\qi in TFAR, extract from fff: FELP(8)= F3FD(2)        ! surface emissivity
+\qi FAC5X=(1.-SKYFAC)*EMIS*SIGSB*DELP(8) ! last is fff surface emissivity
+\qi Extract fff surface temperatures into WORK for the proper latitude
+\qii add midnight wrap to both ends.
+\qii raise to 4'th power and multiply by FAC5X
+\\ CALL CUBUTERP8 (2,WORK,NHF,TENS,N2,FARAD) ! cubic interpolation to timesteps
+
+\subsubsection{Code in TDAY}
+
+Snippits of code in TDAY for calculating surface temperature; omitting all the logical tests and the convergence loops.  Minor edits for clarity.  
+When there is no atmosphere:
+
+.
+\qii   FAC3S = 1.D0-SALB         ! spherical absorption
+\qii   FAC3  = 1.D0-ALBJ(JJ) ! hemispherical absorption
+\qi   ABRAD = FAC3*ASOL(JJ)+FAC3S*SOLDIF(JJ) ! surface absorbed radiation
+\qii   FAC5 = SKYFAC*EMIS*SIGSB ! if self-heating 
+\qii   FAC5 = EMIS*SIGSB ! if fff 
+\qii   FAC7 = KTT(2)/XCEN(2)    ! current redone if T-dep conductivity
+\qii   TS3 = TSUR**3         ! bare ground
+\qi   SHEATF = FAC7*(TTJ(2)-TSUR) ! upward heat flow to surface
+\\ POWER = ABRAD +SHEATF - FAC5*TSUR*TS3 ! unbalanced flux
+\\ POWER = POWER+FARAD(JJ) ! only if fff
+
+
+ERROR: of 10 deg slope, fff 30 K hotter than self. Not physical
+\qi And  hour 23 and 23.5 are much colder.
+\qi daytime rise with fff= flat:NoA greater than with fff= flat:tinyA
+\\ Suggests: far view factor much too big
+
+\subsubsection{find T for W=0} %........................
+Need to modify JGR Eq. 29 : ``
+ From Eq. (13), find 
+\qbn \frac{\partial W}{\partial T} = \overbrace{-k / X_2}^{FAC7} - \overbrace{4 \Omega \epsilon \sigma}^{FAC45} T^3  \ \ (jgr29) \qen 
+
+ where $X_2$ is the depth to the center of the first soil layer. `` becomes \qbn
+ \frac{\partial W}{\partial T} = -\overbrace{ k / X_2}^{FAC7} -\overbrace{4
+   \epsilon \sigma}^{FAC45} T^3 \mc{coded \ as} \overbrace{\Delta T}^{DELT}=
+ \frac{W}{k / X_2 + 4 \epsilon \sigma T^3} \qen i.e., $\Omega$ becomes 1, so
+ omit this from \nv{FAC45}
+ 
+Thus, the fff must contain at least  $R_{\Downarrow}$ [or Tatm] and $T_x$. 
+Probably desireable that it contain KRCCOM for insurance.
+
+To handle many seasons, could write direct access files.
+
+\qsd{Interpolation of the fff}
+
+Generally expect that the far-field case will be run with exactly the same grid in
+season, latitude and time as a sloped case. Because the stored hours are less
+dense than time-steps, will need interpolation in at least that dimension.
+
+Accomodate linear interpolation in season, but if the seasons are within
+DELSEAS=1\% of a season-step, use that season without interpolation.
+
+To avoid many complications in interpolation, require that fff contain a
+latitude within DLATEST=0.1 degree of those in the sloped case, and use that
+without interpolation.
+
+Will interpolate smoothly (cubic spline, replicated across midnight) in hour
+from the stored N24 points to the N2 time-steps. Firm-code the maximum number of
+times steps for using a fff to a generous MAXFF=384*4*4=6144.
+
+However, this requires that N2 for the slope run be an integral multiple, 2 or
+more, of N24 for the fff run.
+
+
+ 
+
+\subsubsection{Getting Tatm from TPlan and Tsurf. Not used.}
+in \np{TLATS}:  tauir is in krcc8m.f;
+ \qi It does vary with elevation (due to PRES) , which can be a function of latitude
+\qi  it can vary with season if PZREF varies due to KPREF ne 0
+\vspace{-3.mm} 
+\begin{verbatim}
+in TLATS:
+        TAUIR=(CABR+TAUVIS*TAURAT)*(PRES/PTOTAL)+TAUICE ! thermal opacity, zenith
+        QA=AMIN1(0.0168455D0,AMAX1(TAUIR,62.4353D0)) ! limits 1. < FACTOR < 2.
+        FACTOR= 1.50307D0 -0.121687D0*DLOG(QA) ! from fit to hemisphere integrals
+        TAUEFF=FACTOR*TAUIR     ! effective hemispheric opacity
+        BETA=1.-DEXP(-TAUEFF)   ! hemispheric thermal absorption of atmosphere
+
+
+in TDAY:  IF (LATM) ....
+      EMTIR = DEXP(-TAUIR)       ! Zenith Infrared transmission of atm
+      FAC82=1.-EMTIR            !  " absorption "
+      FAC9=SIGSB*BETA           ! factor for downwelling hemispheric flux
+SIGSB is a constant and BETA
+      IF (EFROST.GT.0.) THEN
+        FAC8=EMTIR*FEMIS        ! ground effective emissivity through atmosphere
+      ELSE                      ! bare ground
+        FAC8=EMTIR*EMIS
+      ENDIF
+
+            ATMRAD= FAC9*TATMJ**4 ! hemispheric downwelling  IR flux
+              TPFH(IH)=(FAC8*TSUR4+FAC82*TATM4)**0.25 ! planetary  
+              TAF(IH,J4)=TATMJ  ! save Atm Temp.
+              DOWNIR(IH,J4)=ATMRAD ! save downward IR flux
+\end{verbatim}
+This is a mess, as seasonal PRES is not in type -1 files.
+and EFROST is only in the single KRCCOM in the first record.
+
+ Alternate solution is to store Tatm in traditional type -1 files.
+
+To get the right Tplan for output for sloped surfaces, need to have Tatm for the flat case, so would have to include that also in the type -1 files.
+
+Could avoid worsening the large size of type -1 files by making them R*4, convert to/from R*8 in \np{TDISK}
+
+Not much more work to define a new type similar to -1 but which includes TATM. This could be read/write simultaneously with type 52.
+
+Could store the any new flags and arrays  in hatcom to avoid impacting any other commons. hatcom is already included in \np{TLATS} and \np{TDAY}.
+
+
+Better solution might be to put only  DOWNIR and TATM  is a separate type -2 file, 
+ and perhaps be able to write -1,-2 and 52 all at the same time?
+
+ This would take additional input parameters to set up, or could set the required logical flags (in \np{TCARD}) based on setting the file names
+
+\subsubsection{File handling in version 3.4 \label{mint}}
+ To utilize far-field  temperatures, need to have an input data file
+ open simultaneous with at least one output file. Version 3.4 can handle 0 to 3
+ data files open at once. To deal efficiently with fff for both with and without
+ atmophere cases, two additional types of binary files have been defined, and
+ the prior type -1 has becomes type -2.
+
+\subsubsection{ Handling 3 data files at once. \label{help}}
+Because type 52 is written after all cases done, it should be possible to have direct-access file open at the same time with little conflict. Will need more complex control logic.  Note: type - requires open/close for each case.
+
+Need to have multiple file names active, and \np{TCARD} must distinguish when to open/close direct access (each case) versus bin5 files (may be multi-case) 
+
+May have zero to 3 data files active at one time, determined by the second field in a change card starting '8':
+\begin{description}  % labeled items   
+\item [ 5] A ``bin'' Type 5x (52) bin5-format to be written. Name is \nv{FDISK}.
+  PIO (c-level I/O) system determines the unit.  LOPN4 is true when active. All interface is through \np{TDISK}, which calls \np{BINF5} to open or close.
+
+\item [21] A direct-access file to be written. Name is \nv{FDIRA}.  Uses IOD2,
+  LOPN2 is true when active. Five types are available; they are distinguished by
+  the value of K4OUT. By convention, the file extension should indicate the file
+  type, but the KRC system makes no decisions based on this extension.  All interface is through \np{TDISK}.
+\item [ 3] A fff direct access file to be read. Name is
+  \nv{FFAR}, it must be type -N; -1 is adequate for air-less bodies and -3 is
+  required for atmospheres. Uses IOD3, LOPN3 is true when active.  All interface is through \np{TFAR}, with open and close initiated by calls from \np{KRC}  
+
+BEWARE: seasons in this file must cover all that will be computed in later KRC
+run, including the spin-up. It is best to save a full year, with no wrap.
+
+ \end{description}
+Each  direct access file is opened after a new name of length four or more characters is read into FILCOM by \np{TCARD}
+\\ Each  direct access file is closed from \np{TCARD} when a new name of any length is listed or from \np{KRC} when the run ends.
+\qii IOD2 is closed at the end of a case, as direct-access files as implimented by KRC can only hold one case.
+\\ An open file is always active!
+\qi e.g., a sloped case will use FFAR if that is open, else it will self-heat
+\\ Seasons-records are written or read from \np{TSEAS} by calls to \np{TDISK} or read by calls to \np{TFAR}.  
+ Sloped cases are required in abundance to address thermal beaming, which may be
+ especially relevant for airless bodies. For these, need only the surface
+ tempertures, so include the capability of writing direct access files with only Tsurf.
+
+\subsection{Lab notes on tests}
+Start with master34.inp, fewer latitudes and shorter spinup. Generate fff tm3 for flat and for fake steep self-heating slope.
+
+Run case with epsilon slope to compare with flat, and a case with slope and azimuth identical to the fake steep case, expecting same temperatures. Output to /work/work1/krc/beam/BeamBa*
+\vspace{-3.mm} 
+\begin{verbatim}
+
+2016 May 25 19:07:35
+Edit candi.inp for 321 and 341, run both
+kv3@115, then parf[[5,6,0,1]]=['/work2/KRC/321/run/out/',    'candi' $
+                              ,'/home/hkieffer/krc/tes/out/','candi341']
+ 
+Doing -------------->     550
+Num lat*seas*case with NDJ4 same/diff=         632         128
+
+
+test341.inp: 40 seasons, 2 year spinup, 3 latitudes
+   6 cases exercising zone table, photometric function, heatflow, constant KofT
+
+----------  consistency between file types --------
+test341a.inp: Double run: output in: /work/work1/krc/test/
+
+1) 670 seasons, soly, no spinup, 5 latitudes
+   6 cases exercising zone table, photometric function, heatflow, constant KofT
+   54271232 May 23 23:11 v341aTest.t52
+   57201408 May 23 23:11 v341aFlat.tm3
+
+2) 40 seasons, 2 year spinup, 19 latitudes
+ 1 case, variable frost albedo and temperature
+    1047488 May 23 23:11 v341aTest2.t52
+    3495168 May 23 23:11 v341aFlat2.tm3
+
+kv3@ 147 for both pairs of files confirms that t52 and tm3 temperatures 
+are identical.
+
+--------- comparison of 341 to older versions ------
+
+321//VerTest.inp
+670 seasons soly, no spinup 5 latitudes
+ 6 cases test KofT with/without atmosphere
+
+
+
+@2 pari 7=3 8=11 17=2
+
+@45  Case 1-Case 3
+Item in ttt Mean     Std    mean_ABS_std
+    Tsurf  -0.417   2.814   0.480   2.804
+    Tplan   1.633   4.516   3.654   3.115
+     Tatm   0.000   0.548   0.450   0.313
+  DownVIS   0.030   0.380   0.030   0.380
+   DownIR   0.000   0.319   0.244   0.205
+
+ dt=reform(t1[*,0,jlat,*])
+clot,dt   shows that last hour are all near -.8, read within +-.2
+
+@45  Case 2-Case 4
+Item in ttt Mean     Std    mean_ABS_std
+    Tsurf  -0.241   2.141   0.375   2.122
+    Tplan   1.818   4.046   3.539   2.675
+     Tatm   0.000   0.543   0.440   0.318
+  DownVIS   0.020   0.363   0.020   0.363
+   DownIR   0.000   0.318   0.240   0.209
+
+2016 May 24 08:03:02
+KRCINDIFF: test for changes. Input limits:       64     120     220
+ 11 10   ABRPHA      27.955     -0.0000      27.955
+ 22 21ARC3/Safe     0.80010     -0.0000     0.80010
+ 32 31     fd32      3182.5      0.0000      3182.5
+ 76 75    TATMJ      184.59      184.61   -0.015201
+117 16    K4OUT      -3      52     -55
+118 17    JBARE    9999       0    9999
+134 33      KKK       4       8      -4
+
+
+.rnew kv3
+@114  4  232 342
+@11 1=test342f
+@111 123
+@12  7=0 20=3  23=
+@402 Clot DOWNVIS and Tsurf for all cases     WRONG? slope greater max
+   WRONG? Tsurf far is 36K greater than self at noon
+@45   stats on case deltas
+@46   plot case delta for DOWNVIS and Tsurf
+
+@12  0=34 23=-3
+ stem='v342Flatf'   read the type -n for 1st case 
+@51    yields FOUT=dblArray[5, 2], TTOU= dblarr[48, 5, 3, 40]
+t4=ttt[*,0:2,*,*,0] & t4=transpose(t4,[0,2,1,3])
+HISTFAST,ttou-t4 ; all 0
+  stem='v342Flata' & pari[23]=-1     read the type -n for 2nd case 
+@51    yields  TTOU= dblarr[48, 5, 1, 40]
+t4=ttt[*,0,*,*,1] & t4=transpose(t4,[0,2,1,3])
+HISTFAST,ttou-t4 ; all 0
+
+\end{verbatim}
+Far-field heating has a smaller effect than self-heating; see Figure
+\ref{tslope}.  An artifact of KRC is that atmospheric pressure can be constant
+even when frost forms so that the amount of frost is not limited; this limits
+night temperatures and can delay the dawn temperature rise, as seen in the first
+case in the Figure.
+\begin{figure}[!ht] \igq{tslope}
+\caption[Effect of far heating]{Test with slope of 30\qd~ dipping to the West
+  for a nominal asteroid surface in Mars orbit; diurnal surface kinetic
+  temperatures at the equator at $L_S=134$. The 5 cases in the legend are:
+  top=white: Flat with surface pressure ($P_T$) 1.1 Pa and clear with frost
+  temperature 146; 2=blue: flat with no atmosphere; 3=green: sloped with no
+  atmosphere and self-heating; 4=yellow: sloped with no atmosphere and far-field
+  from first case, which is artificial; bottom=red: sloped with no atmosphere
+  and far-field from 2nd case, which is realistic. The dashed line shows the
+  difference self-heating minus far-flat-heating magnified by a factor of ten
+  and offset from 200; it reaches 9K near dawn.
+\label{tslope}  tslope.png }
+\end{figure} 
+% how made: kv3: 114 11 1=t342b 111 402 : t342b slope=30, azi=90
+%t342a slope=10, azi=80
+
+
+
+\subsubsection{fff types}
+All lunar-like with Mars orbit, 5 lats, 40 seasons.  Cases:
+\qi  1: tiny atmosphere, save /work1/krc/test/v342Flatf.tm3
+\qi  2: no atm, save v342Flata.tm1
+\qi  3: 10 degree slope, save v342Flatb.tm1
+\qi  4: same slope, use fff, save v342Flatc.tm1
+
+
+\subsubsection{temporary}
+
+ 
+  tday 686             TAF(IH,J4)=TATMJ  ! save Atm Temp.
+ Done only on the saved hour, so would need to either use as is or interpolate to each time step.
+C0uld do the interpolation in \np{TLATS} time-step loop
+
+
+\subsubsection{Reminder, FORTRAN file types}  % ---------------------
+http://www.fortran.com/fortran/F77_std/rjcnf.html is the F77 definition
+OPEN arguments that control the nature of the file.
+
+ ACCESS: 
+\qi 'SEQUENTIAL'=default  
+\qi 'APPEND' 
+\qi 'DIRECT'
+\qii RECL must also be given, since all I/O transfers are done in multiples of fixed-size records.
+\qii UNFORMATTED is the default
+
+  FORM:
+\qi 'FORMATTED'=default for sequential. Each record is terminated with a newline character; that is, each record actually has one extra character.
+\qi 'UNFORMATTED' the size of each transfer depends upon the data transferred.
+\qii Each record is preceded and terminated with an INTEGER*4 count, making each record 8 characters longer than normal. This convention is not shared with other languages, so it is useful only for communicating between FORTRAN programs.
+\qi 'PRINT' 
+
+RECL=rl: required if ACCESS='DIRECT' and ignored otherwise.
+\qi rl is an integer expression for the length in characters of each record of a file. rl must be positive.
+\qii If -xl[d] is set, rl is number of words, and record length is rl*4. 
+\qiii else, rl is number of characters [bytes], and record length is rl.
+\qii -xl does not occur in the KRC Makefile, as of 2016may11. Excerpt from \np{TDISK}:
+\vspace{-3.mm} 
+\begin{verbatim}
+     IF (K4OUT.LT.0) THEN  !  K4OUT is negative  .tm1
+        NWTOT=2*MAXNH*MAXN4
+     NRECL=8*NWTOT    ! bytes: or  NRECL=NWTOT  ! depends upon compiler <<<< 
+     OPEN (UNIT=IOD2,FILE=FDISK,ACCESS='DIRECT',STATUS=CSTAT,RECL=NRECL,...
+\end{verbatim}
+
+\subsubsection{Early plan and timing tests}
+Although dicussed in this early email, changing files to Real*4 has not been impliments in V3.4.2
+\vspace{-3.mm} 
+\begin{verbatim}
+Robin:
+
+With regard to the need for additional stored information to enable use of a
+ flat far field (fff) for sloped surfaces in KRC. 
+
+I have reached a compromise solution that optionally adds atmospheric
+ temperature (Ta) as a third array after Surface kinetic temperature (Ts) and
+ top-of-atmosphere nadir brightness temperature (Tp, planetary temperature) in
+ the type -1 file. This is called type -3; the file extension would be .tm3  
+
+An added advantage of type -3 is that it allows relatively easy calculation
+ (estimation) of the brightness temperature for off-nadir viewing: e.g.,
+B=(emis*Ts^4 - Tp^4)/( Ta^4-emis*Ts^4)  B is the transmission of the atmosphere
+tau = -ln(B)                    is the atmosphere column opacity
+C=exp(-tau/cos e)               where e is the off-nadir (emittance) angle
+To^4=(1-C)emis*Ts^4 + C*Ta^4    To is the off-nadir brightness temperature
+
+Use of fff requires an additional TDISK-like routine to read-only a type -3
+ file, called TDIF3. This results from needing to have two KRC direst-access
+ files open simultaneously.  TDISK has been modified to allow writing a type 52
+ simultaneously with either -1 or -3.
+
+Changes required to read a -3 file to get Ts and Tp in the fashion of a -1 file:
+ FORTRAN: Change the RECL argument in the OPEN statement. 
+   (Beware, its meaning depends upon the compiler setting of -xl[d])
+
+Note that type -1 and -3 file records are fixed size set by the MAXN4=37 and
+ MAXNH=96 and the word type (currently REAL*8) so -3 will be MAXNH*MAXN4*3=10656
+ words or 85248 bytes each. The first record contains KRCCOM, currently 1704
+ bytes. A typical KRC model of 40 seasons is 3.4 Mbytes
+
+-----
+
+I am considering changeing the type of the Ts, Tp and Ta arrays
+ written to type -3 files from REAL*8 to REAL*4 simply to keep the size
+ down. This would be done transparently to users of TDISK. KRCCOM would still be
+ REAL*8, but there is no need for double precision in the final temperatures.  I
+ believe the time to do REAL*4 <-> REAL*8 conversion is trivial.
+
+Changes required to accomodate REAL*4 in the files for other readers:
+If user really wants REAL*8 temperatures, 
+  READ arrays as REAL*4, also define REAL*8 arrays 
+  Loop over hour and latitude with 
+   TP8(I,J)=TP4(I,J) and similar for Ts and Ta
+  Loop limits could be MAXNH and MAXN4 or the actual N24 and N4
+
+I have tested timing to read type -3 files and to convert between R*4 and R*8.
+  For a typical file with 40 seasons (does not matter how many hours or
+ latitudes as the array sizes are fixed at the maximum allowed). For type -3,
+ reading takes 0.6 to 0.9 ms, but this may be highly dependent upon caching.
+  Conversion of the maximum set of hours and latitudes for all seasons takes 1.6
+ ms (array was filled with random temperatures).
+
+\end{verbatim} 

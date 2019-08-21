@@ -1,0 +1,104 @@
+# Makefile for IDL externals
+#_Hist 2014feb25 HK Derive from Hugh's idl/externals/Makefile for KRC users
+##########################################################################
+
+# Set up some shell-level specific variables
+SHELL=/bin/sh  # do not use csh or bash 
+RM=/bin/rm -f  # removal forced
+
+# Set up compiler flags
+LIMOS=Linux_x86_64   # current operating system
+
+#  These are the GNU C compiler flags.  No preprocessor commands
+# -D is a flag to state that something is defined=True. (Compiler directives)
+CC= gcc -pipe  
+CFLAGS= -Wall -fPIC -Dunix -D$(LIMOS)
+
+#  These are the FORTRAN compiler flags
+FC=g77
+FC_OPT=-O2 -fPIC -fvxt # optimize, relocatable,  Linux extended support
+EXTRA_FFLAGS=-ftypeless-boz -fno-automatic -fno-second-underscore \
+	     -fargument-alias -Dunix -D$(LIMOS)
+FFLAGS= $(FC_OPT) $(EXTRA_FFLAGS)
+
+#  Special load flags.  These flags are utilized in all builds, whether
+#  they are FORTRAN or C
+LD=gcc
+#LDFLAGS= -shared -fPIC  # -Wl,--whole-archive
+LDFLAGS= -shared -fPIC -Wall # -Wl,--whole-archive  << try 1
+
+# Special library MACROS
+AR=ar
+ARFLAGS=-rvs
+RANLIB=/bin/echo
+
+# Include files paths
+INCLUDES=-I.   # in this directory
+
+# L are Library directores that always are searched in
+# l are libraries to include  -lc==libc.a  etc. 
+LIBDIRS=-L. -L/home/hkieffer/linux/lib  # Code Library directories
+SYSLIBS = -lg2c -lc -lm  
+
+
+#  Set up suffixes and special ISIS targets for those suffixes     
+.SUFFIXES:           # clean out any prior
+.SUFFIXES: .o .c  .f
+.c.o: 
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+.f.o: 
+	$(FC) $(FFLAGS) $(INCLUDES) -c $<
+
+# binding routines in this directory 
+# Then change w.c to w.o
+OBJSW= ccor2dw.o con4w.o deding1w.o deding2w.o dpephemw.o elevatew.o eqoftimew.o errdelw.o ertiaw.o  fl1w.o miedpw.o modinitw.o mseasw.o planckw.o  rndexw.o tifovw.o vlpresw.o
+
+# source routines   copy OBJSW  Change w.o to .o
+OBJS= ccor2d.o con4.o deding1.o deding2.o dpephem.o elevate.o eqoftime.o errdel.o ertia.o fl1.o miedp.o modinit.o mseas.o planck.o rndex.o tifov.o vlpres.o  
+
+# routines not in reference libraries that are called only from Fortran
+OBJI = averag.o const.o fsizer2.o interp.o split.o state.o dspline.o dsplint.o
+
+OBJSALL=  $(OBJI) $(OBJSW) $(OBJS) # concatonate objects
+
+EXES = ftnwrap.so
+ftnwrap64.so:	$(OBJSALL)
+	$(LD) $(LDFLAGS)   -o $@ $(OBJSALL) $(LIBDIRS) \
+	 -lhk_fmath -lsofa -lhk_fNumRec $(SYSLIBS)
+
+# A call to make will build all the executables that are out of date
+all:    $(EXES)
+
+# A call to 'make Clean' removes all the executable and object files
+clean:
+	-$(RM) $(EXES) $(OBJSALL) so_locations
+
+#----------- routine dependancies --------------
+
+dpephem.o: stacom.inc ephcom.inc
+
+mooneph.o: stacom.inc ephcom.inc
+
+dpephem.o: stacom.inc ephcom.inc
+
+dp_eph.o: stacom.inc ephcom.inc
+
+state.o: stacom.inc ephcom.inc
+
+tifov.o: tifov.f modcom.inc errcom.inc
+
+ertia.o: ertia.f modcom.inc errcom.inc
+
+modinit.o: modinit.f modcom.inc
+
+elevate.o: elevate.f errcom.inc
+
+errdel.o: errdel.f errcom.inc
+
+#idlkrc.o: idlkrc.f krccom.inc latcom.inc daycom.inc units.inc filcom.inc
+
+#/home/hkieffer/src/for/NumRec/spline.o: /home/hkieffer/src/for/NumRec/spline.f
+#/home/hkieffer/src/for/NumRec/splint.o: /home/hkieffer/src/for/NumRec/splint.f
+
+#c2t06bw.o: c2t06bw.c
+#iau_C2T06Aw.o: iau_C2T06Aw.c

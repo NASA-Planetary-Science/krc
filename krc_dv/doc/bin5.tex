@@ -1,0 +1,74 @@
+%\title{Description of the bin5 file system -i}
+\begin{verbatim}
+           Description of the "bin5" file system  
+               Hugh Kieffer 2010may12
+
+The bin5 file system is designed to allow transfer of binary arrays between
+different languages, operating systems and hardware types. Each bin5 file
+contains a leading 512 byte (or multiple thereof) region that is ASCII text
+and describes the array which follows it.
+
+The first few words are integers separated by spaces, these define 
+the array size and type
+  The first integer is the number of dimensions to the array, N.
+  The next N integers are the sizes of each dimension, in the order of 
+    most-rapidly varying index first, 
+
+Then comes an integer that defines the word type; this follow the IDL
+convention. Values greater than 4 are not supported in Fortran as of 2002sep.
+
+       1	Byte	
+       2	Integer	
+       3	Longword integer	
+       4	Floating point	
+       5	Double-precision floating	
+       6	Complex floating	
+       7	String	
+       8	Structure	
+       9	Double-precision complex	
+      10	Pointer	
+      11	Object reference	
+      12	Unsigned Integer	
+      13	Unsigned Longword Integer	
+      14	64-bit Integer	
+      15        Unsigned 64-bit Integer
+
+The next integer is the number of elements in the array, this is redundant with
+the product of the dimension sizes.
+
+Files written after 1999march should have a final integer that indicates the
+number of leading ASCII bytes in the file; this is always a multiple of 512.
+
+Next is some text bounded by << .. >>; the first part will usually be
+"<<IDL_SIZE + headlen " , the latter part should be the creation date of the
+file, e.g.," Tue Jul 9 05:08:18 2002 >>"
+
+This is followed by the "header", which is free text describing the file. Files
+from Hugh Kieffer may contain Keyword=value sections and/or embedded small
+arrays. Embedded arrays use a separator,such as |,#, or ^, between each element,
+the separator is doubled to indicate the limits of the embedded array.  E.g.,
+Geom=||7.|0.|7.|0.|0.|1.||  Such arrays are created/read by strum.pro
+
+The last 5 bytes of the ASCII section should always be "C_END"; these should be
+immediately preceeded by a 5- or 8-byte indication of the source hardware
+architecture, e.g. "x86 ".
+
+It may be convenient to define an alias to look at the ASCII section:
+  alias bhead  'dd count=1 if=\!*'  # display first 512  bytes of one binary file
+  alias bhead2 'dd count=2 if=\!*'  # display first 1024 bytes of one binary file
+
+Versions are available in  IDL, Fortran (uses calls to C routines)
+
+Example: 
+
+ 2 32 2 4 64 512 <<IDL_SIZE + headlen Tue Jul  9 05:08:18 2002 >>synmoonspec: 
+Multiply factor for ROLO irrad model r311f and Solar model= solar_bb. Synthetic 
+spectrum: Match mean and StdDev of Apollo with Breccia fraction: 0.05. Geom=
+||7.|0.|7.|0.|0.|1.||                                                          
+                                                                               
+                                                                               
+                             x86_64  C_END
+ 
+This example defines a single-precision floating-point array sized (32,2)
+
+\end{verbatim}

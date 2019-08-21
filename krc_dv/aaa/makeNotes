@@ -1,0 +1,129 @@
+Must not have any blanks after the continutation symbol: \
+Must not have comments on any line of an executable target
+
+gfortran produces warnings:
+
+ In file tcard.f:52
+
+     & ,'SPEC_HEAT','DENSITY','CABR','AMW','ABRPHA','PTOTAL','FANON' !7 
+       1
+Warning: initialization string truncated to match variable at (1)
+HK: seems to have defined the entire array properly
+
+======== Notes on compiler notation and meanings ========
+
+
+FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-comments -Wall # -g -fbounds-check   #-Wall  -O  
+# -fargument-alias  pass the same argument more than once.  <<< remove
+# options [where they are described]
+# -g [gcc Debug] Produce debugging information in the op. system's native format 
+# -O [gcc Optimize] Try to reduce code size and execution time. First stage
+#  -check=bounds [-fbounds-check gcc Code]  Run-time checks for array subscripts 
+# -fd-lines-as-code   [gF Lang.]   Compile D lines
+# -fd-lines-as-comments [gF Lang.]  Ignore D lines
+# -fno-automatic  [gF Code]  act as if SAVE were specified for every local variable 
+# -ffixed-line-length-N [gF Lang] N is column after which characters are ignored Default=72
+# -ffpe-trap=invalid,zero,overflow [gF Debug] enable traps for 3 types of exceptions
+# -Wall enables -Wunused-labels, -Waliasing, -Wampersand, -Wsurprising, -Wnonstd-intrinsic, and -Wline-truncation
+
+
+#------------- Libraries -------------------------
+# -l is a flag indicating that a file is a library ??
+# -L adds a file to the library search path ??
+
+
+===========  
+
+gcc -pipe -O2  -Wall -fPIC -Dunix -DLinux -Dx86_64 -Dx86_64    -c -o primio.o primio.c
+primio.c: In function ‘pio_ap’:
+primio.c:702: warning: unused variable ‘dummy’
+primio.c: In function ‘pio_truncate’:
+primio.c:939: warning: unused variable ‘open_mode’
+primio.c:938: warning: unused variable ‘flags’
+primio.c:937: warning: unused variable ‘omode’
+primio.c:936: warning: unused variable ‘file_no’
+
+primio.c: In function ‘pio_in’:
+primio.c:164: warning: ‘tbytes’ may be used uninitialized in this function
+primio.c:169: warning: ‘omode’ may be used uninitialized in this function
+
+u_actinf.c: In function ‘u_actinf’:
+u_actinf.c:59: warning: unused variable ‘errbuf’
+
+u_error.c: In function ‘u_error’:
+u_error.c:102: warning: unused variable ‘dumped’
+
+u_write_term.c: In function ‘u_write_term’:
+u_write_term.c:125: warning: control reaches end of non-void function
+ar            -rvs     ./libhk_cisis.a b2b.o b_alloc.o b_c2fstr.o b_f2cstr.o b_free.o binf5_bind.o gdate.o gtime.o pio_bind_c.o primio.o r2r.o u_actinf.o u_bind_c.o u_error.o ui_error.o u_move1.o u_move4.o u_new_id.o upper.o u_swapn.o u_write_msg.o u_write_term.o
+ar: creating ./libhk_cisis.a
+
+modinitw.c: In function ‘modinit’:
+modinitw.c:15: warning: unused variable ‘t_stderr’
+modinitw.c:15: warning: unused variable ‘t_stdout’
+modinitw.c:15: warning: unused variable ‘t_stdin’
+modinitw.c:14: warning: unused variable ‘tmp’
+
+con4.f several warnings about "not in the same block "
+
+con4.f:343.3:
+
+377       C2 = YC(IC)                                                   
+   1
+con4.f:332.72:
+
+          IF (XCN.EQ.X2) GOTO 377 ! rare case of  XA &  XC coincide     
+                                                                        2
+Warning: Label at (1) is not in the same block as the GOTO statement at (2)
+con4.f:156.3:
+
+501         IF (JL.EQ.JLOW) THEN        ! before low end of  XA         
+   1
+con4.f:426.17:
+
+        GOTO (501,502),KASE                                             
+                 2
+Warning: Label at (1) is not in the same block as the GOTO statement at (2)
+con4.f:259.3:
+
+502       IF (JL.EQ.JLOW) THEN  ! before low end of  XA                 
+   1
+con4.f:426.21:
+
+        GOTO (501,502),KASE 
+
+
+All  *test*.inp  in chronologic order 
+
+-3 lats == 0.00 -30.00 -60.00
+ 5 lats == -60.00 -30.00   0.00  30.00  60.00
+19 lats == -87.50 17*10.  87.50
+  .inp     lats elev1    DJUL    DELJUL JDISK N5      output
+testVn.inp    5  1.22 12986.6    1.0275    1 670  krc/test/Vntest1.t52
+
+testV212.inp  5  1.22   838.26   1.0275    1 670  krc/test/V212test1.t52
+
+V222test.inp  5  1.22   838.26   1.0275    1 670      ./V222test1.t52
+             19  3.51  -535.700 17.1745   81 120       /V222test2.t52'
+
+V24test.inp   5  1.22   838.26   1.0275    1 670      /out/VerTest.t52
+             19  3.51  -535.700 17.1745   81 120
+
+test33.inp   -3  0.17 -1222.69 17.174822  81 120   krc/test/test33C.t52 << std
+   (-30 elev was 0.48)
+
+test33E.inp  -3  0.00 -1222.69 17.174822  81 401  /krc/test/test33E.t52
+
+V330test.inp  5  1.22   838.26   1.0275    1 670   ./out/V330test1.t52 
+             19  3.51  -535.700 17.1745   81 120   ./out/V330test2.t52
+
+
+
+V331test.inp  5  1.22   838.26   1.0275    1 670    /out/V331test1.t52
+             19  3.51  -535.700 17.1745   81 120   ./out/V331test2.t52
+
+321/
+VerTest.inp  -3  1.22   838.26   1.0275    1 670   ./out/VerTest.t52
+             19  3.51  -535.700  17.1745  81 120   ./out/VerTest2.t52
+
+test341.inp  -3

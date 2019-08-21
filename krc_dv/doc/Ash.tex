@@ -1,0 +1,649 @@
+\documentclass{article} 
+% OLI 2015 report: t=single input  tt=includeonly  ttt=all
+\usepackage{ifpdf} % detects if processing is by pdflatex
+%\usepackage{graphicx} % should allow jpeg or png
+%% B&W shows but color will be empty: Process with  latex  and display with  xdvi
+%\usepackage{epsfig} 
+\usepackage{underscore} % accepts  _ in text mode
+\usepackage{newcom} % new commands developed in 2015 for OLI 
+%\usepackage{definc}
+
+\usepackage{lineno}  \linenumbers
+
+\title{KRC runs to match results of Ashwin Vasavada thermal models}
+
+\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/Ash.tex 2015dec04+}
+
+%\begin{document} 
+% alias fff 'fgrep -in \!* Ash.tex'
+
+\begin{document} %==========================================================
+
+\maketitle
+\tableofcontents
+\listoffigures
+\listoftables
+%\hrulefill .\hrulefill %______________________________________________________
+%\clearpage
+\section{Introduction}
+Ashwin Vasavada (AV) Mars surface thermal models have been provided by Sylvain Piqueux (SP) in form of ASCII tables: \nf{-/krx/sylv/sylvain_case?.txt}; 16 cases. The email cover letter is \nf{AshDataExp}. This work is an attempt to understand the differences in results from equivalent KRC models, and hopefully to modify some KRC input parameters to bring the two numerical models into closer agreement
+
+\subsection{Summary}
+KRC yields surface temperatures with less diurnal variation than AV; this is due largely to AV coupling more strongly with the atmosphere near the surface versus the KRC single slab atmosphere. 
+   
+KRC  \nf{master.inp} values yield less solar radiation at the surface and generally lower temperatures. The downwelling IR has less diurnal amplitude, particularly at low opacity,  significantly   
+
+Using Vasavada dust properties yields surface downwelling solar flux almost the same as AV models, but the IR flux is only slightly closer to AV.
+
+By artifically reducing the heat capactiy of the KRC atmosphere, the thermal responsivity of the atmosphere is increased and surface temperature become somewhat closer to AV models. However, this also modifies the amount of atmosphere except at zero elevation. 
+
+? What effort to expend to modify KRC code to approach AV results?
+
+\subsection{Notation use here}
+The following font styles have been partially implemented: 
+\qi File names are shown as \nf{file}. 
+\qi Program and routine names are shown as \np{PROGRM [,N]} 
+\qii where \np{N} indicates a major control index. 
+\qi Code variable names are shown as \nv{variab} and within equations as $\nvf{v
+ariab}$.  
+\qi Input parameters are shown as \nj{INPUT} and within equations as $\njf{INPUT
+}$
+
+
+\subsection{Processing}
+Comparison with KRC is done in the IDL program \np{gcmcomp.pro}; the symbol '@' here refers to specific actions in the large case statement within that program.
+
+I read them  in gcmcomp.pro @610,611 and make IDL save file\nf{Ash16.sav} . Sol and Tau_vis are in columns, but are constant over Hour. Values for parmeters that vary between AV models are listed in the top section of Table \ref{AshM}
+\\ AAA FLOAT[96,9,16] AAID: Sol Ls LTST LMST Tsurf IRflux Solflux Elev_ang Tau_vis
+\\ PPP FLOAT[16,10] PPID: LAT ELON ALBEDO TI SLOPE AZ ELEV OPACITY Sol Tau_vis
+\qi  OPACITY and Tau_vis are the same in all cases.
+\begin{table} \caption[AV models]{Values from file header, plus Sol and Tau_vis from tables}  \label{AshM} 
+\begin{verbatim}
+ index>      0      1      2      3      6      7      9     8   10     4      5
+ i Case     LAT   ELON ALBEDO    TI   ELEV OPACITY     Ls  Sol Tau_vis SLOPE  AZ
+ 0   1    -4.59 137.44  0.200   300.     0.  0.700  270.1  196  0.70  0.00  0.00
+ 1   2    -4.59 137.44  0.200   300. -4501.  0.700  270.1  196  0.70  0.00  0.00
+ 2   3    -4.59 137.44  0.200   300.     0.  2.000  270.1  196  2.00  0.00  0.00
+ 3   4    -4.59 137.44  0.200   100.     0.  0.700  270.1  196  0.70  0.00  0.00
+ 4   5    -4.59 137.44  0.200   300.     0.  0.000  270.1  196  0.00  0.00  0.00
+ 5  6a   -26.37   0.00  0.130   350.  -940.  0.100   91.0  546  0.10  0.00  0.00
+ 6  6b   -26.37   0.00  0.130   350.  -940.  0.100  270.3  197  0.10  0.00  0.00
+ 7   7    22.50   0.00  0.250   270. -1500.  0.300  100.2  566  0.30  0.00  0.00
+ 8   8    -4.59 137.44  0.250    50. -4501.  0.300  150.6    0  0.30  0.00  0.00
+ 9   9    -4.59 137.44  0.250    50. -4501.  0.300  270.7  197  0.30  0.00  0.00
+10  10    -4.59 137.44  0.250  1200. -4501.  0.300  150.6    0  0.30  0.00  0.00
+11  11    -4.59 137.44  0.250  1200. -4501.  0.300  270.7  197  0.30  0.00  0.00
+12  12    -4.59 137.44  0.250    50. -4501.  2.000  150.6    0  2.00  0.00  0.00
+13  13    -4.59 137.44  0.250    50. -4501.  2.000  270.7  197  2.00  0.00  0.00
+14  14    -4.59 137.44  0.250  1200. -4501.  2.000  150.6    0  2.00  0.00  0.00
+15  15    -4.59 137.44  0.250  1200. -4501.  2.000  270.7  197  2.00  0.00  0.00
+
+           Sol     Ls     LTST    LMST   Tsurf  IRflux Solflux ElevAng  Tau_vis
+ index>     0      1       2       3       4       5       6       7       8 
+ 0   1  196.00  270.08   12.01   11.97  232.60   45.71  175.17   20.27   0.700
+ 1   2  196.00  270.08   12.01   11.97  234.20   50.90  175.17   20.27   0.700
+ 2   3  196.00  270.08   12.01   11.97  232.43   78.32  122.97   20.27   2.000
+ 3   4  196.00  270.08   12.01   11.97  225.28   46.21  175.17   20.27   0.700
+ 4   5  196.00  270.08   12.01   11.97  232.65   20.77  215.17   20.27   0.000
+ 5  6a  546.00   91.02   12.06   12.06  190.73    9.34   80.03   10.27   0.100
+ 6  6b  197.00  270.33   12.09   12.06  248.98   33.73  246.32   25.36   0.100
+ 7   7  566.00  100.15   12.11   12.06  219.49   24.85  162.92   24.79   0.300
+ 8   8    0.00  150.62   12.03   11.97  205.42   26.66  159.54   20.41   0.300
+ 9   9  197.00  270.73   11.99   11.97  218.03   36.52  196.33   20.27   0.300
+10  10    0.00  150.62   12.03   11.97  222.86   24.73  159.54   20.41   0.300
+11  11  197.00  270.73   11.99   11.97  236.64   35.03  196.33   20.27   0.300
+12  12    0.00  150.62   12.03   11.97  213.71   63.65  101.86   20.41   2.000
+13  13  197.00  270.73   11.99   11.97  226.90   83.16  124.12   20.27   2.000
+14  14    0.00  150.62   12.03   11.97  220.17   60.23  101.86   20.41   2.000
+15  15  197.00  270.73   11.99   11.97  234.32   80.17  124.12   20.27   2.000
+                   ^^^ Mean ^^^      vvv StdDev vvvv 
+ 0   1  0.0000  0.1875   6.962   6.964   32.86   10.73  221.40   25.20  0.0000
+ 1   2  0.0000  0.1875   6.962   6.964   32.25   10.02  221.40   25.20  0.0000
+ 2   3  0.0000  0.1875   6.962   6.964   25.11   20.32  161.17   25.20  0.0000
+ 3   4  0.0000  0.1875   6.962   6.964   47.05   13.87  221.40   25.20  0.0000
+ 4   5  0.0000  0.1875   6.962   6.964   37.74    5.42  257.11   25.20  0.0000
+ 5  6a  0.0000  0.1317   6.964   6.964   22.05    1.54  112.00   14.29  0.0000
+ 6  6b  0.0000  0.1874   6.960   6.964   37.15    8.19  271.61   29.58  0.0000
+ 7   7  0.0000  0.1335   6.964   6.964   30.76    5.11  187.06   29.46  0.0000
+ 8   8  0.0000  0.1530   6.964   6.964   53.28    8.03  202.14   26.19  0.0000
+ 9   9  0.0000  0.1874   6.962   6.964   55.71   11.00  242.31   25.20  0.0000
+10  10  0.0000  0.1530   6.964   6.964   12.68    2.40  202.14   26.19  0.0000
+11  11  0.0000  0.1874   6.962   6.964   14.47    3.53  242.31   25.20  0.0000
+12  12  0.0000  0.1530   6.964   6.964   35.82   16.17  136.89   26.19  0.0000
+13  13  0.0000  0.1874   6.962   6.964   36.93   20.04  162.68   25.20  0.0000
+14  14  0.0000  0.1530   6.964   6.964    8.79    8.11  136.89   26.19  0.0000
+15  15  0.0000  0.1874   6.962   6.964    9.94   10.13  162.68   25.20  0.0000
+\end{verbatim}
+\vspace{-3.0mm}
+\hrulefill \end{table}
+
+KRC input file begins with standard Version 3 input values. Runs use 80 dates per Mars year and 48 times of day (starting at 0.5 Hour) following a 2 year spin up. Define 4 latitudes and elevations to cover multiple AV cases.
+Then the 16 AV models can be covered by 10 KRC cases, shown in Table \ref{cases} each with the same 4 latitude/elevation pairs. 
+\vspace{-3.mm} 
+\begin{verbatim}
+ -26.37  -4.59  -4.59  22.50
+  -0.94 -4.501    0.0   -1.5
+\end{verbatim}
+
+
+\subsubsection{IR flux oddity} %--------------------------
+ The AV files show small reversals in the downIR flux in the morning and afternoon, see Fig. \ref{AVdownIR}
+\begin{figure}[!ht] \igq{AVdownIR}
+\caption[AV down IR]{Downgoing IR flux at the surface for all 16 AV models showing small reversals for most models in the morning and afternoon. The 7 columns of the legend are: 1: 0-based index; 2: model ID; 3: latitude/longitude/elevation location identifier, A and B are at MSL with A at 0 elevation and B at MSL elevation, C is-26.37/0./-940 and D is 22.50/0/-1500; 4: albedo; 5: thermal inertia; 6: opacity; 7: Ls
+\label{AVdownIR} AVdownIR.png }
+\end{figure} 
+% how made: After gcmcomp 613, j=5
+% CLOT,reform(aaa[*,j,*]),cave,locc=[.25,.95,-.022,.03],titl=['Hour index',aaid[j],dir+fil1]
+
+
+\subsubsection{2016jan22 resumption} %--------------------------
+. 
+\\  3993 Dec  6 15:43 Ash.inp $rightarrow$ Ash1.inp
+\\ 4371 Dec  9 08:44 krc.inp $rightarrow$ Ash2.inp
+\\ Ash2.inp has the corrected Tau's.
+\\ Make Ash3.inp using version 323 standards,  AVc1.t52  Total time 24.68
+
+\clearpage
+\subsection{Opacity adjustment} %-------------------------------
+AV model (\S \ref{AVM}) states pressure at Gale at Ls=150 is 730 Pa.
+In gcmcomp@617 I compute equivalent KRC PTOTAL is 552.2 Pa, versus KRC nominal of 556.
+
+
+I am told that AV models define opacity $\tau_A$ at the local surface and
+  season] whereas KRC defines visual opacity $\tau_K$ for the mean global annual
+pressure at 0 elevation, and the $\tau$ used at each latitude:elevation:season
+is [tlats8.f code extract, some simplification]:
+\qii        PTOTAL is global mean pressure at 0 elevation. Input=546.
+%        FANON is the non-condensing fraction of gas, input=0.055 
+%        PCO2M = (1.-FANON)*PTOTAL ! initial partial pres. of  CO2 at 0 elev
+\qi      If annual constant, KPREF=0
+\qii        PZREF = PTOTAL   ! current total pressure at 0 elevation
+\qiii    $P_r$: \ PTOTAL is in \nv{kcom}
+%         PCO2G = PCO2M              !  partial pres. of  CO2 at 0 elev. now
+\qi       If follows Viking,KPREF=1
+ \qii         Z4=VLPRES(4, DJU54) ! current normalized pressure
+ \qii         PZREF = PTOTAL*DBLE(Z4) ! current total P at 0 elev
+\qiii $P_c$: \ PZREF is in \nv{vvv}[season,2,case]
+ %        PCO2G = PCO2M+(PZREF-PTOTAL) ! all changes are pure CO2
+ \qi        for each latitude
+  \qii    $H$: \    SCALEH = TATMAVE*RGAS/(AMW*GRAV) ! scale height in km
+  \qiii     $\langle T_a \rangle $: \     TATMAVE is average of TAF over prior day
+  \qiii           TAF is final hourly atmosphere temperature, not predicted., close to $T_a$, which is in  \nv{ttt}[*,2,lat,season,case]
+  \qiii           RGAS/(AMW*GRAV) = are constants for Mars = 1/19.5 km
+  \qii         PFACTOR = DEXP(-ELEV(J4)/SCALEH) ! relative to global annual mean
+\qiii $z$: \ is ELEV in  \nv{uuu}[lat,0,case]
+  \qii         PRES = PZREF * PFACTOR ! current local total pressure 
+ \qii        OPACITY = TAUVIS*PRES/PTOTAL+TAUICE/TAURAT 
+
+
+
+\qbn \tau= \tau_K \frac{P_c}{P_r}   e^{-z/H} \mc{or} \tau_K= \tau \frac{P_r}{P_c }  e^{z/H} \ql{tau}
+where $z$ is the elevation in km \nv{ELEV}; $H$ is the scale height in km  $H= \langle T_a \rangle /(Wg/R) \approx  T_a/19.5 $ km, where $W$ is the atomic weight of the atmosphere, $g$ is the gravity and $R$ is the universal gas constant; $P_c=V_fP_r$ is the current pressure at 0 elevation; $V_f$ is the optional normalized Viking pressure curve and $P_r$ is the global annual mean pressure at 0 elevation \nv{PTOTAL}. \nv{TAUICE} is zero for all these KRC runs. Equate $\tau$ to  $\tau_A$ and use the right-hand relation to get the $\tau_K$  that should be input to KRC. 
+
+Type 52 files contain  $T_a, z, P_r $ and $P_c$, enough to reconstruct this; done @612. There is also an IDL VLPRES routine.
+
+
+Using run AVc1, as a start, get
+\vspace{-3.mm} 
+\begin{verbatim}
+model    1    2    3    4    5   6a   6b    7    8    9   10   11   12   13   14   15
+index    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15
+elev   0.0 -4.5  0.0  0.0  0.0 -0.9 -0.9 -1.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5 -4.5
+tauAV 0.70 0.70 2.00 0.70 0.00 0.10 0.10 0.30 0.30 0.30 0.30 0.30 2.00 2.00 2.00 2.00
+ tauk 0.62 0.42 1.77 0.62 0.00 0.09 0.08 0.27 0.23 0.18 0.22 0.18 1.53 1.19 1.53 1.19
+ratio 1.13 1.69 1.13 1.13 -NaN 1.09 1.23 1.10 1.33 1.71 1.33 1.71 1.30 1.68 1.31 1.68
+Sylva 0.70 0.46 2.00 0.70 0.00 0.09 0.09 0.26 0.20 0.20 0.20 0.20 1.33 1.33 1.33 1.33
+DelMi 0.00 2.91 0.00 0.00 0.00 0.02 0.03 0.06 0.78 1.13 0.71 1.13 3.23 2.72 1.75 2.69
+
+ tauk 0.61944 0.41516 1.76983 0.61944 0.00000 0.09160 0.08144 0.27282
+      0.22536 0.17584 0.22490 0.17570 1.53274 1.19010 1.52920 1.18985
+
+DelMi is the 1000*(TAUD in KRC - tauk)
+\end{verbatim} 
+
+
+Because of this adjustment a separate KRC case is needed for each AV model, otherwise 10 would do. For simplicity, the same four latitude/elevation sets are run for each case although only one of four is used.  Some initial runs with 10 KRC cases and KRC version 2 standard imputs were run; After Jan 20, all runs use KRC Version 3 and 16 cases. 
+
+ Dec  9 08:41 KRC runs with 16 cases take 6.3 seconds, version 3.2.3 runs take   24.6 seconds.
+
+\begin{table} \caption[KRC Runs]{KRC runs to cover the 16 AV models. Because of the opacity adjustment, a separate KRC case is required for each }  \label{cases}
+\begin{verbatim}
+10 case runs:
+Case=       1 had: ALBEDO=0.2 INERTIA=300. TauDust=0.7 
+Case=       2 changed: TauDust=2. 
+Case=       3 changed: INERTIA=100. 
+Case=       4 changed: TauDust=0. 
+Case=       5 changed: ALBEDO=0.13 INERTIA=350. TauDust=0.1 
+Case=       6 changed: ALBEDO=0.25 INERTIA=270. TauDust=0.3 
+Case=       7 changed: ALBEDO=0.25 INERTIA=50. TauDust=0.3 
+Case=       8 changed: ALBEDO=0.25 INERTIA=1200. TauDust=0.3 
+Case=       9 changed: ALBEDO=0.25 INERTIA=50. TauDust=2. 
+Case=      10 changed: ALBEDO=0.25 INERTIA=1200. TauDust=2. 
+
+Run    file  Input parameters
+  0    Av1   No change 
+  1    Av18  Dust_A=0.91 
+  2    Av19  TauRati=0.25 
+  3    Av21  ARC2=0.71 
+  4    Av48  AtmCp=650 
+-----------------------------  begin 16-case runs
+  0    AVb1  TauDust=0.61944 
+  1    AVb2  TauDust=0.61944 TauRati=0.25 
+  2    AVc1  rel to b1: TauRati=0.25 RLAY=1.15 FLAY=0.1 CONVF=3. N1=37 N2=1536
+  3    AVc2  rel to c1: DUSTA=0.91  TAURAT=0.208  ARC2=0.71  Vasavada
+  4    AVc3  rel to c1  TAURAT=0.208  [redid]
+  5    AVc4  rel to c1  DUSTA=0.91
+  6    AVc5  rel to c1  ARC2=0.71
+  7    AVc2c rel to c2  tiny corrections to TAUD to match tauk
+  8    AVc6  rel to c2c  AtmCp=650.
+  9    AVc7  rel to c2c  AtmCp=350.
+ 
+Hparm=      0.20000000       300.00000      0.70000000       597.79410
+AV18 Base case= ALBEDO=0.2 INERTIA=300. TauDust=0.7 
+\end{verbatim}
+\vspace{-3.0mm}
+\hrulefill \end{table}
+% how made: part 1 @22  
+
+
+% part2; krccs for each @1173, table @ 617
+\qsb{Adjusting AV and KRC to same grid}
+
+When KRC models are read in, the appropriate latitude data are interpolated in season to the AV Ls values.
+
+\vspace{-3.mm} 
+\begin{verbatim}
+KRCv3.2.2
+RASE,MASE,MTOT=   91.857727              91     9906624
+ END KRC   Total time [s]=   3.9913931 
+
+lsubs[]              Ash index
+ 270.08   0=270.2   0 1 2 3 4 
+ 91.02     42=91.8   5
+100.15     44=99.5   7
+150.62     57=152.7  8 10 12 14
+270.73     0=270.2   9 11 13 15
+ Rerun with disk season 0=2.9 Ls
+just interpolate!
+
+lsubs.pro uses coefficients identical to alsubs.f used by KRC 
+\end{verbatim} 
+
+AV models are at 96 times of day; both local true solar time (LTST) and local mean solar time (LMST) are given to 0.01 hour precision. Ls is given for every hour to 0.001 precision.
+
+I don't know details of what algorithm AV uses to get Ls; Sol is only given as integer, so can not check with that.
+
+All AV Ls values near 270 differ slightly, so there will be no simple relation
+\qi Converted to sols, some are near-integral different, so AV probably uses 
+sol-based seasons.
+
+@610, 611: AV model text files are read once, converted to floating-point and
+stored as an IDL save file.
+
+@612, 615: When the AV save file is read, its 96 'hours' for each model, which
+cover at least 0.13 to 23.86 are interpolated to the 47 hours of KRC; omitting
+midnight, which would be more complex for interpolation. This is done for the
+four variables that correspond to KRC type 52 files and which for AV change with
+hour: Tsurf, IRflux, Solflux, Tau_vis.
+
+Test both interpolations by applying the same interpolation algorithm to the
+interpolated: result is zero differences.
+
+Match KRC case to AV model by requiring agreement in latitude and elevation to
+0.1 degree and 0.1 km. Agreement of these and albedo, inertia tested
+against the first KRC file for each AV model @613; agreement is zero or
+roundoff.
+
+\qsc{Atm Dust values}
+ 11/06/2015 08:15 AM email from Sylvain has table of values 
+\vspace{-3.mm} 
+\begin{verbatim}
+            TAURAT   DUSTA  ARC2
+Bandfield    0.22    0.90   0.50
+Vasavada     0.208   0.91   0.71
+Piqueux      0.25    0.90   0.50
+KRC default  0.5     0.9    0.5
+\end{verbatim}  
+
+Define some metrics of agreement in T_S; implement as \np{temetrics.pro}. All
+are based on Argument 1 (Y) relative to argument 2 (Z); may be one or many pairs
+of vectors, each vector is for a set of hours in common between the two sources.
+\qi [0= mean of the difference Y-Z
+\qi [1= std Dev of difference Y-Z 
+\qi [2= pre-dawn or minimum:  min(Y)-min(Z) 
+\qi [3= post-noon or maximum: max(Y)-max(Z)
+\qi [4= floating index of mid-rise time;  $H_{rY} -H_{rZ}$ 
+\qii where use linear interpolation to find $T(H)_Y = (\max_Y + \min_Y)/2$
+\qi [5= floating index of mid-fall time (Max-min or symmetric)
+\qii Same as for rise, but with option that the min is T at the hour which is symmetric with the hour of Tmin around the hour of Tmax.
+
+The last two, the index differences, are typically much smaller than the temperature differences, so magnify by 20 (\nv{parw[6]} for display.
+
+To generate a single value of merit, develop an weighting factor for each metric used before summing over them; @155: \nv{parw}, listed in Table \ref{wei}.
+ The first 4 metrics have units of temperature; the last two units of $\frac{1}{2}$ hour.
+
+
+\begin{table} \caption[Metric weights]{Weighting factors for the metrics}  \label{wei}
+\begin{verbatim}
+Item        Mean    StdDev       Min       Max   RiseLoc   FallLoc
+Weight      1.00      0.50      0.50      0.50      5.00      5.00
+\end{verbatim}
+\vspace{-3.0mm}
+\hrulefill \end{table}  
+ 
+\qsc{Initial observations}
+Model 5 has zero dust opacity; down IR has similar average between AV and KRC;
+KRC has small diurnal variation suggesting greater heat capacity.
+
+In general, KRC downIR lags AV, suggesting greater heat capacity.
+
+In general, KRC downIR larger and greater amplitude than AV, 
+  suggesting greater opacity
+\vspace{-3.mm} 
+\begin{verbatim}
+
+plot,ppp[*,7],zz[24,*]/yy[24,*],psym=4
+ With higher opacity, KRC has lower downVis
+ KRC/AV  about 1-sqrt(tau)/.
+\end{verbatim}  
+
+Looping to include multiple KRC runs is defined @117.
+
+KRC runs all have the same 10 cases; a few input parameters may be changed between runs [before the first case]. As KRC runs are read, all input values of the first case are compared with the first run and the differences stored for labeling.  
+
+\qsb{Flux comparisons}%----------------------------------------------
+
+ For all figures in this section AV are solid lines and KRC are dashed and all legends are as described for Figure \ref{AVdownIR}.
+
+With ``standard'' KRC values for dust properties, DUSTA=0.9, TAURAT=0.5,  ARC2=0.5, KRC downgoing solar flux at the surface is less than AV; the factor increases with opacity; see Fig. \ref{solflux402}; 
+
+KRC downgoing IR flux at the surface is generally smaller than AV, except near midday for low opacities, see Figs. \ref{IRflux402} and \ref{IRflux19}. KRC IR diurnal amplitude are generally smaller than AV and more delayed from the surface temperature variation. These qualitative relations are as expected because KRC values represent the average atmosphere and AV models have stronger coupling to the lower layers of the atmosphere.
+
+The corresponding surface temperatures are shown in Figs. \ref{Ts402} and \ref{Ts19}. The Ts values for all cases relative to the corresponding AV models are shown in Fig. \ref{TsDelb1}
+
+\begin{figure}[!ht] \igq{solflux402}
+\caption[Solar Flux 1]{Down-going solar flux for opacity 0 (white), 0.7 (blue) and 2.0 (green). KRC values (dashed lines) are higher than AV (solid) for non-zero opacities, the factor at noon is 0.05\% for $\tau=0$, -5.7\% for  $\tau=0.7$, and -20.7\% for $\tau=2.0$.  These amounts increase slightly away from noon, indicating the KRC has less diffuse flux than AV.
+\label{solflux402} solflux402.png }
+\end{figure} 
+% how made:  kik=[4,0,2] @621
+
+\begin{figure}[!ht] \igq{IRflux402}
+\caption[]{Down-going IR flux for 3 opacities for otherwise identical models; ordinate log scale. KRC values are generally higher than AV except for near midday for low opacity; KRC amplitudes are smaller and delayed relative to AV. 
+\label{IRflux402} IRflux402.png }
+\end{figure} 
+% how made: ditto 
+
+\ref{Ts402}
+\begin{figure}[!ht] \igq{Ts402}
+\caption[Surface temperature 1]{Diurnal surface temperatures for models with 3 opacities, AV are solid lines and KRC are dashed. Peak temperature differences reflect the difference in model down-going solar flux (Fig. \ref{solflux402}) and the relative delay of KRC follows the phase shift in IR downgoing flux (Fig.  \ref{IRflux402}).
+\label{Ts402} Ts402.png }
+\end{figure} 
+% how made:  ditto 
+
+The final version of AlphaGo used 40 search threads, 48 CPUs, and exploited multiple machines, 40 search threads, 1,202 CPUs and
+8 GPUs. We also implemented a distributed version of AlphaGo that 176 GPUs. 
+
+
+\begin{figure}[!ht] \igq{TsDelb1}
+\caption[Delta Ts for KRC defaults]{KRC using default parameters: surface temperatures relative to AV for all models.
+\label{TsDelb1} TsDelb1.png }
+\end{figure} 
+% how made: 
+
+\begin{figure}[!ht] \igq{IRflux19}
+\caption[IR flux 2]{Down-going IR flux at Ls=270\qd. KRC values are higher than AV except for near midday for low TI and low opacity. All KRC curves have smaller amplitude than AV.
+\label{IRflux19} IRflux19.png }
+\end{figure} 
+% how made:  ditto 
+
+\begin{figure}[!ht] \igq{Ts19}
+\caption[Surface temperature 2]{Diurnal surface temperatures for 5 models at Ls=270\qd. See caption for Fig. \ref{Ts402}
+\label{Ts19} Ts19.png }
+\end{figure} 
+% how made:  ditto 
+\clearpage
+\qsc{Using AV dust parameters} %----------------------------------------------
+
+KRC run AVc2c, uses Vasavada values for dust scattering: DUSTA=0.91,
+TAURAT=0.208, and ARC2=0.71; it also includes a few tiny corrections to the
+adjusted opacity (based on run AVc2) so that they agree with \qr{tau} to better
+than 0.0001.  AV downgoing solar flux at the surface is 0.44 $\pm$0.05 \% less
+than KRC [and AV/KRC decreases slightly with hour indicating the AV time-of-day
+  as interpolated is minutely [pun] earlier than KRC]. For just the 5 cases
+shown in Fig. \ref{solfluxC}, the ratio is 0.55 $\pm$0.08 \%.
+
+KRC downgoing IR flux at the surface is slightly less than with KRC standard paramters, the basic comparison to AV IR fluxes remains; see Fig \ref{IRfluxC}. The KRC surface temperatures are warmer than AV , see Fig. \ref{TsC} and  \ref{TsDelC}
+
+\begin{figure}[!ht] \igq{solfluxC}
+\caption[Solar flux with AV dust]{Down-going solar flux at Ls=270\qd, the KRC model use AV dust values and the resulting solar flux is close to that in AV models.
+\label{solfluxC} solfluxC.png }
+\end{figure} 
+% how made: AVc2c, gcmcomp @621 with kik=[1,9,11,13,15]
+
+\begin{figure}[!ht] \igq{IRfluxC}
+\caption[IR flux with AV dust]{Down-going IR flux at Ls=270\qd, the KRC model use AV dust values/ KRC values are greater than AV except for low opacities and low inertia near midday. 
+\label{IRfluxC} IRfluxC.png }
+\end{figure} 
+% how made: ditto
+
+\begin{figure}[!ht] \igq{TsC}
+\caption[Tsur with AV dust]{Surface temperatures for 5 AV models and KRC using AV dust parameters
+\label{TsC} TsC.png }
+\end{figure} 
+% how made: ditto
+
+\ref{TsDelC}
+\begin{figure}[!ht] \igq{TsDelC}
+\caption[Tsur: KRC-AV]{KRC using AV dust parameters: surface temperatures relative to AV; 5 models at MSL location at Ls=270. 
+\label{TsDelC} TsDelC.png }
+\end{figure} 
+% how made: ditto
+
+\qsb{Tuning} %----------------------------------------------
+Objective: determine KRC input parameters that generate models that match AV models. Here, ``match'' is defined as minimum RSS over [a weighted set of] the AV surface temperatures. 
+
+To get a single ``figure of merit'' $F$, I weight the metrics and sum over them for each KRC run:case; shown in Figure \ref{619}
+
+\qbn F_{mk}=\sum_{i} w_i M_{imk} \ql{fm}
+where $W$ is the weighting for each metric, $M$ is the metric,$i$ is the index of the metric, $m$ is the AV model index and $k$ is the KRC run index.
+
+Each $M_{imk}$ is formed across the 47 hours in common
+
+\begin{figure}[!ht] \igq{619}
+\caption[Figure of merit: 1]{Weighted sum of the metrics for each AV model and KRCrun. Bottom section (box symbols) is scaled graphic of the items which change between AV models. 
+\label{619} 619.png  }
+\end{figure} 
+% how made: 
+
+Tried making the KRC atmosphere more responsive by reducing the atmospheric heat capacity, AtmCp; for its normal 735.9 to 650 and to 350; see Figs \ref{TsDelc6} and \ref{TsDelc7}. While this does not affect the atmosphere scattering proerties, it does change the scale height and hence the amount of atmosphere except at zero elevation (model cases 1,3,4,5) . 
+
+\begin{figure}[!ht] \igq{TsDelc6}
+\caption[Delta Ts for KRC with slightly reduced AtmCp]{KRC using AV atmosphere parameters and a 12\% reduction in AtmCp: surface temperatures relative to AV for all models.
+\label{TsDelc6} TsDelc6.png }
+\end{figure} 
+% how made: 
+
+\begin{figure}[!ht] \igq{TsDelc7}
+\caption[Delta Ts for KRC with greatly reduced AtmCp]{Delta Ts for KRC with AtmCp reduced more than 1/2; surface temperatures relative to AV for all models.
+\label{TsDelc7} TsDelc7.png }
+\end{figure} 
+% how made: 
+
+Metrics for KRC runs are shown in Figs. \ref{gm623c} and  \ref{gm623m}
+
+\begin{figure}[!ht] \igq{gm623c}
+\caption[Summary metrics]{Average over models for the surface termperature metrics for 10 KRC runs. Ordinate is the mean of each metric; abscissa is 0-based index of KRC runs shown in the upper legend of Fig. \ref{gm623m}
+\label{gm623c} gm623c.png }
+\end{figure} 
+% how made: 
+
+\ref{gm623m}
+\begin{figure}[!ht] \igq{gm623m}
+\caption[]{Mean weighted metric for each AV model in each KRC run. Abscissa is the 0-based AV model. Ordinate is the weighted average of the 6 metrics of the surface temperature curves for each AV model with a curve (see legend) for each KRC run. At the bottom are the scaled values of 6 parameters of the AV models; boxes, see lower legend.
+\label{gm623m} gm623m.png }
+\end{figure} 
+% how made: 
+
+\qsb{KRC runs}
+Before b1 used 10 cases, which did not account for difference in $\tau$ definition. Run c1 differs from b2 only in layers and convergence.
+
+\section{actions}
+.
+\\ 610: Define Ashwin Vasavada 2015
+\qi Assign dimensions and file labels
+\\ 611: Read Ashwin Vasavada 2015 REQ 610
+\qi Read each tabular file; move values into \nv{aaa} and \nv{ppp}
+\qi Save in TDL save-file
+\\ 612: Restore Ash16 save file 
+\\ 613: Some plots and statistics
+\\ 11: 1=AV 13=?,
+\\ 252, READ KRC 
+\\ 22 print cases
+\\ 615: match latitude to AV
+\qi and form match arrays
+\\ 617 compute tauk and test tauk (no stop)
+
+AV in bbb, KRC in ftt,fgg,fvv; begin comparisions
+\\ 621: Make Y,Z vectors and plot comparisons 
+\\ 622: Run metrics REQ 615 
+\\ 623: Look at metrics for all KRC models
+\\ 624: CLOT metrics for one run 
+\\ 626: CLOT each metric
+\\ 628: add AV parameter strip to CLOT
+
+\appendix %===============================================================
+
+
+\section{IDL keystrokes}
+\vspace{-3.mm} 
+\begin{verbatim}  
+.rnew gcmcomp
+14  21=7   or check
+   hilt: loop stops >4=inner >2=mid >0=outer  >6 call91 in 615
+  if want to make pmg for AV19=taurat, then hilt=7 at end of koop=1
+  after all 615 plots desired, could set hilt=0
+125
+123
+
+ Dec  9 go to 16 KRC models, COde and run @612 using AV 
+ 
+Err: mean,std=      0.00000      0.00000
+Err2: mean,std=      0.00000      0.00000
+
+.rnew
+610   611  117 to define fille
+
+613 required to create bbb and mlat test interpolation agreement
+
+\end{verbatim}
+
+\subsection{Looping}
+@117
+
+redo 610 and 613 each outer loop redunantly becasue need a 252 before 613
+\begin{verbatim}
+..====================== gcmcomp ===================..
+     1231. Start clock 1
+     862.. ......... missing .........
+/--> 610.. Define Ashwin Vasavada 2015
+|     252.. Read type 52 file
+|     22... Get KRC common & changes as kcom1.*
+|     613.. Restore Ash16, interpolate to KRC hours REQ 252
+|     1235. Start clock 2
+| /--> 1171. Get current file name part
+| |    252.. Read type 52 file
+| |    22... Get KRC common & changes as kcom1.*
+| |    614.. Get KRC values at Ash seasons Follows 252
+| |    615.. Make Y,Z vectors and plot comparisons 
+| |    616.. Run metrics REQ 615
+| |    -1... ......... missing .........
+| |    1173. Transfer metrics
+| \<-- 1256. +++   Inner-loop increment
+|     1236. Print elapsed time 2 
+|     860.. ......... missing .........
+|     617.. Look at metrics for all KRC models
+|     619.. add AV parameter strip to CLOT
+\<--- 1258. +++++ 2nd-loop increment
+     1232. Print elapsed time 1
+\end{verbatim}
+
+
+\section{IDL routines}
+
+see  Doc/idlRoutines.tex   
+
+see  Doc/krcIDL.tex  section:  Routines: Title lines and  Calls
+
+see /home/hkieffer/xtex/tes/krc/routines.tex
+
+There is a large tool-kit of routines to handle KRC binary files. I have gradually been separating them into two directories:
+\begin{itemize}      % ticked items   
+ \item  idl/krc/ are current and of general use 
+\item   idl/TES/KRC/ are older, treat thermal models from other people (Mike Mellon +), designed for TES or THEMIS production runs or for specific science objectives 
+\end{itemize}
+
+The distinction is not unique! 
+
+\section{AV model  \label{AVM} }
+Assessment of environments for Mars Science Laboratory entry, descent, and surface operations; A. R. Vasavada, A. Chen, ...   
+\qii I have as /work1/krc/cited/Vasavada12.pdf
+
+p9.4 We use the UKMGCM for our surface pressure predictions 
+
+p11.8 diurnal mean surface pressure at Gale Crater at Ls=150° is 730 Pa, 
+
+p 25.9 Ground temperatures insolation are taken from a 1-D model run at JPL,
+while air temperatures are taken from a 1-D version of the Ames MGCM run at
+NMSU.  There is very good general agreement between the models (see Section
+6.3).  The JPL model has more accurate ground temperatures because it runs
+continuously over the year and captures seasonal effects.
+
+p26.5 Atm as 20 layer to about 70 km. One solar and 3 IR bands.  \qi dust single
+scattering albedo $\omega$, phase function asymmetry parameter $g$, and
+extinction cross-section, $C_{ext}$ .
+\qi 5-11.6, 11.6-20, 20-100 \um two-stream delta-Eddington
+
+p26.9 Absorption and emission by CO2 near the 15 \um μm band are calculated
+using the numerical approximation of Hourdin (1992).  In the remaining two IR
+regions, a two-stream algorithm is used that includes multiple scattering for
+dust (Toon et al., 1989).  Dust IR properties correspond to a “palagonite-like”
+composition and a modified gamma size distribution with an effective
+(cross-section weighted) radius of 1.5 \um and a radius variance of 0.4 \um,
+computed at a temperature of 215 K (Wolff and Clancy, 2003).
+
+p27.3 Model atmospheric pressure varies seasonally according to VL-1
+measurements as fit by Hourdin et al. (1995).
+
+The surface pressure is scaled to the modeled location using MGS- MOLA
+topography and a scale height of 9.25 km.
+
+p27.7 Mars Ls is found using the expressions of Allison (2000).  We use a model
+time step of 1/96 of a Martian day.  Initial conditions are removed by running
+the model for four model years and re-initializing the subsurface to computed
+average surface temperatures after the second year.
+
+Frederic Hourdin, F.Forget,  O.Talagrand,  J. Geophys. Res. 100, 5501 (1995). 
+\qi  I have.
+
+\section{Questions for Ashwin}
+
+Does opacity track total pressure?
+
+Hourdin Table 1 VL2 harmonic 6 missing. Do you have it?
+
+
+ \end{document} %===============================================================
+% ===================== stuff beyond here ignored =============================
+\ref{}
+\begin{figure}[!ht] \igq{}
+\caption[]{
+\label{}  }
+\end{figure} 
+% how made: 
+
+\begin{table} \caption[]{} \label{}
+\begin{verbatim}
+---
+\end{verbatim}
+\vspace{-3.0mm}
+\hrulefill \end{table} 

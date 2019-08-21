@@ -1,0 +1,31 @@
+# source this file to reset idl path.>>>>
+        # One way to see result is  printenv | fgrep IDL_PATH
+        # Within IDL     print,!path
+        # A leading + expands to all directories one level lower
+#_Hist 2005jul15 Hugh Kieffer   For use on hulk in ~/rolodist/idl
+# 2011oct24 HK Version for KRC
+
+# Edit the next 3 lines for your machine
+
+setenv IDLL '+/usr/local/exelis/idl82/lib/'   # Location of RSI IDL library
+
+setenv IDLD '+/work1/build/idl' 		# location of KRC distribution idl
+
+#setenv IDLH '+/home/hkieffer/idl'	# Your own IDL source code area
+
+# Now, put in the order you want for a path search. E.g.,
+
+#setenv IDL_PATH ${IDLD}:${IDLH}:${IDLL} 
+
+setenv IDL_PATH ${IDLD}:${IDLL}  
+
+exit
+
+
+echo,"idlPath script : should never get here"
+ pwd
+
+
+/work1/build/idl/subs:/work1/build/idl/krc:/work1/build/idl:/usr/local/exelis/idl82/lib/bridges:/usr/local/exelis/idl82/lib/graphics:/usr/local/exelis/idl82/lib/dicomex:/usr/local/exelis/idl82/lib/imsl:/usr/local/exelis/idl82/lib/wavelet/data:/usr/local/exelis/idl82/lib/wavelet/source:/usr/local/exelis/idl82/lib/obsolete:/usr/local/exelis/idl82/lib/datatypes:/usr/local/exelis/idl82/lib/itools/components:/usr/local/exelis/idl82/lib/itools/framework:/usr/local/exelis/idl82/lib/itools/ui_widgets:/usr/local/exelis/idl82/lib/itools:/usr/local/exelis/idl82/lib/hook:/usr/local/exelis/idl82/lib/utilities:/usr/local/exelis/idl82/lib
+
+

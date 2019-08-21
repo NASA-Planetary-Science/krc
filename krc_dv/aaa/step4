@@ -1,0 +1,34 @@
+#!/bin/bash
+#################################################################
+# Script to write distribution tar file of KRC system
+#  step3  script[s] must be executed first
+#_Hist 2005jan25 Hugh Kieffer
+# 2009may12 HK minor cleanup
+# 2011oct17 HK Make generic
+# 2013oct2 HK Move BIG to step4b
+# 2017feb25 HK Convert from tsch to bash without the -f 
+# 2017mar01 HK Remove the unused "big" file stuff. It is all in step4b
+#################################################################
+
+RT1='/work2/'		# one level above distribution constuction area
+RT2='DistKRC'		# distribution construction area
+NAME='krc' 			# name for this distribution
+SKEL='dist.tar.gz'		# last part of tar file name	
+  
+# name construction
+IN=$RT1$RT2			# construction area
+OUT=$RT1$NAME$SKEL 		# output tar file
+
+echo "IN="$IN
+echo "OUT="$OUT
+
+cd $IN
+
+tar -chzf  $OUT aaa doc idl run src  	 # tar following all links
+
+pwd
+cd ~/krc/aaa   # return to parent directory
+pwd
+
+echo "Now:  mv "$OUT"  KRC/krc---.tar.gz"
+exit

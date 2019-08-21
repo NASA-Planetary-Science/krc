@@ -1,0 +1,111 @@
+\vspace{-3.mm} 
+\begin{verbatim}
+Type 52 is a "bin5" file; this has an ASCII header followed by a N-dimensional
+binary array whose dimensions and word-type are defined in the header; for
+type 52, the number of dimensions is 5 and the type is REAL*4 or REAL*8. The 4th
+dimension is increased to allow room for a "prefix" to be embedded in the binary
+array for each case.
+
+The array is written by the tdisk[8] routine, which stores values for each 
+season for each case in the large buffer FFF.   
+
+Type 52 = (N24 hours, 7 items, N4 latitudes, NDX+seasons, cases)
+The 7 items are:  
+1)=TSF      Final hourly surface temperature
+2)=TPF      Final hourly planetary temperature
+3)=TAF      Final hourly atmosphere temperature, not predicted
+4)=DOWNVIS  Hourly net downward solar flux [W/m^2]
+5)=DOWNIR   Hourly net downward thermal flux [W/m^2]
+6) packed with: 
+  NDJ4     Number of days to compute solution
+  DTM4     RMS temperature change on last day
+  TTA4     Predicted final atmosphere temperature   
+  TIN(2:n) Minimum hourly layer temperature, starting with first real layer
+        n is the smaller of: N1    (the number KRC computed  
+                             N24-2 (limit of what fits in this file)   
+7) packed with: 
+  FROST4   Predicted frost amount, [kg/m^2]
+  AFRO4    Frost albedo (at the last time step)
+  HEATMM   Mean upward heat flow into soil surface on last day, [W/m^2]
+             This would have contributed to sublime frost-cap if it were present
+  TAX(2:n) Maximum hourly layer temperature. Parallel to TIN
+
+Type 52 allows multiple cases, each with a "prefix" for each case stored in the
+NDX leading extra seasons. This region contains:
+  4 integers (converted to Real) that define sizes
+   (1)=FLOAT(NWKRC)   Number of 4-byte words in KRCCOM, currently 255
+   (2)=FLOAT(IDX)     1-based index of the dimension with extra values
+   (3)=FLOAT(NDX)     Number of those extra
+   (4)=FLOAT(NSOUT)   Number of output seasons  (Not used; could be redefined)
+ followed by KRCCOM, defined in krccom.inc or krccom8.f
+ followed by a sub-array (seasons,5)     (0-based index)
+    0]=DJU5   Current Julian date (offset from J2000.0)
+    1]=SUBS   Seasonal longitude of Sun, in degrees
+    2]=PZREF  Current surface pressure at 0 elevation, [Pascal] 
+    3]=TAUD   Mean visible opacity of dust, solar wavelengths
+       If a climate model is used, value if for the last latitude.
+    4]=SUMF   Global average columnar mass of frost [kg /m^2]  (If computed)
+
+ Thus the prefix requires NPREF = [255 or 426]+4 +5*nseas  words;
+ where nseas is the number of seasons output: NJ5-JDISK+1
+
+Each season contains N24*7*N4 words, the number of leading pseudo-seasons is 
+  NDX = Ceil ( NPREF / (N24*7*N4) )
+
+For Type 52, the size of a case is set by the first case.  The number of cases
+allowed is set by this size and printed as MASE at the end of the first case in
+the print output.
+
+KRC input items that would change any of the bin5 dimensions are not allowed to
+increase between cases; i.e., N24, N4 and nseas=N5-JDISK. An invalid change of
+these will be detected in tdisk.f; a note will go to the print file and the
+error file, the output file will be written with any cases completed up to this
+point and the file closed. All remaining cases will be computed but not saved.
+
+The number of cases that can be stored is dynamic and fairly liberal; recent
+versions of KRC reserve 10 M words for the bin5 array. So, for example, with
+N24=24, 19 latitudes and 50 stored seasons, up to 61 cases can be saved in one
+run.
+
+In the IDL readkrc52 routine, these are expanded into 5 arrays and 
+a structure. The dimensions here are typical; produced in krcvtest @188
+
+TTT             FLOAT     = Array[24, 5, 3, 120, 8]
+(hour,item,latitude,season,case)
+itemt =  Tsurf, Tplan, Tatm, DownVIS, DownIR
+
+DDD             FLOAT     = Array[21, 2, 3, 120, 8]
+(layer,item,latitude,season,case)
+itemd =  Tmin, Tmax
+
+GGG             FLOAT     = Array[6, 3, 120, 8]
+(item,latitude,season,case)
+itemg =  NDJ4, DTM4, TTA4, FROST4, AFRO4,, HEATMM
+
+UUU             FLOAT     = Array[3, 2, 8]
+(nlat,item,case)       Values often the same for each case
+itemu =  Lat., elev
+
+VVV             FLOAT     = Array[120, 5, 8]
+(season,item,case)   First 2 item values often the same for each case
+itemv =  DJU5, SUBS, PZREF, TAUD, SUMF
+
+KRCCOM is in kcom:  readkrc52 returns values for the first case
+** Structure <cdcab8>, 7 tags, length=1020, data length=1020, refs=1:
+   FD              FLOAT     Array[96]
+   ID              LONG      Array[40]
+   LD              LONG      Array[20]
+   TIT             BYTE      Array[80]
+   DAYTIM          BYTE      Array[20]
+   ALAT            FLOAT     Array[37]
+   ELEV            FLOAT     Array[37]
+
+For the REAL*8 version, the order is changed
+   FD              REAL*8    Array[96]
+   ALAT            REAL*8    Array[37]
+   ELEV            REAL*8    Array[37] 
+   ID              LONG      Array[40]
+   LD              LONG      Array[20]
+   TIT             BYTE      Array[80]
+   DAYTIM          BYTE      Array[20]
+\end{verbatim}

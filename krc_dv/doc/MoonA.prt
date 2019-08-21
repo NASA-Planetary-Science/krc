@@ -1,0 +1,759 @@
+ IDB1:6=           0           0           0           0           0           0
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   2   2   1536.             N2      N2    
+ Changed>>   8   5   0.000     ./out/Moon
+           1 =Run. New T52 file name= ./out/MoonA.t52
+ TCARD:16 Lat+name           3  00N
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 1   2018 Feb 22 13:57:43  PAGE=  1
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0000   1.46500    0.0000 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96         0       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ IDX= 4  JJJ=    5   96    7    5    4    0    0    5   25    0
+ MMM=          96         672        3360       10080           0           0
+ KOMMON,KASE=    10000000       13440
+ RASE,MASE,MTOT=   744.04761             744     9999360
+ TLATS wrote MoonAtout00Nc01.bin5                                                              iret=            0
+     0.099 seconds at end of season   20 of   20
+ Case  1  DTIME: total, user, system=    0.1000    0.0990    0.0010
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   2   7   20.00            IIB      IIB   
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 2   2018 Feb 22 13:57:43  PAGE=  2
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ TLATS wrote MoonAtout00Nc02.bin5                                                              iret=            0
+     0.094 seconds at end of season   20 of   20
+ Case  2  DTIME: total, user, system=    0.0950    0.0950    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 7-fluxes  0.51570E-01  0.50000E-02   20.000      0.11000E-01
+                  0.11000E-01   0.0000       12.000    
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 3   2018 Feb 22 13:57:43  PAGE=  3
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     0.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ TLATS wrote MoonAtout00Nc03.bin5                                                              iret=            0
+     0.126 seconds at end of season   20 of   20
+ Case  3  DTIME: total, user, system=    0.1270    0.1270    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 12-eclip   1.000       1.000       6371.      0.3844E+06   1737.       29.53    
+                   0.000       6000.       12.00       7.000       60.00       29.53    
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 4   2018 Feb 22 13:57:43  PAGE=  4
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     1.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ TLATS wrote MoonAtout00Nc04.bin5                                                              iret=            0
+     0.135 seconds at end of season   20 of   20
+ Case  4  DTIME: total, user, system=    0.1350    0.1350    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 12-eclip   1.000       1.000       6371.      0.3844E+06   1737.       29.53    
+                  0.5000       6000.       12.00       7.000       60.00       29.53    
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 5   2018 Feb 22 13:57:43  PAGE=  5
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     1.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ TLATS wrote MoonAtout00Nc05.bin5                                                              iret=            0
+     0.134 seconds at end of season   20 of   20
+ Case  5  DTIME: total, user, system=    0.1350    0.1350    0.0000
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 12-eclip   3.000       1.000       6371.      0.3844E+06   1737.       29.53    
+                  0.5000       6000.       12.00       7.000       60.00       29.53    
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 6   2018 Feb 22 13:57:43  PAGE=  6
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     3.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+TFINE layers: Num,lowest center[m]   64    0.6531
+ TFINE low lay of time doubli:  12 20 27 34 42 49 57 64
+   -778      6     20      6      4    762    774     64
+   -777      6     20      1      3    762    774    786     64   T
+End eclipse: J4,JJ,KG,delT,delE   1  787  22   -0.10280E-02    -83.392    
+   -777      6     20      2      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   2  784  22   -0.66403E-03    -53.867    
+   -777      6     20      3      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   3  784  22   -0.57897E-03    -46.966    
+ TLATS wrote MoonAtout00Nc06.bin5                                                              iret=            0
+   -777      6     20      4      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   4  784  22   -0.66198E-03    -53.701    
+   -777      6     20      5      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   5  784  22   -0.10004E-02    -81.155    
+TFINE: Case= 6  JJJ=    3   14  216    5    0    0    0    5  373    0
+ TFINE wrote MoonAtfine06.bin5                                                                 iret=            0
+     0.137 seconds at end of season   20 of   20
+ Case  6  DTIME: total, user, system=    0.1480    0.1450    0.0030
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   1   3   200.0        Inertia    INERTIA 
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 7   2018 Feb 22 13:57:43  PAGE=  7
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500  200.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     3.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.72070     0.45455E-01 0.15855    
+ 8.800E+05=Dens*Cp   5.165E-08=Diffu.      0.2048=Scale      200.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0178   -0.0435   -0.0089 0.4545E-01  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0205    0.0500    0.0102 0.4545E-01  1100.00  800.00    22.530   2.445
+    3    0.1150    0.0236    0.1575    0.0323 0.4545E-01  1100.00  800.00    48.439   3.233
+    4    0.1322    0.0271    0.2811    0.0576 0.4545E-01  1100.00  800.00    78.234   4.276
+    5    0.1521    0.0311    0.4233    0.0867 0.4545E-01  1100.00  800.00   112.499   5.655
+    6    0.1749    0.0358    0.5868    0.1202 0.4545E-01  1100.00  800.00   151.903   3.739
+    7    0.2011    0.0412    0.7748    0.1587 0.4545E-01  1100.00  800.00   197.218   4.945
+    8    0.2313    0.0474    0.9910    0.2030 0.4545E-01  1100.00  800.00   249.331   3.270
+    9    0.2660    0.0545    1.2397    0.2539 0.4545E-01  1100.00  800.00   309.260   4.324
+   10    0.3059    0.0627    1.5256    0.3125 0.4545E-01  1100.00  800.00   378.178   5.719
+   11    0.3518    0.0721    1.8545    0.3798 0.4545E-01  1100.00  800.00   457.435   3.782
+   12    0.4046    0.0829    2.2326    0.4573 0.4545E-01  1100.00  800.00   548.580   5.001
+   13    0.4652    0.0953    2.6675    0.5464 0.4545E-01  1100.00  800.00   653.396   3.307
+   14    0.5350    0.1096    3.1677    0.6488 0.4545E-01  1100.00  800.00   773.935   4.374
+   15    0.6153    0.1260    3.7428    0.7666 0.4545E-01  1100.00  800.00   912.555   5.784
+   16    0.7076    0.1449    4.4043    0.9021 0.4545E-01  1100.00  800.00  1071.968   3.825
+   17    0.8137    0.1667    5.1649    1.0578 0.4545E-01  1100.00  800.00  1255.293   5.058
+   18    0.9358    0.1917    6.0396    1.2370 0.4545E-01  1100.00  800.00  1466.116   3.345
+   19    1.0761    0.2204    7.0456    1.4430 0.4545E-01  1100.00  800.00  1708.564   4.423
+   20    1.2375    0.2535    8.2024    1.6800 0.4545E-01  1100.00  800.00  1987.378   5.850
+   21    1.4232    0.2915    9.5328    1.9525 0.4545E-01  1100.00  800.00  2308.014   3.868
+   22    1.6367    0.3352   11.0627    2.2658 0.4545E-01  1100.00  800.00  2676.746   5.116
+ Bottom                     11.8810    2.4334
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+TFINE layers: Num,lowest center[m]   64    2.3749
+ TFINE low lay of time doubli:  12 20 27 34 42 49 57 64
+   -778      7     20      6      4    762    774     64
+   -777      7     20      1      3    762    774    786     64   T
+End eclipse: J4,JJ,KG,delT,delE   1  787  22    0.11152E-02     328.98    
+   -777      7     20      2      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   2  784  22    0.14342E-02     423.07    
+   -777      7     20      3      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   3  784  22    0.15179E-02     447.77    
+ TLATS wrote MoonAtout00Nc07.bin5                                                              iret=            0
+   -777      7     20      4      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   4  784  22    0.14398E-02     424.72    
+   -777      7     20      5      4    763    773    783     64   T
+End eclipse: J4,JJ,KG,delT,delE   5  784  22    0.11320E-02     333.93    
+TFINE: Case= 7  JJJ=    3   14  216    5    0    0    0    5  373    0
+ TFINE wrote MoonAtfine07.bin5                                                                 iret=            0
+     0.138 seconds at end of season   20 of   20
+ Case  7  DTIME: total, user, system=    0.1480    0.1470    0.0010
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ Changed>>   1   3   55.00        Inertia    INERTIA 
+ TCARD: 12-eclip   3.000       1.000       6371.      0.3844E+06   1737.       29.53    
+                  0.5000       6000.       15.00       7.000       60.00       29.53    
+ TCARD: 7-fluxes  0.51570E-01  0.50000E-02   20.000      0.11000E-01
+                  0.11000E-01   0.0000       15.000    
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 8   2018 Feb 22 13:57:43  PAGE=  8
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1800.0000   29.5300  800.0000 1100.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20       999
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     3.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T   999     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.19819     0.34375E-02 0.57656    
+ 8.800E+05=Dens*Cp   3.906E-09=Diffu.      0.0563=Scale       55.00=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0049   -0.0435   -0.0024 0.3438E-02  1100.00  800.00     0.000   0.000
+    2    0.1000    0.0056    0.0500    0.0028 0.3438E-02  1100.00  800.00     6.196   2.445
+    3    0.1150    0.0065    0.1575    0.0089 0.3438E-02  1100.00  800.00    13.321   3.233
+    4    0.1322    0.0074    0.2811    0.0158 0.3438E-02  1100.00  800.00    21.514   4.276
+    5    0.1521    0.0086    0.4233    0.0238 0.3438E-02  1100.00  800.00    30.937   5.655
+    6    0.1749    0.0099    0.5868    0.0331 0.3438E-02  1100.00  800.00    41.773   3.739
+    7    0.2011    0.0113    0.7748    0.0436 0.3438E-02  1100.00  800.00    54.235   4.945
+    8    0.2313    0.0130    0.9910    0.0558 0.3438E-02  1100.00  800.00    68.566   3.270
+    9    0.2660    0.0150    1.2397    0.0698 0.3438E-02  1100.00  800.00    85.046   4.324
+   10    0.3059    0.0172    1.5256    0.0859 0.3438E-02  1100.00  800.00   103.999   5.719
+   11    0.3518    0.0198    1.8545    0.1045 0.3438E-02  1100.00  800.00   125.795   3.782
+   12    0.4046    0.0228    2.2326    0.1258 0.3438E-02  1100.00  800.00   150.859   5.001
+   13    0.4652    0.0262    2.6675    0.1502 0.3438E-02  1100.00  800.00   179.684   3.307
+   14    0.5350    0.0301    3.1677    0.1784 0.3438E-02  1100.00  800.00   212.832   4.374
+   15    0.6153    0.0347    3.7428    0.2108 0.3438E-02  1100.00  800.00   250.953   5.784
+   16    0.7076    0.0399    4.4043    0.2481 0.3438E-02  1100.00  800.00   294.791   3.825
+   17    0.8137    0.0458    5.1649    0.2909 0.3438E-02  1100.00  800.00   345.206   5.058
+   18    0.9358    0.0527    6.0396    0.3402 0.3438E-02  1100.00  800.00   403.182   3.345
+   19    1.0761    0.0606    7.0456    0.3968 0.3438E-02  1100.00  800.00   469.855   4.423
+   20    1.2375    0.0697    8.2024    0.4620 0.3438E-02  1100.00  800.00   546.529   5.850
+   21    1.4232    0.0802    9.5328    0.5369 0.3438E-02  1100.00  800.00   634.704   3.868
+   22    1.6367    0.0922   11.0627    0.6231 0.3438E-02  1100.00  800.00   736.105   5.116
+ Bottom                     11.8810    0.6692
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+TFINE layers: Num,lowest center[m]   64    0.6531
+ TFINE low lay of time doubli:  12 20 27 34 42 49 57 64
+   -778      8     20      6      4    954    966     64
+   -777      8     20      1      3    954    966    978     64   T
+End eclipse: J4,JJ,KG,delT,delE   1  979  22   -0.48979E-03    -39.732    
+   -777      8     20      2      4    955    965    975     64   T
+End eclipse: J4,JJ,KG,delT,delE   2  976  22   -0.49319E-03    -40.008    
+   -777      8     20      3      4    955    965    975     64   T
+End eclipse: J4,JJ,KG,delT,delE   3  976  22   -0.49388E-03    -40.064    
+ TLATS wrote MoonAtout00Nc08.bin5                                                              iret=            0
+   -777      8     20      4      4    955    965    975     64   T
+End eclipse: J4,JJ,KG,delT,delE   4  976  22   -0.49311E-03    -40.001    
+   -777      8     20      5      4    955    965    975     64   T
+End eclipse: J4,JJ,KG,delT,delE   5  976  22   -0.48983E-03    -39.735    
+TFINE: Case= 8  JJJ=    3   14  216    5    0    0    0    5  373    0
+ TFINE wrote MoonAtfine08.bin5                                                                 iret=            0
+     0.136 seconds at end of season   20 of   20
+ Case  8  DTIME: total, user, system=    0.1460    0.1450    0.0010
+
+
+ ============================= New case =============================
+ --------- TYPE LOC  VALUE ------- Parameter Changes
+ TCARD: 12-eclip   1.000       1.000       6371.      0.3844E+06   1737.       29.53    
+                  0.5000       6000.       12.00       7.000       60.00       29.53    
+ TCARD: 7-fluxes  0.51570E-01  0.50000E-02   20.000      0.11000E-01
+                  0.11000E-01   0.0000       12.000    
+ Changed>>   2   8   7.000            IC2      IC2   
+ Changed>>   1   8   1275.           Dens    DENSITY 
+ Changed>>   1   5   1625.           Dens    DENS2   
+ TCARD: IO error: at          439
+    RBUF=3 10 1 'LKofT / use T-dep properties                                            
+Earth and Moon lunar eclipse  5 lats                                                
+KRCv3.5.5    RUN-CASE  1- 9   2018 Feb 22 13:57:43  PAGE=  9
+ Input file: MoonA.inp                                                                       
+ Print file: MoonA.prt                                                                       
+ Save file: ./out/MoonA.t52                                                                 
+     ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD  SpecHeat   DENSITY
+     0.1200    0.9500   55.0000    0.0700 1625.0000   29.5300  800.0000 1275.0000
+       CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+     0.1100   43.5000   27.9546    0.0010    0.0550  200.0000  180.0000  800.0000
+       TAUD     DUSTA    TAURAT     TWILI  ARC2/PHT     [ARC3     SLOPE    SLOAZI
+     0.3000    0.9000    0.2500      0.00      0.50      0.80       0.0      45.0
+     TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+   146.0000  589944.0    0.6500    0.9500   0.54000    0.0009   50.0000 3182.4800
+       RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+     1.1500    0.1000    3.0000    0.0000    0.0000    0.0000    0.1000    0.1000
+       DJUL    DELJUL SOLAR DEC       DAU       L_S    SOLCON      GRAV    Atm_Cp
+   7305.000   35.5118    0.0162   0.99127   48.4509 1368.0000    3.7270  735.9000
+     ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+     0.0023    0.0013    0.0006    0.0001    0.0046    0.0025    0.0011    0.0002
+     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.7010  578.5080  208.6100   66.0619  790.7010  578.5080  208.6100   66.0619
+         N1        N2        N3        N4        N5       N24       IIB       IC2
+         22      1536        15         5        20        96        20         7
+      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+          3        24         1        18         0        45        65         1
+      K4OUT     JBARE     Notif    IDISK2
+         -3      9999         5         0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LKofT
+       F      T      F      F      F      F      F      F      F      F
+   LPORB   LKEY    LSC  LZONE  LOCAL   LD16 LPTAVE  Prt78  Prt79  L_ONE
+       T      F      F      F      T      F      F      T      F      F
+
+ Latitudes: 
+  -60.00 -30.00   0.00  30.00  60.00
+
+ Elevations:
+    0.00   0.00   0.00   0.00   0.00
+ Eclipse or PlanHeat on     1.000     0.052
+LZONE,LALCON,JJH, IK1:4=  F  T     7     1     0     0     0
+ Time-doubling fraction:  0.30059522    
+IIB:TGHF=     20 0.73584     0.70000E-01 0.10512    
+ 1.020E+06=Dens*Cp   2.908E-09=Diffu.      0.0486=Scale       55.00=Inertia
+ Beginning at layer   7  At      0.0328 m.
+ 1.300E+06=Dens*Cp   5.385E-08=Diffu.      0.2091=Scale      301.66=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0042   -0.0435   -0.0021 0.2966E-02  1275.00  800.00     0.000   0.000
+    2    0.1000    0.0049    0.0500    0.0024 0.2966E-02  1275.00  800.00     6.196   2.445
+    3    0.1150    0.0056    0.1575    0.0077 0.2966E-02  1275.00  800.00    13.321   3.233
+    4    0.1322    0.0064    0.2811    0.0137 0.2966E-02  1275.00  800.00    21.514   4.276
+    5    0.1521    0.0074    0.4233    0.0206 0.2966E-02  1275.00  800.00    30.937   5.655
+    6    0.1749    0.0085    0.5868    0.0285 0.2966E-02  1275.00  800.00    41.773   3.739
+    7    0.2011    0.0421    0.7748    0.0538 0.7000E-01  1625.00  800.00   110.123   4.945
+    8    0.2313    0.0484    0.9910    0.0990 0.7000E-01  1625.00  800.00   188.724   3.270
+    9    0.2660    0.0556    1.2397    0.1510 0.7000E-01  1625.00  800.00   279.116   4.324
+   10    0.3059    0.0640    1.5256    0.2108 0.7000E-01  1625.00  800.00   383.067   5.719
+   11    0.3518    0.0736    1.8545    0.2796 0.7000E-01  1625.00  800.00   502.610   3.782
+   12    0.4046    0.0846    2.2326    0.3587 0.7000E-01  1625.00  800.00   640.085   5.001
+   13    0.4652    0.0973    2.6675    0.4496 0.7000E-01  1625.00  800.00   798.180   3.307
+   14    0.5350    0.1119    3.1677    0.5542 0.7000E-01  1625.00  800.00   979.991   4.374
+   15    0.6153    0.1287    3.7428    0.6745 0.7000E-01  1625.00  800.00  1189.073   5.784
+   16    0.7076    0.1480    4.4043    0.8128 0.7000E-01  1625.00  800.00  1429.517   3.825
+   17    0.8137    0.1702    5.1649    0.9718 0.7000E-01  1625.00  800.00  1706.027   5.058
+   18    0.9358    0.1957    6.0396    1.1548 0.7000E-01  1625.00  800.00  2024.015   3.345
+   19    1.0761    0.2250    7.0456    1.3651 0.7000E-01  1625.00  800.00  2389.700   4.423
+   20    1.2375    0.2588    8.2024    1.6070 0.7000E-01  1625.00  800.00  2810.238   5.850
+   21    1.4232    0.2976    9.5328    1.8852 0.7000E-01  1625.00  800.00  3293.857   3.868
+   22    1.6367    0.3423   11.0627    2.2052 0.7000E-01  1625.00  800.00  3850.019   5.116
+ Bottom                     11.8810    2.3763
+ Lower layer of time doubling:   5  7 10 12 15 17 20 22
+ TLATS wrote MoonAtout00Nc09.bin5                                                              iret=            0
+     0.131 seconds at end of season   20 of   20
+ Case  9  DTIME: total, user, system=    0.1320    0.1300    0.0020
+
+
+     END OF DATA ON INPUT UNIT
+ IDX= 4  JJJ=    5   96    7    5    4    9    0    5   25    0
+ Wrote bin5 file type 52: iret=            0
+   File name=./out/MoonA.t52
+      END KRC   Total time [s]=      1.166

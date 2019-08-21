@@ -1,0 +1,74 @@
+
+
+Prior to version 3, KRC with a sloped surface assumes that the far ``ground''
+was at the same temperature as the slope, a model called in the
+literature``self-heating''. This assumption becomes increasingly non-realistic
+with increasing slope, and with slopes oriented East or West. Version 3.4 allows
+the far-field ground temperature to come from any prior model for which an
+appropriate direct-access file was saved, normally a zero-slope model of the
+same thermal properties; this is termed the ``far-field file'' or fff.
+
+To create a type -3 model, set K4OUT=-3 and include the input line:
+\vspace{-3.mm}
+\begin{verbatim}
+8 21 0 '<file>.tm3' / Direct-access output file for far-field
+\end{verbatim}
+This may be the first case of a run. This can be in addition to saving a type 52
+file. If there is no atmosphere (PTOTAL less than 1.), may use type -2 or -1,
+with the corresponding changes to K4OUT and the file extension.
+
+To invoke use of a ``far-flat'' model, include the input line:
+\vspace{-3.mm}
+\begin{verbatim}
+8 3 0  '<file>.tm3' / Direct-access file to read for far-field
+\end{verbatim}
+Because the type of file (-1,-2 or -3) is stored in the file (as K4OUT in
+KRCCOM), the current value of K4OUT is ignored. Thus, it is possible to save a
+different type of direct-access by setting K4OUT as desired for output.
+
+
+To revert to ``self-heating'', include an input line with full path name less than 4 characters; e.g. 'off'
+\vspace{-3.mm}
+\begin{verbatim}
+8 3 0  'off' / Revert to self-heating for sloped cases
+\end{verbatim}
+
+Note: For change type 8, the third argument, 0 in the above examples, is ignored.
+
+The latitudes in a fff must be within 0.1\qd of those of the slope run. The
+seasons of fff must include the range of the slope run. The number of hours,
+N24, need not match, TLATS will do cubic interpolation if needed.
+
+
+\subsubsection{How things work:  short file names as 'off'}
+Zone table: TCARD detects name length, sets LZONE true if length is 4 characters or more, else sets it false.
+
+ Far-field file: TCARD does not look at the name length. Any write should be closed after each case.
+\qi  KRC calls TFAR(1  inside the case loop if the name length is $>3$
+\qi  If Far-field invoked, N2 will be limited to the values of MAXFF (firm-code as 6144)
+
+Although TFAR can handle type -1 to -3 files, the far-field algorithm requires
+type -3 if there is an atmosphere; TSEAS will check for this, and an error will
+return code 41.
+
+To terminate writing a type 52 file or reading a fff, define a new name of less
+than 4 characters lengths, such as 'off'; to change to a new file, enter its
+name (4 characters or more).
+
+fff's are written as type -1,-2, or -3 by TDISK; they are read by
+TFAR. TDISK can read type -n files, but it is not used for that.
+
+KRC will close any direct-access file open for write at the end of a case
+and turn off further writes to such files until a new direct-access file name is
+read.
+
+A fff may be left open for read for multiple cases
+
+All type -n files contain KRCCOM with the values when the file being written was
+closed. Because such files are closed at the end of each case, the value of
+K4OUT must be the same as when the file was opened for write, and thus proper
+for the file.
+
+Development details are in \S \ref{fffd}.
+
+

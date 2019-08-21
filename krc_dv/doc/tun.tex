@@ -1,0 +1,52 @@
+
+\section{Special tabular output; routine tun8.f}    % 2017oct01
+Beginning with version 3.2.1, the user can request tabular output of items not
+in the type 52 files. This output is triggered by setting I15 to a value of
+100+N where N is an option coded in the subroutine TUN8 (T unique). For each
+output case, there is a header line of 8 integers:
+\qi 1: the number of dimensions to the data, Ndim, currently always 4
+\qi 2: total number of columns in the table, 3 larger than the data columns
+\qi 3: number of times per day output
+\qi 4: number of latitudes
+\qi 5: number of seasons output
+\qi 6: IDL-style type of data for conversion, currently always 4 (single-precision floating point)
+\qi 7: The run number in the KRC run
+\qi 8: the case number
+\\ Thus, the first Ndim+2 values can be used to construct a storage array
+
+This is followed by a line for every hour, latitude and season: the first 3
+columns are those values as integers. The rest of the columns are [normally]
+floating-point values for that instant on the final convergence day of each
+season.
+
+The three options coded as of 2017 Mar 2 are:
+\qi N=1: Temperatures for each layer at each hour, layer number increases to the right
+\qii the virtual layer is omitted
+\qi N=2: Down-going solar fluxes, atmosphere and apparent sky temperatures
+\qii floating-point columns are: 
+\qiii 1: collimated insolation
+\qiii 2: diffuse and 'Bounce' insolation 
+\qiii 3: Atmosphere kinetic temperature (redundant with Type 52)
+\qiii 4: Apparent zenith sky temperature: $^4 \sqrt{ \beta} \ T_a$, see [40] in the JGR KRC paper.
+\qiii 5: Effective hemispheric sky temperature:  $^4 \sqrt{1-e^{-\tau_r}} \ T_a$, see [42] 
+\qi N=3: Photmetric albedoes
+\qii floating-point columns are: 
+\qiii 1: time index 
+\qiii 2: collimated insolation onto slope surface
+\qiii 3: all downward insolation except collimated 
+\qiii 4: solar heating of atm. $H_v$ 
+\qiii 5: cos of incidence angle on horizontal 
+\qiii 6: current hemispheric albedo
+
+Output is always to a file 'fort.77' in the directory where KRC was invoked, so for preservation it must be renamed before the next KRC run. 
+
+Output will be for the same set of seasons as written by TDISK. Output can be
+for any subset of cases in a run (single TDISK output file) or multiple runs in
+one input file.  Output is turned on by a change line, e.g., 
+\qi 2 15 101 'I15' / values to fort77
+\\ and it is turned for by, e.g., 
+\qi 2 15 75 'I15' / RESET to no fort77
+\\  However, the current IDL routine to read a TUN8 output file does
+not accomodate cases with different sized tables.
+
+Additional options can be coded into tun8.f .

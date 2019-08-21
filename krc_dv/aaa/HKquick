@@ -1,0 +1,117 @@
+Keystroke guide to build of new version KRC on H3
+
+---------------  Make and test a PORB only Distro ------------------
+
+Check that PORB documentation is up to date: see top part of stepP34
+cd ~/krc/aaa
+do: stepP34
+
+cd /work1/buildp
+rm -Rf *
+tar -xzf /work2/porbdist.tar.gz
+
+cd src
+make porbmn
+
+cd ../run
+ln -s ../src/porbmn .
+
+porbmn  to start PORB
+
+
+
+
+---------------  Make a full KRC Distro ------------------
+
+Run latest krc:  in=VerTest.inp   prt=VerTest.prt
+Run latest krc:  in=Mone.inp      prt=VnnnMone.prt
+
+Check that all documentation is up to date
+  look at step2. Update any worked on recently
+   lt ~/krc/Doc/*.tex  ~/krc/Doc/*.pdf ~/krc/VER/*.tex  ~/krc/VER/*.pdf
+    If any tex newer than its pdf, do the proper actions in step2
+
+in ~/krc/aaa  
+do: step3
+do: step4 
+IF transferring BIG files:
+  Edit step3b to latest version
+  do: step3b
+  do: step4b 
+endif
+
+in /work2
+mv krcdist.tar.gz ./KRC/krcNNN.tar.gz    << edit the version number
+mv krcbig.tar  ./KRC/krcNNNbig.tar      Only if new BIG files
+
+in ~/cop                        steps to transfer distor to ASU
+ln -s /work2/KRC/krc342.tar.gz .     << edit the version number
+cd
+gp p cop/krcNNN.tar.gz asu 
+
+---------------  Install a Distro ------------------
+
+cd /work2/KRC
+mkdir NNN  <- version number. Need do only once for each version
+cd NNN
+      if Dir not empty: rm -Rf *
+tar -xzf /work2/KRC/krc230.tar.gz  << edit the version number
+
+NOPE: in /work2/KRC/NNN/ , do: source ~/krc/uniq/step6
+
+go to the “src/cfiles” directory.
+make all
+
+go to the “src” directory.
+make krc
+make porbmn
+
+go into the “idl/extern” directory
+make ftnwrap64.so
+
+cd into "run"  directory
+mkdir out
+ln -s ../src/krc . 
+ln -s ../src/porbmn .
+
+krc
+input] VerTest.inp     or 342Test    <- edit version.  ".inp" not used V342+
+print] VerTest.prt     or /
+
+krc
+input] Mone.inp
+print] V232Mone.prt
+
+Testing against prior version: 
+cd ../idl   ; go to the idl Directory
+source idlPath
+idl
+kirin
+.comp krcvtest
+krcvtest,newv='V232' 
+@11   just check is paths are correct
+
+
+----- FIXES YET NEEDED
+
+
+NOte. If files are not in current directory, surround in single quotes.
+
+
+^^^  FIXES YET NEEDED
+
+
+Replace build/src/Makefile with 
+FC=gfortran 
+FFLAGS= -fno-automatic -fno-second-underscore -fargument-alias -fd-lines-as-comments
+LD=gfortran
+
+                                      
+ Case  1  DTIME: total, user, system=    0.7739    0.7729    0.0010
+      END KRC   Total time [s]=   6.0410814    
+   
+ Case  1  DTIME: total, user, system=    0.7739    0.7739    0.0000
+      END KRC   Total time [s]=   5.9960880 
+
+
+Ken's area:  bastion, ssh halex, cd ../krios/krc/builds/latest

@@ -1,0 +1,101 @@
+###################################
+# Script and comments for adding IDL routines to the distribution
+# package of the KRC thermal model file system.
+# Run this after step 3 and before step 4
+#
+#_Hist 2009may09 Hugh Kieffer 2010jan23 2010jul19 2011oct17
+###################################
+
+set FAM='/home/hkieffer/krc'    # family to be distributed
+set RTOP='/work2/Dist'		# Top of the distribution tree
+echo "RTOP="$RTOP
+
+cd $RTOP/idl
+rm -f *  # empty the directory
+
+ln -s /home/hkieffer/idl/TES/KRC/definekrc.pro .  #  Define structures in IDL that correspond for Fortran commons. Calls BYTEPAD
+ln -s /home/hkieffer/idl/TES/KRC/delcase.pro .    # Show delta between arrays changing only last index. Calls HISTFAST
+ln -s /home/hkieffer/idl/TES/KRC/lookrc.pro .     # Read any type 5x KRC bin5 models; look at change between cases. Calls READKRC5*
+ln -s /home/hkieffer/idl/TES/KRC/krccomlab.pro .  # Print KRC common input items. Calls 0
+ln -s /home/hkieffer/idl/TES/KRC/krchange.pro .   # Find changes in KRC input values in common KRCCOM. Calls READKRCCOM MAKEKRCVAL
+ln -s /home/hkieffer/idl/TES/KRC/krclayer.pro .   # Compute center depth of KRC layers. Calls 0
+ln -s /home/hkieffer/idl/TES/KRC/makekrcval.pro . # Make string of selected KRC inputs: Key=val. Calls DELAST0
+ln -s /home/hkieffer/idl/TES/KRC/readkrc52.pro .  # Read RKC type 52 or 51 bin5 file; post 2004jul21. Calls bin5
+ln -s /home/hkieffer/idl/TES/KRC/readkrc54.pro .  # Read KRC type 54 or 55 bin5 file. Calls bin5
+ln -s /home/hkieffer/idl/TES/KRC/readkrc56.pro .  # Read KRC type 56 bin5 file. Calls bin5
+ln -s /home/hkieffer/idl/TES/KRC/readkrccom.pro . # Read a KRCCOM structure from a bin5 file. Calls DEFINEKRC
+ln -s /home/hkieffer/idl/TES/KRC/tstp2ta.pro .    # Convert T_surf and T_plan to T_atm. Calls 0
+ln -s /home/hkieffer/idl/TES/KRC/when2start.pro . # Calc starting date for KRC to reach Ls on specific season step. Calls 0 
+
+ln -s /home/hkieffer/idl/themis/debyefunc.pro . # Debye Function to be called for integration
+ln -s /home/hkieffer/idl/themis/koft.pro .    # Thermal conductivity of minerals
+ln -s /home/hkieffer/idl/themis/koftop.pro .  # Specific heat, thermal conductivity. minerals, particulate soils
+ln -s /home/hkieffer/idl/themis/molewt.pro .  # Molecular weights based upon common mix of isotope
+ln -s /home/hkieffer/idl/themis/partcond.pro .    # Particulate conductivity for cemented materials
+ln -s /home/hkieffer/idl/subs/pp_co2.pro .  # Vapor pressure and thermal properties of  CO2
+ln -s /home/hkieffer/idl/themis/sp09a.pro .   # Sylvain Piqueux unconsolidated particulate thermal conductivity
+ln -s /home/hkieffer/idl/themis/specheat.pro . # Specific heat capacity of minerals 
+
+#ln -s /home/hkieffer/idl/TES/KRC/krcsizes.pro .   # Compute array and common sizes for KRC Fortran. Calls 0
+#ln -s /home/hkieffer/idl/TES/KRC/plotkrc53.pro .  # Plot temperature curves for a series of models. Calls CURVEGUIDE LABEL_CURVE
+#ln -s /home/hkieffer/idl/TES/KRC/readkrc.pro .    # Read KRC annual models, except layer values. Calls 0
+#ln -s /home/hkieffer/idl/TES/KRC/skindepth.pro .  # Diurnal and annual thermal scales. Calls GETPINTS GRAPH LABEL_CURVE SUBTITLE TV2JPG
+
+echo "Done copy of IDL KRC routines"
+
+# following utilities are referenced directly or indirectly
+# try to keep alpabetic
+ln -s /home/hkieffer/idl/subs/bin5.pro .     # Write/Read numeric binary files with 'standard' header. Calls 0
+ln -s /home/hkieffer/idl/subs/bytepad.pro .  # Create a Byte version of a string, padded with trailing blanks. Calls 0
+ln -s /home/hkieffer/idl/subs/chart.pro .    # Strip-chart plot of several variables. Calls PSYMLINE
+ln -s /home/hkieffer/idl/subs/clot.pro .     # Color plot of related curves
+ln -s /home/hkieffer/idl/subs/color24bit.pro . # Generate 256 longwords to emulate nice 8-bit color table. Calls 0
+ln -s /home/hkieffer/idl/subs/cumsum.pro .   # Form cumulative sum of 1-D array, option for reverse
+ln -s /home/hkieffer/idl/subs/curveguide.pro . # Put guide to curves or symbols onto a plot
+ln -s /home/hkieffer/idl/subs/delast0.pro .  # Delete trailing 0's past the decimal point. Calls 0
+ln -s /home/hkieffer/idl/subs/evmono.pro .   # Evaluate monomial power series
+ln -s /home/hkieffer/idl/subs/getp.pro .     # Modify single numeric value; with prompt and limit tests. Calls 0
+ln -s /home/hkieffer/idl/subs/getpan.pro .   # Modify any elements of numeric array, with prompt and limit tests. Calls 0
+ln -s /home/hkieffer/idl/subs/getpsn.pro .   # Interactive input any elements of a string array, with prompt. Calls 0
+ln -s /home/hkieffer/idl/subs/graph.pro .    # Interface to graphics devices. Calls SETCOLOR
+ln -s /home/hkieffer/idl/subs/histfast.pro . # Robust, easy histogram plot, with statistics, opt row weights. Calls  MEAN_STD SUBTITLE
+ln -s /home/hkieffer/idl/subs/hstats.pro .   # Selectable statistics. Calls 0.
+ln -s /home/hkieffer/idl/subs/init.pro .    # Procedure to initialize IDL environment
+ln -s /home/hkieffer/idl/subs/kon91.pro .    # Common minimal functionality in the kon case statement. Calls GETPINTS GRAPH  MAKE99 SETCOLOR TV2JPG TV2LP
+ln -s /home/hkieffer/idl/subs/label_curve.pro . # Place an oriented label on a curve . Calls RNDEX RTERP1
+ln -s /home/hkieffer/idl/subs/locate.pro .   # Find lower index of interval in ordered vector containing x. Calls 0
+ln -s /home/hkieffer/idl/TES/subs/l_s.pro .  # Convert Martian season L_s <-> Julian day. Calls 0
+ln -s /home/hkieffer/idl/subs/make99.pro .   #  Make/print list of user options for a program. Calls 0
+ln -s /home/hkieffer/idl/subs/mean_std.pro . # Mean and standard deviation of a vector. Calls 0
+ln -s /home/hkieffer/idl/subs/mean_std2.pro . # Mean and standard deviation of a 2D array. Calls MEAN_STD
+ln -s /home/hkieffer/idl/subs/pm180.pro .     # Bring angles into +/- half-circle. Calls 0
+ln -s /home/hkieffer/idl/subs/psymline.pro .  # Hughs convention for transfering PSYM and LINESTYLE in one. Calls 0
+ln -s /home/hkieffer/idl/subs/readtxtcol.pro .  #  Reads a columnar file of ASCII [space,comma,tab]-delimited text
+ln -s /home/hkieffer/idl/subs/rndex.pro .     # Finds floating-point index of within a monotonic array. Calls LOCATE
+ln -s /home/hkieffer/idl/subs/rterp1.pro .    # real interpolation in a vector. Calls 0
+ln -s /home/hkieffer/idl/subs/setcolor.pro .  # Set or modify colors, lines, plot-symbols, #plots/page. Calls COLOR24BIT  GETP  GETPAN  TOOTHB  ST0 
+ln -s /home/hkieffer/idl/subs/st0.pro .       # Make minimal string for numbers, or string arrays. Calls DELAST0 
+ln -s /home/hkieffer/idl/subs/strword1.pro .  # Extract first word from a string or strarr. Calls 0
+ln -s /home/hkieffer/idl/subs/toothb.pro .    # Add a toothed color scale-bar to a window or TVPLEX panel. Calls GETPAN
+ln -s /home/hkieffer/idl/subs/xyy5.pro .      # Interface to concatonated [spectral] arrays of different length
+
+echo "Done copy of IDL utilities"
+exit
+
+# routines related to new L sub S  But, requires JPL ephemeris
+ln -s /home/hkieffer/idl/test/qlsubs.pro .         # Test LSUBSGEN, dpephem, READSTANDISH 
+ln -s /home/hkieffer/idl/TES/subs/lsubsgen.pro .   # Generic conversion between date and L_sub_s
+ln -s /home/hkieffer/idl/TES/subs/readstandish.pro . # Read Standish orbital elements table, precess to date
+ln -s /home/hkieffer/idl/math/cocomc.pro  .     # Coordinate conversion: mapping to cartesian
+ln -s /home/hkieffer/idl/math/cocosc.pro  .     # Coordinate conversion: spherical to cartesian.
+ln -s /home/hkieffer/idl/math/eccanom.pro  .    # Eccentric and true anomoly using Keplers eqs. iteration
+ln -s /home/hkieffer/idl/lunar/rotmata2e.pro  . # Rotation matrix from J2000 to ecliptic, or reverse
+ln -s /home/hkieffer/idl/math/rotorb.pro  .     # construct rotation matrix from classic orbital elements
+ln -s /home/hkieffer/idl/math/rotvec.pro  .     # Rotate a vector ! U = B * V
+ln -s /home/hkieffer/idl/math/showvec.pro  .    # print latitude and logitude, radius of a vector	  
+ln -s /home/hkieffer/idl/math/stereograph.pro . # hemisphere plot of multiple vectors
+ln -s /home/hkieffer/idl/math/trans3.pro  .     # Transpose a 3x3 matrix stored as 9-element vector
+ln -s /home/hkieffer/idl/math/vcross.pro  .     # cross-product of 2 vectors
+ln -s /home/hkieffer/idl/math/vdot.pro  .       # Dot product of two vectors of same length
+ln -s /home/hkieffer/idl/math/vnorm.pro  .      # Normalize a vector to magnitude 1.
+ln -s /home/hkieffer/idl/subs/zero360.pro  .    # Brings angles into 0:360 degree range

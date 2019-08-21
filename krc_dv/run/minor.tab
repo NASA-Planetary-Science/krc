@@ -1,0 +1,130 @@
+Orbit elements and spin axis for minor bodies.
+Each object must have 1 non-blank ID line followed by 12 lines to be read
+   This line should contain the set-number in this file
+First of 12 line is object name, optionally within single quotes
+Next 11 lines must start with numeric values followed by a space, then anything
+All angles are in degrees.   
+Default inertial reference system is:
+  J2000 ecliptic for orbital elements.  J2000 equatorial for spin axis (pole)
+  PDS uses 1950 Ecliptic for pole.    Flag to indicate this is PM==1.0
+Last valid object is   5   [update].    Beyond that should not be read
+C_END    << Required to indicate end of comments
+-------  1    First 4 from  Minor Planet Center  
+Ceres / http://scully.cfa.harvard.edu/cgi-bin/returnprepeph.cgi?d=b2011&o=00001
+2455400.5 / epoch in full Julian date     2000.0= 2451545.D0 
+2.7653485 / Semi-Major axis in A.U.: a
+0.0791382  / Eccentricity: e
+10.58682  / Inclination of mean orbit to ecliptic : i [deg]
+80.39321 / Longitude of the ascending node: Omega [deg]
+72.58976  / Argument of perihelion: w [deg]
+113.41048 / Mean anomaly at epoch: M [deg]
+315. / RA  from PDS
+74. / Dec from PDS
+1.0  / Prime meridian at epoch [deg]
+0.379167 / Sideral rotation period, [days]  FROM ?? 9.1 Hours
+------- 2 http://scully.cfa.harvard.edu/cgi-bin/returnprepeph.cgi?d=b2011&o=00002
+Pallas / from Minor Planet Center
+2455400.5 / epoch in full Julian date 
+2.7721533  / Semi-Major axis in A.U.: a
+0.2309995 / Eccentricity: e
+34.84091  / Inclination [deg]
+173.12949  / Longitude of the ascending node: Omega [deg]
+310.15090  / Argument of perihelion: w [deg]
+ 96.14829  / Mean anomaly at epoch: M [deg]
+44. /  RA  from PDS
+-9.  /  Dec from PDS
+1.0/  no data Prime meridian at epoch [deg]
+0.32551 / Sideral rotation period, [days] from PDS
+-------   3
+Juno /  from Minor Planet Center
+2455400.5  / epoch in full Julian date
+2.6700913 / Semi-Major axis in A.U.: a
+0.2549812 / Eccentricity: e
+12.98211  / Inclination of mean orbit to ecliptic : i [deg]
+169.91138  / Longitude of the ascending node: Omega [deg]
+248.10804  / Argument of perihelion: w [deg]
+32.09611  / Mean anomaly at epoch: M [deg]
+106. / Right Ascension of Pole,from PDS
+34.  / Declination of Pole,from PDS
+1.0 / no data Prime meridian at epoch [deg]
+0.3003970 / Sideral rotation period, [days] from PDS
+-------   4 
+Vesta / from Minor Planet Center
+2455400.5/ epoch in full Julian date
+2.3619124  / Semi-Major axis in A.U.: a
+0.0886225  / Eccentricity: e
+7.13407  / Inclination of mean orbit to ecliptic : i [deg]
+103.90970  / Longitude of the ascending node: Omega [deg]
+149.83731  / Argument of perihelion: w [deg]
+307.80111  / Mean anomaly at epoch: M [deg]
+325. / Right Ascension of Pole    PDS=355 Kyrs07=326
+55. / Declination of Pole      PDS=41   Kyrs07=53
+1.0 / Prime meridian at epoch [deg]
+0.2225886 / Sideral rotation period, [days]
+ -------  5   101955 Bennu 
+'1999RQ36' / http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=101955  2012feb29
+2456000.5 / epoch in full Julian date
+1.126038025838632 / Semi-Major axis in A.U.: a  period=436.443481 day
+.2036994928473318 / Eccentricity: e
+6.035405340360255 / Inclination of mean orbit to ecliptic : i [deg]
+2.051615098784052 / Longitude of the ascending node: Omega [deg]
+66.2666863129749  / Argument of perihelion: w [deg]
+102.8657778912915 / Mean anomaly at epoch: M [deg]
+-68.6423 / Right Ascension of Pole, J2000 [deg]
+-78.0386 / Declination of Pole, J2000 [deg]
+0. / Prime meridian at epoch [deg]
+4.288 /Sideral rotation period, [days]
+-------   99 / REPLICATE  DO NOT REMOVE this and next 12 lines
+ / object name. may be within single quotes
+ / epoch in full Julian date     2000.0= 2451545.D0 
+ / Semi-Major axis in A.U.: a
+ / Eccentricity: e
+ / Inclination of mean orbit to ecliptic : i [deg]
+ / Longitude of the ascending node: Omega [deg]
+ / Argument of perihelion: w [deg]
+ / Mean anomaly at epoch: M [deg]
+ / Right Ascension of Pole, J2000 [deg]
+ / Declination of Pole, J2000 [deg]
+ / Prime meridian at epoch [deg]
+ / Sideral rotation period, [days]
+------- BELOW NOT FORMATTED
+
+'Ceres' / From Tim Titus 2012aug08
+2456400.5 / epoch in full Julian date     2000.0= 2451545.D0 
+2.768 / Semi-Major axis in A.U.: a
+0.076  / Eccentricity: e
+10.594  / Inclination of mean orbit to ecliptic : i [deg]
+80.330 / Longitude of the ascending node: Omega [deg]
+72.167  / Argument of perihelion: w [deg]
+327.8540426 / Mean anomaly at epoch: M [deg]
+291. /   315. RA  
+59. /  74.Dec
+0.  / Prime meridian at epoch [deg]
+0.379167 /Sideral rotation period, [days] 9.1 Hours
+  2 /
+Vesta-h / orbit from http://www.cfa.harvard.edu/iau/Ephemerides/Bright/2006/00004.html
+2453800.5 / 2006 Mar. 6.0 epoch in full Julian date
+2.3613051  / Semi-Major axis in A.U.: a
+0.0890882  / Eccentricity: e
+7.13351 / Inclination of mean orbit to ecliptic : i [deg]
+103.92607 / Longitude of the ascending node: Omega [deg]
+150.30933 / Argument of perihelion: w [deg]
+232.80490 / Mean anomaly at epoch: M [deg]
+308. / Right Ascension of Pole, J2000 [deg]
+48. / Declination of Pole, J2000 [deg]
+0. / Prime meridian at epoch [deg]
+0.222583 /Sideral rotation period, [days]
+
+
+Vesta /    Values from Tim Titus email 2009nov30
+2455201. /  epoch in full Julian date  2010Jan4
+2.3619  / Semi-Major axis in A.U.: a
+0.0887  / Eccentricity: e
+7.134 / Inclination of mean orbit to ecliptic : i [deg]
+103.915 / Longitude of the ascending node: Omega [deg]
+149.837 / Argument of perihelion: w [deg]
+253.504 / Mean anomaly at epoch: M [deg]
+308. / Right Ascension of Pole, J2000 [deg]
+48. / Declination of Pole, J2000 [deg]
+0. / Prime meridian at epoch [deg]
+0.222583 / Sideral rotation period, [days]

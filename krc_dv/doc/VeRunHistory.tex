@@ -1,0 +1,410 @@
+\documentclass{article} 
+\usepackage{underscore} % accepts  _ in text mode
+\usepackage{ifpdf} % detects if processing is by pdflatex
+\usepackage{/home/hkieffer/gong/tex/newcom}  % Hughs conventions
+% \newcommand{\qj}{\\ \hspace*{-2.em}}      % outdent 1
+\title{History and location of KRC versions and runs}
+\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/VeRunHist.tex 2016aug27 ... 2017dec07}
+\begin{document} %==========================================================
+\maketitle
+\tableofcontents
+%\listoffigures
+%\listoftables
+\hrulefill .\hrulefill
+% \pagebreak 
+
+\section{Introduction}
+
+This document is the place to accumulate notes on specific versions, input files
+and related runs that test/compare different versions of KRC.
+
+The formal documentation of the evolution of KRC is in \nf{evolve.tex} .
+
+Version 33x has been abandoned; the alpha release should be ignored.
+
+Symbols: 
+\qi -/ is the equivalent of $\sim /$, as the tilde is a special symbol in LaTeX
+\qi ]] is the command prompt, as the dollar sign is a special symbol in LaTeX
+
+\section{Files on Hughs computer: H3}
+active: -/krc
+build distribution
+-/cop is used for transfers with bastion
+
+/work2/KRC/ has the distribution tar files
+
+2016 Jun 30 18:52:16
+\\ 102/src:  all .f are Dec  6  2012 \ \  KRC Hist: 2010jan11 HK Change to use of IMPLICIT NONE
+\qi tday Hist:  2012apr24  HK  Tiny cleanup  May10: add FLOST calculation
+\\ 103/src: lt shows only 2 .f files newer than Nov 22  2012
+\qii dates look identical to 101/src. use lt and diff to confirm .f and .inc identical
+\qii lt of src/*.inc identical for 101, 102 and 103
+\qi 5846 Jan 16  2013 krc.f \ \  KRC Hist: 2013jan16 HK Eliminate the multiple use of IR 
+\qi tday Hist:  2012apr24  HK  Tiny cleanup  May10: add FLOST calculation
+\qi thus /mars/u/krios/krc/krcdist.tar and /mars/u/krios/krc/krc2/krcdist.tar are the same
+\qi and I remove all 101 files
+
+\subsection{Documentation on H3}
+\cinput{AAindex}
+
+\section{Files at  ASU}
+% then can: grep -in krc myTree
+
+2016 Mar 21 07:02:37 did on bastion: 
+\vspace{-3.mm} 
+\begin{verbatim}
+cd /mars/u/krios/krc
+ls -d -1 --color=never */ */*/ > ~/kenKrcTree 
+\end{verbatim}
+results below, annotated with version number or date
+
+ \subsection{top 2 directories}
+2016 March 22: Where shown, at /mars/u/krios/krc/builds, I did  
+\qi ]] lt ../src/krc*, then 
+\qi ]] more ../src/krc.f
+\qi extract the lastest History date, and the VERSIN if there. 
+\vspace{-3.mm} 
+\begin{verbatim}
+
+[hkieffer@bastion src]$ pwd
+/mars/u/krios/krc/builds/11_2012/src
+tar -cvf /mars/u/hkieffer/krc2012nov_src.tar  *.inc *.f
+tar: caldat.f: Cannot open: Permission denied
+
+102313/
+admin/
+builds/           File date
+builds/11_2012/ Nov 13  2012 builds/11_2012/src/krc.f 2010jan11 
+                              krcccom has 2012may10  Several .f are 2012nov22
+builds/2.3.0/  Jan 27  2014 builds/2.3.0/src/krc.f    2014jan27  KRCv2.3.0
+builds/2.3.2/  Feb 26  2014 builds/2.3.2/src/krc.f    2014jan27  KRCv2.3.2
+builds/2.4.1/  Apr 28  2014 builds/2.4.1/src/krc.f    2014feb26  KRCv2.4.1
+builds/3.2.1/  Jun  7  2014 builds/3.2.1/src/krc8.f   2013mar10  KRCv3.2.1
+builds/latest/ Feb 26  2014 builds/latest/src/krc.f   2014jan27  KRCv2.3.2
+builds/new/    Sep  6  2013 builds/new/work/src/krc.f 2013jul24  KRCv2.2.4
+builds/old/    Sep  6  2013 builds/old/src/krc.f      2013jul24  KRCv2.2.4
+builds/old2/   Sep  6  2013 builds/old2/work/src/krc.f 2013jul24 KRCv2.2.4
+builds/testing/  no src
+builds/tmp/    Feb 26  2014 builds/tmp/src/krc.f      2014jan27  KRCv2.3.2
+builds/unique/   no src
+candi/
+candi/asutest/
+hosted/
+hosted/hosted/
+hosted_new/
+hosted_new/cluster_test/
+hosted_new/css/
+hosted_new/images/
+hosted_new/krc_run_stuff/  has a /2.3.2/ directory
+hosted_new/php/
+hosted_new/samples/
+hosted_new/scripts/
+krc/          Dec  6  2012 krc/src/krc.f       2010jan11 
+krc11/        Jan 25  2013 krc11/krc/src/krc.f 2010jan11
+krc11/krc/  
+krc2/         Jan 16  2013 krc2/src/krc.f      2013jan16
+krc2/aaa/
+krc2/doc/
+krc2/idl1/
+krc2/idl2/
+krc2/run/
+krc2/src/
+krc/aaa/
+krc/doc/
+krc/idl/
+krc/run/
+krc/src/
+Ls/
+newdocs/
+new_krc_dist/    Jan 16  2013 new_krc_dist/src/krc.f  2013jan16
+new_krc_dist/aaa/
+new_krc_dist/doc/
+new_krc_dist/idl1/
+new_krc_dist/idl2/
+new_krc_dist/run/
+new_krc_dist/src/  
+old/             no src
+rss/             no src
+tmp/
+tmp/2.3.2/        Feb 26  2014 tmp/2.3.2/src/krc.f  2014jan27 KRCv2.3.2
+uploads/
+\end{verbatim}
+Checked equivalence of the krc.f source file when history dates and the version
+were the same by using diff ; any difference is indicated.
+\vspace{-3.mm} 
+\begin{verbatim}
+builds/11_2012/src/krc.f  krc/src/krc.f     
+builds/11_2012/src/krc.f  krc11/krc/src/krc.f       Trivial, right looks newer
+builds/latest/src/krc.f   builds/tmp/src/krc.f
+builds/latest/src/krc.f   tmp/2.3.2/src/krc.f
+builds/new/work/src/krc.f builds/old/src/krc.f
+builds/new/work/src/krc.f builds/old2/work/src/krc.f
+\end{verbatim} 
+
+\subsection{Kens area}
+/mars/u/krios/krc/builds/new/work/idl/subs
+
+Version 241: references in Makefiles
+\vspace{-3.mm} 
+\begin{verbatim}
+in --/src/cfiles/Makefile 
+LIBNAME=./libhk_cisis.a
+make all: output=  --/krc/builds/2.4.1/src/cfiles/libhk_cisis.a 
+
+in --/src/Makefile
+HHKLIB=/mars/u/krios/krc/builds/2.4.1/  # top of libraries to use
+LIBDIRS=-L$(HHKLIB)  
+CLIB=./cfiles/libhk_cisis.a
+make porbmn: output=  --/krc/builds/2.4.1/src/porbmn
+make krc:    output=  --/krc/builds/2.4.1/src/krc
+
+
+2016jun30, found:
+12144640 Jan 15  2013 krc.tar.gz       files dated up to 2012dec06 ~v100
+ 7833600 Jan 28  2013 krcdist.tar      files dated up to 2012nov22 ~v100
+ 4707328 Feb 21  2014 krcDist230.tar.g files dated up to 2014jan27  v230
+
+[hkieffer@bastion krc]$ lk */*.tar* */*/*.tar*  */*/*/*.tar*
+  1085440 May  2  2014 candi/candi.tar
+  4702656 Oct 23  2013 builds/old2/krc222e.tar.gz
+  4713563 Apr 28  2014 builds/krc241.tar.gz
+  4736042 Feb 28  2014 tmp/krc232.tar.gz
+  5703680 Apr 24  2014 builds/krcdist2012nov22.tar
+
+  6578568 Mar 22 13:16 331/krc331.tar.gz
+  6578568 Mar 22 12:15 0316/krc331.tar.gz
+
+  6590132 Mar 23 10:13 latest/krc332.tar.gz
+
+  6593454 May 25 16:28 tmp/KRC_Ken_Kieffer_MakeFile/krc332b.tar.gz
+  6593454 May 23 15:22 tmp/332b/krc332b.tar.gz
+
+  7260160 Nov 13  2013 builds/new/krc222f.tar
+
+  7321600 Oct 21  2013 builds/old/krc222d.tar
+  7321600 Oct 23  2013 builds/old2/krc222e.tar
+  7321600 Feb 21  2014 builds/2.3.0/krcDist230.tar
+
+  7352320 Aug 20  2014 builds/3.2.1/krc321.tar
+
+  7362560 Feb 27  2014 builds/tmp/krc232.tar
+  7362560 Feb 27  2014 builds/latest/krc232.tar
+  7362560 Feb 27  2014 builds/krc232.tar
+  7362560 Feb 27  2014 builds/2.3.2/krc232.tar
+
+  7833600 Jan 29  2013 new_krc_dist/krcdist.tar
+  7833600 Jan 25  2013 krc2/krcdist.tar     latest file is 2013-01-25
+
+ 27303035 Oct 22  2013 builds/old2/krcbig-222d.tar.gz
+
+ 32665600 Mar  3  2014 builds/latest/krc232big.tar
+ 32665600 Mar  3  2014 builds/krc232big.tar
+
+ 60221440 Oct 21  2013 builds/old/krcbig.tar
+ 60221440 Oct 22  2013 builds/old/tempbig/krcbig-222d.tar
+ 60221440 Oct 23  2013 builds/old2/krcbig-222d.tar
+ 60221440 Nov 13  2013 builds/new/krcbig-222d.tar
+ 60221440 Nov 13  2013 builds/krcbig-222d.tar
+ 60221440 Feb 21  2014 builds/2.3.0/krcbig-222d.tar
+------------ summary --------
+ 5703680 Apr 24  2014 2012nov22 
+12144640 Jan 15  2013 2012dec06
+ 7833600 Jan 25  2013 2013jan25 version 100
+60221440 Oct 21  2013 222d + 222e 222f
+ 7321600 Feb 21  2014 230
+ 7362560 Feb 27  2014 232
+32665600 Mar  3  2014 232 big
+ 4713563 Apr 28  2014 241
+ 7352320 Aug 20  2014 321
+ 6578568 Mar 22  2016 331
+ 6590132 Mar 23  2016 332
+ 6593454 May 23  2016 332b
+
+mv to ~/cop and do 
+ ln -s /mars/u/krios/krc/krcdist.tar krc2012nov22.tar  -> krc101.tar Then remove on H3
+ ln -s /mars/u/krios/krc/krc.tar.gz krc2012dec06.tar  ->  krc102.tar
+ ln -s /mars/u/krios/krc/krc2/krcdist.tar krc103.tar
+
+then transfer these to H3 /work2/KRC
+
+\end{verbatim}
+
+Version 331: on H3 build dir; references in Makefiles
+\vspace{-3.mm} 
+\begin{verbatim}
+in --/src/cfiles/Makefile 
+LIBNAME=./libhk_cisis.a
+make all: output=  --/src/cfiles/libhk_cisis.a
+
+in --/src/Makefile
+KRCLIB=.
+LIBDIRS=-L$(KRCLIB)
+CLIB=./cfiles/lhk_cisis.a   << error
+\end{verbatim}
+
+\subsection{Hughs area on bastion}
+-/cop is used for transfers with H3, either way
+-/krc/ASU/ to build a distribution
+
+\subsection{Public area}
+
+% \pagebreak
+\section{Testing on H3}
+
+\vspace{-3.mm} 
+\begin{verbatim}
+Listed oldest run time first
+      .inp   N1   N2 N4 seas cases    vary                 .t52
+-----------  --  --- --  --- --    -------------------  ---------------------- 
+232c/VerTest 15  384  5  670 6       kofT,frost,NoAtm      V232test1
+           " 20  384 19   40 1        LVFA,LVFT            V232test2 .t0 .tm1
+232c/VerTestb 15 384  5  670 6 CONVF=5  else=VerTest       V232test1b
+           " 20  384 19   40 1   "     LVFA,LVFT           V232test2b.t0 .tm1
+
+321/master   20  384 19   40 2     LkofT                   master222
+     Bennu   21  384 19   41 3     LkofT                   Bennu
+     candi   22  384 19   40 1                             candi 
+     NoAtm   20  384  5   40 7     pressure                321NoAtmb
+321/VerTest  15  384  5  670 5     kofT,FA,FT,P=.5         VerTest
+       ``    20  384 19   40 1                             VerTest2  .t0 .tm1
+V331test     15 384   5  670 6 CONVF=3  kofT,frost,NoAtm   V331test1
+       "     20  384 19   40 1   "     LVFA,LVFT           V331test2 .t0 .tm1
+master34     38 1536 19   40 2    IC2                      master33
+test341a     15  384  5  670 6    kofT,FA,FT,P=.5       v341aTest   v341aFlat.tm3
+     ``      20  384 19   40 1                          v341aTest2 v341aFlat2.tm3
+test341      44 1536  3   40 8   zones,kofT,ARC2,IIB    test341      v341Flat.tm3
+  [edit]     20  384  5   40     zones,kofT,ARC2/PHT    test341b    v341Flatb.tm3
+test342      20  384  5   40 9   ARC/PHO                test342      v342Flat.tm3
+test342k
+test342p first good run of 342, but allowed nega
+342NoAtmc was before add Keihm and recode of TLATS
+342NoAtmd was after, same input parameters and cases
+   Differences in Tsur ==0 for Atm cases, 1.e-12 for P=0 case
+342b compare case 9=Keihm  with others, them prune it and compare with 341b
+  after prune, differences are under a mK. 
+--All 34x prior to 2016aug23 is suspect as memory overlays were not cleared up---
+2016 Aug 4 08:53:09 remove all Version 34x output earlier than Aug 1.
+
+      .inp   N1   N2 N4 seas cases    vary                 .t52
+-----------  --  --- --  --- --    -------------------  ----------------------
+krc          20  384  5   40 7   pressure               342NoAtm,b,c,d 
+342v3t       20  384  5   40 6 CONVF=3  kofT,FA,FT,P=.5   342v3tb
+krc          20  384  5   40 8 CONVF=3  kofT,FA,FT,P=.5   342v3t
+342Test      15  384  5  670 6 CONVF=3  kofT,FA,FT,P=.5   V342Test  V342Test2
+krc9         38 1536  5    5 1   default                  none
+krcB         38 1538 19    5 1 CONVF=3                    none
+thin9        38 1538  5   40 9 CONVF=3 N2 FLAY N1 IC2     thin9
+V34a         28 1536  5 2y41 12 HF slope Photo            V34a.t52
+V34b         28 1536  5 2y41 12 HF slope Photo            V34a.t52
+V34i         28 1536  5 2y41 14 inertia                   V34i.t52 
+V34j         28 1536  5 2y41 12 inertia Trojan ASteriod   V34j.t52  
+
+\end{verbatim} 
+
+All testing of 34x prior to 2016aug23 is suspect, as memory overlays were not
+cleared up until then.
+\section{Testing of eclipse: version 3.5.x}
+Largely in /home/hkieffer/krc/Eur
+
+\vspace{-3.mm} 
+\begin{verbatim}
+      .inp   N1   N2 N4 seas cases    vary                 .t52
+-----------  --  --- --  --- --    -------------------  ----------------------
+ thin9.inp   
+ V35a.inp    28 1536  1   20  4   Europa Daily,rare,heat           V35b.t52
+ eur6.inp    28 1536  1   10  3   Europa Daily,rare               -Eur6.t52  
+ phob.inp    28 1536  1   10  3   Phobos Daily,rare               -phob.t52 
+ 351v3t.inp  20  384  5  120  6   T-dep, frost,pressure  351v3tb.t52 351v3tb.tm2
+ phoz.inp    28 1536  1   10  4   P total                         -phoz.t52
+ phoc.inp    28 1536  1   10  3   Phobos Daily,rare,finsol==1     -phoc.t52
+ eurA.inp    28 1536  1   20  6   Europa Daily,rare,heat          -EurA.t52
+ eurB.inp    22 1536  3   20  9   Europa Daily,rare,heat,slope    -EurC.t52
+ eurC.inp    22 1536  3   20  9   Europa Daily,rare,heat,slope    -EurC.t52
+ eurE.inp    22 1536  3   20  9   Europa Daily,rare,heat,slope     EurE.t52
+ eurD.inp    22 1536  3   20  9   Europa Daily,rare,heat,slope     EurD.t52
+\end{verbatim} 
+
+\appendix %=========================================================
+\section{List of inputs and runs}
+\vspace{-3.mm} 
+\begin{verbatim}
+
+2017 Oct 4 07:11:22    cd to /work/work2/KRC   ll */run/out/*.t52  Yields
+
+ 27135872 Mar 21  2016 241/run/out/V241test1.t52*
+   524000 Mar 21  2016 241/run/out/V241test2.t52*
+ 54271232 Mar 22  2016 331/run/out/V331test1.t52*
+  1047488 Mar 22  2016 331/run/out/V331test2.t52*
+ 27135872 Mar 23  2016 232/run/out/V232test1b.t52*
+   524000 Mar 23  2016 232/run/out/V232test2b.t52*
+ 54271232 May 23  2016 321/run/out/VerTest.t52*
+  1047488 May 23  2016 321/run/out/VerTest2.t52*
+  1047488 May 25  2016 321/run/out/candi.t52*
+ 27135872 Jun 26  2016 232/run/out/V232test1.t52*
+   524000 Jun 26  2016 232/run/out/V232test2.t52*
+ 15969792 Jun 30  2016 331/run/out/331NoAtm.t52
+  3857792 Jul  1  2016 321/run/out/321NoAtmb.t52*
+  2204672 Sep  1  2016 232/run/out/232v3t.t52*
+  4408832 Sep  4  2016 321/run/out/321v3t.t52*
+ 54271232 Sep  6  2016 342/run/out/V342Test.t52*
+  1047488 Sep  6  2016 342/run/out/V342Test2.t52*
+  1047488 Dec  6  2016 342/run/out/VerTest34rlf.t52*
+  1047488 Dec  6  2016 321/run/out/VerTest321rlf.t52*
+  3306752 Mar 30  2017 344/run/out/344v3tb.t52*
+   237056 Mar 31  2017 344/run/out/phoz.t52*
+   581120 Apr  7 16:35 352/run/out/EurD.t52*
+ 54271232 Oct  4 05:46 354/run/out/V342Test.t52*
+  1047488 Oct  4 05:46 354/run/out/V342Test2.t52*
+
+suggest that files with size=1047488 are the most common standard
+  ll */run/*t.inp  Yields
+ 3913 Sep  1  2016 232/run/232v3t.inp
+ 3129 Oct  3  2016 232/run/oneTilt.inp
+ 7326 Mar  2  2014 232/run/VerTest.inp
+ 7326 Mar 21  2016 241/run/VerTest.inp
+ 3887 Sep  4  2016 321/run/321v3t.inp
+ 7321 Jun 19  2014 321/run/VerTest.inp
+ 7324 Mar 20  2016 330/run/V330test.inp
+ 7388 Mar 22  2016 331/run/V331test.inp
+ 7877 Mar 24  2016 333/run/V331test.inp
+ 7514 Sep  5  2016 342/run/342Test.inp
+ 3942 Aug 30  2016 342/run/342v3t.inp
+ 7514 Sep  5  2016 344/run/342Test.inp
+ 3942 Aug 30  2016 344/run/342v3t.inp
+ 3942 Mar 30  2017 344/run/344v3t.inp
+ 7514 Sep  5  2016 352/run/342Test.inp
+ 3942 Mar 30  2017 352/run/351v3t.inp
+ 7514 Sep  5  2016 354/run/342Test.inp
+ 3942 Mar 30  2017 354/run/351v3t.inp
+
+in krc/tes/  lt *est*inp    yields
+ 4191 Sep  2  2013 testVn.inp
+ 4234 Sep  2  2013 testV212.inp
+ 7306 Mar  2  2014 V222test.inp
+ 7321 Jun 19  2014 V24test.inp
+ 4589 Feb 25  2016 test33.inp
+ 5542 Feb 26  2016 test33E.inp
+ 7324 Mar 20  2016 V330test.inp
+ 8285 Mar 24  2016 zoneTest.inp
+ 7408 May 23  2016 test341a.inp
+ 4702 Jul  5  2016 test341.inp
+ 3884 Jul  6  2016 test342k.inp
+ 3884 Aug  1  2016 test343k.inp
+ 3905 Aug  1  2016 test342p.inp
+ 3905 Aug  2  2016 test342.inp
+ 7514 Sep  5  2016 342Test.inp
+
+in krc/tes/  lt t.inp    yields
+ 1611 Nov  6  2012 oneList.inp
+ 7306 Mar  2  2014 V222test.inp
+ 4383 May 30  2014 InSight.inp
+ 7321 Jun 19  2014 V24test.inp
+ 7324 Mar 20  2016 V330test.inp
+ 8285 Mar 24  2016 zoneTest.inp
+ 4039 Aug 23  2016 flat.inp
+ 3942 Aug 30  2016 342v3t.inp
+ 7514 Sep  5  2016 342Test.inp
+ 3241 Oct  3  2016 oneTilt.inp
+\end{verbatim}  
+
+\end{document} %===============================================================

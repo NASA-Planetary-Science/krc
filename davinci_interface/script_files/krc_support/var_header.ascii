@@ -1,0 +1,5 @@
+this is a test file for seasonally variable albedo into KRC
+Up to 9 freeform comment lines allowed, followed by line beginning C_END
+then pairs of L-sub-S and Albedo
+Program will handle wrap-around, so best to NOT use seasons of 0. or 360. 
+C_END       this line required

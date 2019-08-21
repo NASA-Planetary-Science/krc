@@ -1,0 +1,89 @@
+# Makefile for PORB distribution  2014jun10
+# Uses may have to edit lines with  # EDIT
+# Set up some shell-level specific variables
+SHELL=/bin/csh
+
+FC=gfortran  
+# -fd-lines-as-comment is listed as gfortran option: http://gcc.gnu.org/onlinedocs/gfortran/Option-Summary.html#Option-Summary  
+
+FFLAGS= -O  -fno-automatic -fno-second-underscore -fargument-alias -fd-lines-as-comments
+# -fbounds-check
+# -Wall
+LD=gfortran
+
+SYSLIBS =  -lg2c -lc -lm
+
+#  library groups
+HHKLIB=/work1/build/  # EDIT top of libraries to use
+LIBDIRS=-L$(HHKLIB)
+
+OBJP = porbmn4.o porbio4.o ephemr4.o ymd2j2.o porbig4.o porbit4.o porbel4.o orbit.o spcrev.o caldate4.o caldat.o julday.o b2b.o upcase.o eccanom.o datime.o prtpcom4.o rotmsp.o cocosp.o vaddsp.o
+
+# PORB double precision
+OBJP3 = porbmn.o porbio.o ephemr.o ymd2j2.o porbig.o porbit.o porbel.o orbit8.o spcrev.o caldate.o caldat.o julday.o b2b.o upcase.o eccanom8.o catime.o prtpcom.o rotmdp8.o cocodp8.o vadddp8.o
+
+
+porbmn4: $(OBJP)
+	$(FC) $(LDFLAGS) $(LIBDIRS) -o $@ $(OBJ6) \
+	$(SYSLIBS)
+
+porbmn: $(OBJP3)
+	$(FC) $(LDFLAGS) $(LIBDIRS) -o $@ $(OBJP3) \
+	$(SYSLIBS)
+
+
+# routines with dependencies
+b2b.o: b2b.f
+caldat.o: caldat.f
+caldate.o: caldate.f
+caldate.o: caldate.f
+catime.o: catime.f
+cocosp.o: cocosp.f # coordinate conversion package
+cocodp8.o: cocodp8.f # coordinate conversion package	 double Prec
+datime.o: datime.f
+eccanom.o: eccanom.f 
+eccanom8.o: eccanom8.f 
+ephemr4.o: ephemr4.f  porbcm.inc
+ephemr.o: ephemr.f  porbcm.inc
+jdate.o:  jdate.f  
+julday.o:  julday.f  
+#oblip.o:  oblip.f  
+#obliq.o:  obliq.f   
+#obliv.o:  obliv.f  
+orbit.o:  orbit.f   
+orbit8.o:  orbit8.f  
+#porb.o:   porb.f   porbcm.inc
+#porb1.o:  porb1.f    porbcm.inc
+porbel.o: porbel.f 
+porbel.o: porbel.f 
+porbig4.o: porbig4.f   porbcm.inc
+porbig.o: porbig.f   porbc8m.f
+porbio4.o: porbio4.f   porbcm.inc
+porbio.o: porbio.f   porbc8m.f
+porbit4.o: porbit4.f   porbcm.inc
+porbit.o: porbit.f   porbc8m.f
+porbls.o: porbls.f   porbcm.inc
+porbmn4.o: porbmn4.f   porbcm.inc
+porbmn.o: porbmn.f   porbc8m.f
+porbqq.o: porbqq.f   porbcm.inc
+porbsa.o: porbsa.f
+prtpcom4.o: prtpcom4.f  porbcm.inc
+prtpcom.o: prtpcom.f  porbc8m.f
+rotmsp.o: rotmsp.f  # rotation matrix package
+rotmdp8.o: rotmdp8.f  # rotation matrix package	 double Prec
+rotdia.o: rotdia.f 
+rotax.o: rotax.f 
+rotvec.o: rotvec.f 
+spcrev.o: spcrev.f 
+upcase.o: upcase.f
+vector.o: vector.f 
+vaddsp.o: vaddsp.f # vector package
+vadddp8.o: vadddp8.f # vector package	 double Prec
+ymd2jd.o: ymd2jd.f
+ymd2j2.o: ymd2j2.f
+
+#
+# Make clean
+#
+clean:  
+	rm -f krc *.o

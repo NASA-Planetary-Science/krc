@@ -1,0 +1,47 @@
+        A Guide to running the  KRC Plantary ORBit system: PORB
+                Hugh H. Kieffer   2013 Aug. 04
+
+cd into the Run directory
+
+> porbmn    To start the main program
+
+Will be asked where to send output; normally enter:  T <CR>
+
+Will be asked which of 5 options:
+ Enter: 1
+
+Will be asked which source data.
+ Normally enter : 1 (planets) or 3 for asteroids
+
+Will be asked which item in the file. Should have looked at the chosen elements
+file to know this
+ Enter the proper number.   E.g., 4 is Mars
+
+Only if doing planets, will be asked for the epoch in centuries after 2000. 
+E.g., for 2012,  enter 0.12
+ 
+At this point, the calculations are done and a brief report will be appear
+If and only if doing Planets, will be asked for which pole position
+   a  /  will use the planet pole, else, enter a satellite name
+      If it is not in the spinaxis table, will use the planets pole.
+
+Will be asked which of 5 options:
+  4  will print the values in vector format and come back to this same prompt
+  2  Will begin the required output process: Then
+   Will be asked to read or save.   Enter: 2
+   Will be asked output format.   Enter: 2
+   Will be asked for an output file name: 
+     A single "/" with no leading spaces will use the default "PORBCM.mat" and
+       append the latest set to whatever is already in that file.
+     Else enter a new file name and <CR>
+
+Will be asked which of same 5 options:
+ Enter: 0 to quit
+
+You then copy the 7 lines in the output file into a KRC input file.
+
+---------
+
+NOTE 1: 
+You may add items to your copy of any of these except the Planets file, 
+following the rigid format in each.

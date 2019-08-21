@@ -1,0 +1,763 @@
+\documentclass{article}  % See Skeleton.tex for examples of many things
+
+% epstopdf fig.eps       TO convert .eps fig to pdf NOPE
+% latex  file[.tex]      TO generate .dvi
+% pdflatex  file[.tex]   TO generate .pdf   NOPE losses  figs 
+% then  dvipdf Vtest.dvi To generate .pdf
+
+% see definc.sty for other page format settings
+%\usepackage{epsfig}
+\usepackage[dvips]{graphicx}  % unComment this line for eps and latex
+%\usepackage[dvipdf]{graphicx}  % unComment this line for non-eps pdflatex 
+
+\usepackage{definc}  % Hughs conventions
+\textheight=10.00in  \topmargin=-0.5in    %  hobo normal=final
+%\textwidth=7.5in  \oddsidemargin=-0.3in \evensidemargin=-0.3in  % hobo final
+%\parindent=0.em \parskip=1.ex % paragraph spacing
+
+\title{Testing new KRC versions and installations}
+\author{Hugh H. Kieffer  \ \ File=-/krc/VER/Vtest.tex 2014feb28 apr14}
+% local definitions
+%\newcommand{\short}{full}    % begin & end un-numbered equations
+\newcommand{\krc}{$\mathcal{KRC}$~}    % fancy krc
+\newcommand{\qdp}{$. \! ^\circ \! $} % degree over decimal point NOT in math mode 
+
+\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+\newcommand{\cf}{$\Leftarrow$} % comes from 
+%\newcommand{\igc}[1]{\includegraphics[trim=2.5mm 4.3mm 0.5mm 0.mm,c
+%                                         bottom right  top  left
+\newcommand{\igc}[1]{\includegraphics[trim=2.5mm -20.mm 6.5mm 4.mm,clip,angle=90,width=175.mm]{#1.eps}}
+
+\newcommand{\igh}[1]{\includegraphics[trim=2.5mm -20.mm 6.5mm 4.mm,clip,angle=90,width=110.mm]{#1.eps}}  % fit two on page
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+\listoffigures
+%\listoftables
+; \hrulefill .\hrulefill
+
+\section{Preamble / Mechanics}
+This document is a guide to testing different versions and installations of \krc using the \np{krcvtest.pro} IDL routine; it
+should not be needed by the general user.
+
+ \np{krcvtest.pro} is coded as a large case statement. The symbol '@' here
+ refers to actions within the case statement; eg., @20 means enter 20 $<$CR$>$ after
+ the prompt `` krcvtest Enter selection: 99=help 0=stop 123=auto$>$'' and the
+ program will execute what is in that section of code.
+
+The ``else'' in this case statement calls the procedure \np{kon91} which contains a large number of generally useful actions. 
+
+@99 will list all actions in the main program, 
+\qi then a dense reminder of the actions in \np{kon91}, 
+\qi then the current action sequence, 123:
+\qi then the actions that allow modification of parameters and their current values
+\qii 11, 12, 15, 16 
+
+@18 yields a quick guide to the current arrays, and @181 a detailed guide to the current \krc Type 52 extracted arrays.
+
+The IDL program can and should produce figures on a black background; White-on-Black figures will be Black-on-White in this document; they were made by:
+\qi @8 Open a B\&W  plot file
+\qii  Action to generate figure
+\qi [@88  Add subtitle with date to the plot]
+\qi @9 Close the plot file
+ 
+Color-on-black figures will show colors better on a monitor than the color-on-white figures in this document, which were produced by:
+\qi @80  enter 1.  Need do this only once.  Then, for each figure:
+\qi @81 [initiate output file]
+\qi  action to generate figure
+\qi [@88  to add subtitle]
+\qi @82  to close output file. Should rename cidl.eps.
+
+\krc output files should be: chmod 644
+
+\subsection{Notation use here}
+
+File names are shown as \nf{file}. 
+Program and routine names are shown as \np{PROGRM [,N]} , where \np{N}
+indicates a major control index. 
+Code variable names are shown as \nv{variab} and within equations as $\nvf{varia
+b}$.  
+Input parameters are shown as \nj{INPUT} and within equations as $\njf{INPUT}$.
+
+
+\hrulefill  From initial .tex \ \ OBSOLETE ? \hrulefill
+
+@123 runs initial kons = [151,21,22,23] read two files specified by @11
+\nv{parf} and does statistics on the difference for each of the major arrays and
+the number of convergence days. Values should be small, ideally all zero.
+
+
+@112,123 runs kons=[221,222,223,225,227,226,4] reads KRCCOM and print changes on
+cases relative to the base. @4 print the firm-coded case IDs, which should be
+short-form equivalence to @226
+
+@15 setting \nv{pari}[1:2] to 0 and 3 differences the base case against no prediction. Then @42 creates the differences and does statistics.   Values should be small although the extremes may be large due to polar cap formation 
+
+
+/work1/krc/test/av211.t52  noP-Default
+           Mean       StdDev      Minimum      Maximum
+ttt    0.0966156      2.23823     -1.10490      96.2280
+ddd    0.0595693      1.79502     -1.04358      90.5065
+ggg     0.439765      1.66330     -15.6621      30.1145
+
+\hrulefill .\hrulefill
+
+\section{Introduction} 
+This document describes \krc Version 2.2.2 and later; it applies to \krc Version
+2.1.1 and later.
+
+Version 2.1.2 and later uses dates relative to J2000.0 = 2000Jan01 noon UTC. To
+change from older version dates, subtract 11545.0
+
+The initial values of file names in \nv{parf}, accessed @11, should default to
+files in the distro for two versions of \krc, with Version A being the lastest
+version and Version B being a prior version.  Comparisons between different file
+types (0,-1,52) are coded for Version A only.
+
+Be careful to never overwrite files in the \krc distribution area. The sequence
+in \nf{AAinstall} does send \krc output to the ./run/ directory, but with new
+names.
+
+The only files output by \np{krcvtest} are:
+\\ 1. A log of results written to parf[12]+parf[13]. Opened @77 and closed @78
+\\ 2. A large OnePoint input file generated @74 and written to parf[0]+parf[11]
+
+This program handles :
+\qi Two versions of KRC Type 52 output: 
+\qi Three file types, 52,-1 and 0, for Version A
+\qi OnePoint output files for two versions.
+
+\subsection{Double precision interlude}
+Over 2104 March and the first half of April, double precision and Crank-Nicholson versions were developed. Testing was done with HP3.pro; inappropriate but in active use at the time. On Apr 14,  \np{krcvtest.pro}  was renamed  \np{kv3.pro} and  KRC-related section of code in\np{hp3.pro} was incorporated. Also, Group 3 and 4 case-sets were defined.
+
+\subsection{Families of Tests}
+
+\Large
+In general, do not override the prior version of \krc at your site before running this version comparison.
+\normalsize
+
+1) Test new installation against output files supplied for the same \krc version. See \S \ref{a111} and  \ref{a112}.
+\qi All statistical results should be zero or at roundoff level.
+
+2) Tests between different file types for the same model. See \S \ref{a113} and  \ref{a114}.
+
+3) Test installation against the prior version. See \S \ref{a115} and  \ref{a116}.
+\qi If pritor version output files not available, run \nf{VerTest.inp} and \nf{Mone.inp} with the prior version of \krc installed at your site to generate the needed output files.
+
+\subsection{Outline of the test procedure}
+
+Save the  \nf{VerTest.inp} file with a name that indicates the prior version.
+
+Edit a new version of \nf{VerTest.inp}.  Unless the input formats/content have changed, should need to change only the output file names.
+
+Note: when using more than one file type in a run, the new file name should follow the K4OUT change.
+
+Note: if re-running a test, must first delete any existing files with the same name as the  named output files. Look at \nf{ VerTest.inp} to check name and directory of output files. If these files eist, delete them. The ones included in the distribution should start with ``Orig''. 
+
+Then run \krc with the test input file
+
+Then get into IDL and do: \ \  .rnew krcvtest
+
+
+\section{Outline of Prerequisite Steps} %--------  
+Build a \krc distribution, including the shared object library
+\\ Edit \nf{VerTest.inp} if necessary
+\\ Run \krc on VerTest.inp and Mone.inp
+\\ Edit kirin.pro for the current site
+\\ Start IDL
+\\ kirin  (should compile and execute the kirin routine)
+\\ .comp krcvtest
+
+\subsection{\krc runs}
+Edit the output file names in  \nf{VerTest.inp}  appropriately. Run the latest version of \krc on this input file.
+\qi Output files from runs on earlier \krc versions should be available in the distribution.  If not, then run an older version of \krc  on VerTest.inp after changing only the output file names.
+
+These should create files of the following sizes with similar names:
+\vspace{-3.mm} 
+\begin{verbatim}
+ 27135872 Vntest1.t52
+  1195200 Vntest2.t0
+ 27135872 V222test1.t52
+   524000 V222test2.t52
+  1195200 V222test2.t0
+   582528 V222test2.tm1
+\end{verbatim}
+
+\subsubsection{One Point mode} %............
+
+Run both versions of \krc on Mone.inp, with different print file names
+
+\subsection{IDL} 
+Set the IDL path
+\\ edit \np{kinin.pro} for the current environment
+\qi  Should need to do the above 2 steps only once at your installation.
+\\ start IDL
+\\ do:  kirin
+
+kirin should open a plot window and print something like:
+\vspace{-3.mm} 
+\begin{verbatim}
+env:  MYHOME= /home/hkieffer/   !outid = Kieffer
+IDLTOP=!idltop= /home/hkieffer/idl/
+PROJSRC=/home/hkieffer/krc/tes/
+PROJDAT=/work/work1/krc/test/
+Printer names: MYBW=HP_Laserjet_3330  MYCLR=q
+Monitor size=    1280    1000
+\end{verbatim}
+
+Do: krcvtest / / / with 4 optional arguments. Defaults listed in the top of the code
+\qii oldd= string Directory for the older version. E.g., '/work1/build/run/out/' 
+\qii oldv= string  File stem for the older version. E.g., 'V222'
+\qii newd= string  Directory for the newer version. E.g., '/work1/krc/test/'
+\qii newv= string  File stem for the newer version. E.g., 'V232'
+\\ E.g., /  krcvtest, oldd='/work1/krc/test/',oldv='V222',newd='/work1/build/run/out/',newv='V232'
+
+
+\subsection{OnePoint mode} %------------------------------------------------
+Run \krc (latest version) with the input file \nf{Mone.inp}, which refers to \nf{oneA.one}; you can add lines to  \nf{oneA.one} if you wish as long as the same input file is used for all \krc versions being compared
+
+Run prior version of \krc, e.g.,  krc12nov30 with its matching OnePoint file, i.e. \nf{V1Mone.inp} , which should refer to \nf{oneA.one} 
+
+\subsection{Notes} %------------------------------------------------
+
+\krc will not open a new direct-access file if it already exists, so if redoing a run, must first remove older files with the desired names.
+
+The V2.2.4 distribution also contains test files for Version 2.1.1
+\section{Binary files output by \krc and input to the test program \label{finput}} %----------
+
+The input file \nf{-/run/VerTest.inp} contains effectively four 'runs' of \krc; all are based on the master input file parameter values. The first 'run' has 6 cases output into a single type 52 file. Then next three 'runs' are a single global case repeated three times and output to 3 different types of file.
+
+Group refers to the set of cases in a \krc run. 
+
+Group 1: A single type 52 file:  Every sol for 670 seasons; 5 latitudes. No spinup.  There are 15 layers, the lower material starts at layer 7.Cases are: (1-based index)
+\qi 1 \ With atmosphere, soil properties constant with T, frost properties constant
+\qi 2 \ With atmosphere, soil properties T-dependent, frost properties constant
+\qi 3 \ With atmosphere, soil properties constant with T, frost properties variable
+\qiii This only affects +/- 60 \qd.
+\qi 4 \ No atmosphere, soil properties constant with T
+\qi 5 \ No atmosphere, soil properties T-dependent
+\qi 6 \ No atmosphere, soil properties T-dependent, but uniform over temperature
+
+Group 2:  Has 19 latitudes for 40 seasons/year, with a 2-year spinup; 
+ 1 case only, default values (20 layers). 
+\qi Three output file types.
+\qii Type 52.  File extension .t52
+\qii Type 0. File extension .t0
+\qii Type -1. File extension .tm1
+
+Group 3: sol exactly 1/672 of a Mars year, uses a two year spin-up. LAtitues -60, -30 and 0. Every sol is a season. File names V-. 5 cases:
+\qi Case=  1 had: ALBEDO=0.25 INERTIA=200. TauDust=0.3 SLOPE=0.  IC=99 
+\qi Case=       2 changed: PTOTAL=0.5 
+\qi Case=       3 changed: N1=22 
+\qi Case=       4 changed: LkofT=T 
+\qi Case=       5 LkofT=T and degree 1+ set to 0
+
+Group 4: Same as Group 3 except 42 seasons of 16 sols per year. File names K-
+
+
+Lat -60 has major differences between skip and sol urns due to polar cap. 
+If look only at lat=0, Tsur  
+
+ 
+\section{Test program} %------------------------------------------------
+
+The test program is an IDL procedure structured with a large case
+statement. Selectable actions are indicated by the ``@'' sign. The 11x actions
+each define a sequence of other actions \nv{kons}, which are each started by
+@123. Several of these are described in the following subsections, along with examples of the expected output.
+
+Ver or Version refers to the Version of \krc, at time of this document 2.3.2 .
+ VerA is defined by items 0:4 in the set of strings set @11; VerB is set by items 5:9.
+
+
+There are four optional input keywords, all strings:
+\qi oldd:    Directory for the older version.  Default '/work1/krc/test/'
+\qi oldv: File stem for the older version. Default 'V222'
+\qi newd: Directory for the newer version. Default is global PROJDAT
+\qi vnew: File stem for the newer version. Default 'V232'
+
+\subsection{Un-documented actions}
+This procedure is also used for stress-tests and contains a number of actions tailored to specific \krc stress-test runs. Referencing these actions is likely to cause the procedure to gag.
+  
+\subsection{ Useful general actions}
+
+@99 Prints a list of all actions
+
+@11 Allows modification of input file path-names.
+
+@18 Prints ``help''  for the critical arrays. The first five are for the type 52 file; they all must exist for anything to work.  TSZ and TSM are the surface temperature arrays for the type 0 and -1 files respectively; they are required for actions starting with 5 or 6.
+
+@188 Prints a guide to Type 52 extracted arrays.
+
+@14  Allows modification of some control items
+
+@123 Executes the current sequence of actions \nv{kons}
+
+The action -1 causes the program to wait for the user to hit any key and is commonly usedin sequences after a plot.
+
+\subsection{Files  @11} %...............................................
+\vspace{-3.mm} 
+\begin{verbatim}
+File names  
+0 VerA=new DIR        = /work/work1/krc/test/
+  1  " case file        = V224str2
+  2  " multi-type stem  = V222test2
+  3  " OnePoint [.prt]  = Mone
+  4 DIR for prt         = /home/hkieffer/krc/tes/
+  5 VerB=prior DIR      = /work/work1/krc/test/
+  6  " case file        = Vntest1
+  7  " multi-type stem  = V211test2
+  8  " OnePoint [.prt]  = Moneq
+  9 DIR for prt         = /home/hkieffer/krc/tes/
+ 10 DIR for IDL output  = /home/hkieffer/idl/
+ 11 Output onePoint set = grid.one
+
+\end{verbatim}
+
+\subsubsection{Print to terminal } %...........
+
+\vspace{-3.mm} 
+\begin{verbatim}
+> 123
+Doing -------------->     860
+Doing -------------->      20
+Doing -------------->     200
+Doing -------------->     203
+Doing -------------->     207
+Doing -------------->      21
+khold=         100      130872           1         255
+Doing -------------->      22
+Case=  1 had: ALBEDO=0.25 INERTIA=200. CABR=0.11 T_DEEP=180. TauDust=0.3 TauRati=0.5 IB=0 
+Doing -------------->      29
+Doing -------------->     252
+Will Read  file: /work/work1/krc/test/V222test2.t52 Size=  5 24 7 19 41 1 4 130872
+# layers computed, transfered=          20          19
+TTT             FLOAT     = Array[24, 5, 19, 40, 1]
+UUU             FLOAT     = Array[19, 2, 1]
+VVV             FLOAT     = Array[40, 5, 1]
+DDD             FLOAT     = Array[19, 2, 19, 40, 1]
+GGG             FLOAT     = Array[6, 19, 40, 1]
+VERN            STRING    = '2.2.2'
+KCOM            STRUCT    = -> <Anonymous> Array[1]
+Nseas, nlat, ncase=          40          19           1
+\end{verbatim}
+
+
+\subsection{Read version A Group 1 cases. @111 \label{a111}} %------------------------------
+111: kons=[200,202,207,21,22,29,252,253]
+\vspace{-3.mm} 
+\begin{verbatim}
+200.. Set to VerA 
+202.. Set to case group 1
+207.. Set input file stem
+21... Open file to determine locations of krccom
+22... Get KRC changes
+29... Close the KRC unit
+252.. Open/Read/Close type 52 file
+253.. specific case names
+\end{verbatim}
+
+\subsection{Tests between cases within one version. @112 \label{a112}} %---------------
+
+113: kons=[41,-1,411,-1,42,43,-1,44,-1,45,-1,46] 
+\vspace{-3.mm} 
+\begin{verbatim}
+41... Test Ls  Requires more than one case
+-1...  Wait
+411.. Check Ls against LSAM REQ 252
+-1...  Wait
+42... Confirm convergence days 
+43... Plot hourly Ts near equator for 2 seasons
+-1...  Wait
+44... Display central latitude seasonal behaviour
+-1...  Wait
+45... Difference two cases
+-1...  Wait
+46... Plot Tsur, DownVis difference of two cases, AFTER 45 
+\end{verbatim}
+
+@41 Plots of Group 1 Ls versus season index, see Figure \ref{p41}.  Print the
+range of differences in $L_S$ betwees cases, which should be less than 0.001
+
+\begin{figure}[!ht] \igc{p41}
+\caption[Ls] {Group 1 Ls versus season index
+\label{p41} } \end{figure}
+
+@411 Compares the Ls computed in \np{readtype52.pro} with the Allison and McEwen model computed in \np{lsam.pro}, which includes planetary perturbations.  Absolute values should be less than 0.1; see Figure \ref{p411}. 
+
+\begin{figure}[!ht] \igc{p411}
+\caption[Ls difference] {Difference in $L_S$, KRC- \np{lsam.pro}
+\label{p411} } \end{figure}
+
+@42 Checks that all seasons of Group 1 ran for a single day. The min and max of
+NDJ4 should be 1.
+
+@43 Displays diurnal curves for seasons closest to perihelion (Ls=251, upper
+curves near midday) and aphelion (Ls=71, lower curves near midday) for each
+case. All the curves should look like normal diurnal temperature curves. Expect
+the major effect to be presence or absence of atmosphere, so cases 1,2 and 3
+should group, and cases 4,5,6 should group and be cooler at night. Case 6 may
+plot on top of case 4.  See Figure \ref{p43}. 
+
+\begin{figure}[!ht] \igc{p43}
+\caption[Ts versus Hour] { Diurnal $T_s$ for a latitude near-or-at the equator for two seasons for each case.
+\label{p43} } \end{figure}
+
+@44 Plots the surface temperature near noon for all seasons and cases, there is
+a different curve for each latitude. There can be a discontinuity between
+cases. See Figure \ref{p44}.
+
+\begin{figure}[!ht] \igc{p44}
+\caption[Ts versus season and latitude] { $T_s$ near noon for 5 latitudes for all seasons for each case.
+\label{p44} } \end{figure}
+
+@45 Looks at the difference between two cases, determined by @12, items 7 and
+8. The default is case 3 (KofT on but the temperature dependence set to zero)
+minus case 5 (KofT turned off) . For each of the 5 major items in a Type 52
+file:
+\qi   0= surface kinetic temperature
+\qi   1= Top-of-atmosphere bolometric temperature
+\qi   2= one-layer atmosphere kinetic temperature
+\qi   3= Down-welling solar radiance 
+\qi   4= Down-welling thermal radiance
+\\ The Mean Absolute Residual (MAR) of case difference for all hours, latitudes and seasons is computed and printed. If this exceeds 1.E-6, then a histogram is plotted.
+
+For V2.2.2 only Tsur exceeded this criterion, the MAR is 5.1e-05 and the
+extremes (shown in the histogram annotation) are -0.00007 and +7.6e-5.
+
+@46 plots the difference (Atmosphere - NoAtmosphere) for Tsurf (bottom plot) and
+Down-going Solar flux at the surface (top plot) for a subset of hours and
+seasons (set by @14, items 0 and 1) for all the latitudes. Temperatures are
+generally higher with an atmosphere, extreme differences are probably related to
+cap edge positions. Delta DownVIS should always be smaller (the plotted
+difference is negative).  Histograms of these differences are plotted.  MAR for
+Tsurf is about 6 and for DownVis is about 10.
+
+\subsection{Read 3 file types. @113  \label{a113} } %...................
+ 
+113: kons=[200,203,207,252,50,51,18] Read 3 types for Ver A
+\vspace{-3.mm} 
+\begin{verbatim}
+200.. Set to Vera
+203.. Set to case group 2
+207.. Set input file stem
+252.. Open/Read/Close type 52 file
+50... Read type 0
+51... Read type -1
+18... Help, and print cases
+\end{verbatim}
+
+\subsection{Difference between file types.  @114 \label{a114} } %..................
+
+114: kons=[511,-1,52,-1,53,-1,55] Tests for differences 
+\vspace{-3.mm} 
+\begin{verbatim}
+511.. Compare Ls in Type 0 file with LSAM 
+-1...  Wait
+52... Plot delta of each ddd item
+-1...  Wait
+53... Check Ls between types
+-1...  Wait
+55... Check Ts and Tp for equivalence between types
+\end{verbatim}
+
+Difference between types is expected to be zero.
+
+@511 Compares the Ls contained in the Type 0 file for each season with the
+Allison and McEwen model computed in lsam.pro, which includes planetary
+perturbations. This comparison ASSUMES that DELJUL was constant for the run
+(True for the test files).
+
+@52 Generates a series of plots for the six items extracted from LATCOM
+contained in Type 0. ``predicted'' is extraplated from the sols computed to the
+end of the season
+\vspace{-3.mm} \begin{tabbing}
+ww \= 5:w \= FROST4(MAXN4)w \= rms \kill
+ \> 0: \> DTM4(MAXN4)   \> rms temperature change on last day \\
+ \> 1: \> TST4(MAXN4)   \> predicted equilibrium temperature of ground \\
+ \> 2: \> TTS4(MAXN4)   \> predicted mean surface temperature for each latitude \\
+ \> 3: \> TTB4(MAXN4)   \> predicted mean bottom temperature \\
+ \> 4: \> FROST4(MAXN4) \> predicted frost amount kg/m$^2$. \\
+ \> 5: \>  AFRO4(MAXN4)  \> frost albedo. May be a single line if constant frost albedo was used (LVFA=F) \\
+\end{tabbing}  \vspace{-3.mm}
+The abscissa is the saved season index; there is a curve for each latitude. The first plot is shown in Figure \ref{p52a}.
+ 
+\begin{figure}[!ht] \igc{p52a}
+\caption[Type 0 summary] {Behavior of summary values for each latitude and season in Type 0 files. Example of 
+the RMS temperature change on last computed day. The spikes are near the edge of the polar caps. \label{p52a} } \end{figure}
+
+@522 plots just one of the above; selected by  @14 item 3. Figure \ref{p522} is an example for mean surface temperature
+
+\begin{figure}[!ht] \igc{p522}
+\caption[Diurnal Mean Ts] {Diurnal average of Ts as a function of time (season index) for each global latitude 
+\label{p522} } \end{figure}
+
+@53 Compares the $L_S$ for the three types. 
+ \vspace{-5.mm} \begin{tabbing}
+ww \= Type 52:w \= Plus signw \= Extr \kill
+ \> Type 52: \> line \>    Extracted from the file for each season \\
+ \> Type 0: \>  Plus sign\>  From each LATCOM \\
+ \> Type 1:  \> Diamond \>  Computed in \np{readkrc1.pro} based on assumption of uniform seasons \\ 
+\end{tabbing}
+ The 100-fold magnified differences of Types 0 and -1 from Type 52  are plotted relative to the $L_S$=200 level (one ordinate tic is 0.1 degree); see Figure \ref{p53}. Differences should be less than 0.1K.
+
+\begin{figure}[!ht] \igc{p53}
+\caption[Diurnal Mean Ts] {$L_S$ in file types 0 (plus sign), -1 (diamond) and 52 (line).  The 100-fold magnified differences of Types 0 and -1 from Type 52  are plotted relative to the $L_S$=200 level (one ordinate tic is 0.1 degree).
+\label{p53} } \end{figure}
+
+
+@55 Prints statistics for the difference in Tsur and Tplan between file types (first 4 lines) and then between Type 52 and Type 0 for 3 items. All values should be zero.
+
+\subsection{Store Version A and read version B. @115 \label{a115}} %---------
+115: kons=[26,201,202,207,252]  Save current t52 and Read VerB cases
+
+@26 Will save the internally all VerA Type 52 arrays
+\vspace{-3.mm} 
+\begin{verbatim}
+26... hold current set. tth=ttt etc. 
+201.. Set to VerB
+202.. Set to case group 1
+207.. Set input file stem
+252.. Open/Read/Close type 52 file
+\end{verbatim}
+
+\subsection{Difference between versions.  @116 \label{a116}} %--------------
+116: kons=[61,-1,62,63]  The sequence @116 123 will runs tests between versions using the Type 52 file
+\vspace{-3.mm} 
+\begin{verbatim}
+61... Plot LS-LSH
+-1...  Wait
+62... Plot Tsur noon equator
+63... Stats on VerB-VerA
+\end{verbatim}
+@61 Plots the difference in $L_S$ between versions if this diference is not zero. The abscissa is the difference in date, which may be large but should have a span of about 690 days. The ordinate is difference in $L_S$;  all absolute values should be less than about 0.1. 
+
+@62 Plots the near-noon, near-equator surface temperature for all seasons for
+both versions; VerB as dashed blue. Curves should nearly overlay. The 100-fold
+magnified difference VerB-VerA is plotted relative to T=280. See figure
+\ref{p62}
+
+\begin{figure}[!ht] \igc{p62}
+\caption[Seasonal Equator Noon] {Ts near midday and near the equator as a
+  function of time (season index). Version A; solid; version B, dashed
+  color. Magnified difference: 100*(VerB-VerA)+280.
+\label{p62} } \end{figure}
+
+@63 Prints statistics on the difference for all the items in the type 52
+arrays. Mean and StdDev values should be generally small; DJU5 will be large if
+the versions used both the J2000.0 and the -2440000 date conventions. Minimum
+and maximum differences can be large due to the polar cap edge.
+
+\subsection{OnePoint mode. @71}
+ @71 reads both VerA and VerB OnePoint files. It compares all the input fields, and should report differences as zero. If not, it will report the range on output differences. E.g., Version 2.3.0 is the first with the more
+accurate models.
+\vspace{-3.mm} 
+\begin{verbatim}
+Range of OnePoint T differences     -1.27000     0.820007
+    B-A  Mean and stdDev=    0.0539113     0.405689
+abs(B-A) Mean and stdDev=     0.266955     0.307744
+Delta (Tp-Ts) Mean and stdDev=   0.00869751    0.0323776
+\end{verbatim}
+
+
+\section{Standard Report}%___________________________________________
+ @11 to set files names
+\\ @111,123 to read one version
+\\ @131,123 to generate Report on one version
+\\ Last 3 lines for @55 are Type 0 - Type 52
+
+@132,123 
+
+Type -1 contains a single krccom, so DJUL and LSUBS for each season are computed in readkrc1.pro; LSUBS assumes the target is Mars and uses the A\&M algorithm. Thus, there will be small differences from the other types.
+
+\subsection{Example} %-
+PARTIAL EXAMPLE
+\vspace{-3.mm} 
+\begin{verbatim}
+krcvtest Report 2014Jan29 09:40:26
+Last read= /work/work1/krc/test/V230test1
+Held file= -none-
+@411 Ls t   0.045   0.013
+@45  AtmTconFcon-noAtmTcon
+Item in ttt Mean     Std    mean_ABS_std
+    Tsurf   8.651  12.118  11.255   9.747
+    Tplan  26.738  30.395  35.667  19.148
+     Tatm   0.560  20.114  16.346  11.734
+  DownVIS -21.603  23.847  21.603  23.847
+   DownIR   2.163  11.626   9.451   7.108
+Ls  t0-t52: Ave and StDev  -0.045   0.013
+Ls tm1-t52: Ave and StDev   0.000   0.000
+@55   What        Mean      StdDev     Minimum     Maximum
+   Ts 0--1     0.00000     0.00000     0.00000     0.00000
+   Tp 0--1     0.00000     0.00000     0.00000     0.00000
+  Ts 52--1     0.00000     0.00000     0.00000     0.00000
+  Tp 52--1     0.00000     0.00000     0.00000     0.00000
+      DTM4     0.00000     0.00000     0.00000     0.00000
+    FROST4     0.00000     0.00000     0.00000     0.00000
+     AFRO4     0.00000     0.00000     0.00000     0.00000
+\end{verbatim}
+
+\section{Specific tests}%___________________________________________
+
+2014jan27 RUn verTest.inp identical to V 222 except for file names now V230
+
+Change DELJUL from 17.1744 to 17.174822 to be closer to 1/40 MarsYear.
+Run output file V230b
+
+\subsection{Stress test 1}%___________________________________________
+
+ I have run \krc for pressures from 1.01 to 10,000 Pa with three points per
+ decade (1,2,5). I built a crude band model for the blockage by CO2 gas (CABR)
+ and scaled the dust opacity (TAUD) linear with pressure. Model were run for 3
+ years, recording all seasons, and 3 latitudes (-30,0,30) with 20 layers.
+
+Results for Tsurf, Tatm, DownVis and DownIR vary smoothly with PTOTAL.
+
+Tsurf and DownVIs appear to trend nicely into the no-Atmosphere result, which is
+defined as P less than or equal to 1.0 Pa.
+
+   
+
+\appendix  %==================================================================
+
+\section{Actions} %_______________
+List by doing  @992.  Short form by @99
+\qi \at 0.... Stop
+\qi \at -1...  Wait
+\qi \at 110.. Reset names to default
+\qi \at 111.. kons=[200,202,207,21,22,29,252,253] Reread VerA group 2 cases
+\qi \at 112.. kons=[201,203,207,252,50,51,18] Read 3 types for Ver B
+\qi \at 113.. kons=[41,-1,411,-1,42,43,-1,44,-1,45,-1,46] Test cases
+\qi \at 114.. kons=[511,-1,52,-1,53,-1,55] Test between types
+\qi \at 115.. kons=[26,201,202,207,252] Save current t52 and Read VerB cases
+\qi \at 116.. kons=[61,-1,62,63] Compare versions
+\qi \at 117.. kons=[200,202,207,21,22,29,252,26,201,207,252,62,63]
+\qi \at 118.. kons=[432,43,435,-1,44,-1,445] look at effect of atm
+\qi \at 131.. kons=[77,411,43,-1,44,-1,45,26,203,207,252,50,51,511,-1,52,53,-1,55] Test one version
+\qi \at 132.. kons=[26,201,207,252,67,-1,68,78] compare 2 versions AFTER 131
+\qi \at 133.. kons=[200,203,207,252,77,671,673,-1,664,-1,672] Long runs A
+\qi \at 134.. kons=[26,201,207,252,671,-1,68,-1,682,78] Long runs B-A
+\qi \at 123.. Start auto-script 
+\qi \at 11... Modify File names parf
+\qi \at 12... Modify integers pari
+\qi \at 15... Modify positions parp
+\qi \at 157.. Print current parp as code
+\qi \at 16... Modify floats parr
+\qi \at 167.. Print current parr as code
+\qi \at 18... Help, and print cases
+\qi \at 188.. Contents
+\qi \at 19... Print input portion of selected KRCCOM arrays REQ 20,21
+\qi \at 200.. Set to VerA 
+\qi \at 201.. Set to VerB
+\qi \at 202.. Set to case group 1
+\qi \at 203.. Set to case group 2
+\qi \at 207.. Set input file stem
+\qi \at 20... Get KRCCOM structure and definitions
+\qi \at 21... Open file to determine locations of krccom
+\qi \at 221.. Change KRCCOM List
+\qi \at 22... Get KRC changes
+\qi \at 23... Print krccom
+\qi \at 232.. Difference 2 KRCCOM's  REQ 26
+\qi \at 252.. Open/Read/Close type 52 file
+\qi \at 253.. specific case names
+\qi \at 26... hold current set. tth=ttt etc. 
+\qi \at 261.. extract 23 layer 6 year from multi-N1 10 year 
+\qi \at 266.. Help latest and hold
+\qi \at 27... Print layer table
+\qi \at 29... Close the KRC unit
+\qi \at 41... Test Ls  Requires more than one case
+\qi \at 411.. Check Ls against LSAM REQ 252
+\qi \at 42... Confirm convergence days 
+\qi \at 431.. Set to Tsur
+\qi \at 432.. Set to any item in ttt
+\qi \at 43... Plot hourly Ts near equator for 2 seasons
+\qi \at 433.. Plot hourly one lat,season  REQ 43 
+\qi \at 435.. Print midday REQ 43
+\qi \at 436.. Plot midday REQ 43
+\qi \at 44... Display central latitude seasonal behaviour
+\qi \at 445.. CLOT one latitude REQ 43 then 44
+\qi \at 45... Difference two cases
+\qi \at 46... Plot Tsur, DownVis difference of two cases, AFTER 45 
+\qi \at 47... Estimate Atm Radiative time
+\qi \at 472.. T of P for CO2 SET PRES
+\qi \at 50... Read type 0
+\qi \at 51... Read type -1
+\qi \at 511.. Compare Ls in Type 0 file with LSAM 
+\qi \at 52... Plot delta of each ddd item
+\qi \at 522.. Plot one dd0 item
+\qi \at 53... Check Ls between types
+\qi \at 55... Check Ts and Tp for equivalence between types
+\qi \at 56... Store Type 0,-1
+\qi \at 57... Compare Versions for Type 0 and -1
+\qi \at 61... Plot LS-LSH
+\qi \at 62... Plot Tsur noon equator
+\qi \at 63... Stats on VerB-VerA
+\qi \at 641..  Convergence at surface as function of N1
+\qi \at 642.. Last year for all cases
+\qi \at 643.. Convergence at specific depth REQ 641
+\qi \at 644.. Convergence at bottom REQ 641
+\qi \at 645.. Convergence of top layer diurnal swing REQ 641
+\qi \at 646.. One case REQ 642 
+\qi \at 663.. Check on last year of global-sol run
+\qi \at 664.. maximum Tmin layer diff. from final season
+\qi \at 665.. Plot Tmin at bottom over season
+\qi \at 666.. CLOT bottom T for one lat, all seasons.
+\qi \at 667.. Plot Tsur\_average REQ 665
+\qi \at 668.. CLOT Tsur\_ave one lat, REQ 665,666
+\qi \at 669.. Plot Tsur diurnal avg, year MAR REQ 665
+\qi \at 671.. Plot final Midnight Tsur
+\qi \at 672.. Plot difference from last season. List NDJ4
+\qi \at 673.. List NDJ4  FOLLOW 672
+\qi \at 68... Compare skip with everySol 
+\qi \at 682.. Difference at each year end FOLLOW 68
+\qi \at 71... Test one-point mode
+\qi \at 72... Check annual trends
+\qi \at 73... generate pressure input series
+\qi \at 74... Generate a large grid .one file
+\qi \at 75... SHOWBYTES for start of parf[0+11]
+\qi \at 76... Find most extreme season for start
+\qi \at 77... Open report file
+\qi \at 78... Close report file 
+
+Plus the actions provided by KON91
+\vspace{-3.mm} 
+\begin{verbatim}
+-9=StopInKON91  -3=null  -1=pause    0=Stop    888=setcolorGuide
+100=wset,0  101=erase  102=wset,2  103=window for output
+121=kons=-3  122=Edit Kons  801/2/3/4 output to eps/png/jpg/-eps
+808=actionlabel at TopLeft   809=Warning to mv output file
+81/82=start/endClrEps  8=newPS 80=restart 87=close 88=subtitle 9=plotPS
+MAKE99: 991=Expand current kons   992/995=1-line each   994=expand all
+\end{verbatim}
+\section{Algorithms} %___________________
+\subsection{Locating the last year} %-----------------------------------------
+Objective: find start of the last [partial] year.
+\\ Assume $L_S$ is increasing. Find all jumps in $L_S$ of $\le -180$. 
+\qi 0: Single ramp, may be virtually full year
+\qi 1: Could be anything up to nearly two full years.
+\qii Use longer ramp to estimate $ \Delta L_S$; calc estimated toal lenght in years
+\qi 2 or more: Interval between last two is a year 
+
+
+\end{document} %===============================================================
+% ===================== stuff beyond here ignored =============================
+
+
+\begin{figure}[!ht] \igc{p62}
+\caption[] { \label{p62} } \end{figure}
+
+\bibliography{mars}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev
+
+\appendix
+ 
+\section{Cookbook \label{cook}} %______________________________
+\vspace{-3.mm}
+\begin{verbatim}
+    A Cookbook to generating test files 
+\end{verbatim}
+

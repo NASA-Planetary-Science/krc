@@ -1,0 +1,93 @@
+Exo-planets information for KRC thermal calculation.
+Each object must have 1 separation line followed by 10 lines to be read.
+   This line should contain the set-number in this file.
+Second  of 11 lines is object name, optionally within single quotes.
+Next 9 lines must start with numeric values followed by a space, then anything.
+All angles are in degrees. 
+  
+The 'Visual Magnitude of host star' and 'Distance from Earth' are used to
+suggest the approximate Star/Sun 'solar constant' factor (ignores star spectral
+ Type).  A parsec is 3.26156 LightYear 
+
+Items commonly reported for exoPlanets that do not affect KRC
+/ M sin(i) Minimum mass (in mJupiter) (only as effect on GRAVity)
+/ planet radius
+/ argument of periastron, omega, degree. Angle between direction to Earth and to
+ periastron +90, deg.  Periastron is toward Earth (in the plane including the
+ star, Earth and the orbit normal), and the probabilty of observing transit is
+ highest, for omega=90 parsec= 2./(parallax in arcsec)
+
+C_END    << Required to indicate end of comments
+-------  1   Separation line       http://exoplanets.org/table
+HD147018b / name. Must have no blanks
+8.3 / Visual Magnitude of host star
+140.2 / Distance from Earth to host star. Lightyears  43pc
+2454459.49 / Time of periastron as full Julian date     2000 Jan 1 noon UTC= 2451545.0 
+0.2389 / Semi-Major axis in A.U.: a
+44.2360 / Orbital period in days
+0.4686 / Eccentricity of orbit : e
+25. / Unknown. Obliquity of planet pole, degree
+45. / Unknown. Season (Ls) at periastron, degree
+12. / Unknown. Sideral rotation period, hours
+-------   2 /Separation line 
+Kepler62e / name. Must have no blanks
+13.8 / Visual Magnitude of host star
+1207 / Distance from Earth to host star. Lightyears
+2454932 / Time of periastron as full Julian date
+0.4263 / Semi-Major axis in A.U.: a
+122.3874 / Orbital period in days
+0.13 / Eccentricity of orbit : e
+15. / Obliquity of planet pole, degree
+0. / Season (Ls) at periastron, degree
+24. / Sideral rotation period, hours 
+-------   3 /Separation line     RA 04h 9m 16s and Dec. -53°22'
+Gliese163c / name. Star is: HIP 19394, also LHS 188. 
+ 11.8 / Visual Magnitude of host star M3.5V    AbsMag=10.9
+ 49. / Distance from Earth to host star. Lightyears   in DOrado 15ps
+ / Time of periastron as full Julian date     2000 Jan 1 noon UTC= 2451545.0 
+ 0.1254 / Semi-Major axis in A.U.: a     Mass=0.2285M_J
+ 25.645/ Orbital period in days
+ 0.094/ Eccentricity of orbit : e
+0.1  / Unknown. Obliquity of planet pole, degree
+0.  / Unknown. Season (Ls) at periastron, degree
+30. / Unknown. Sideral rotation period, hours
+INSERT ABOVE this 13-line sets for additional bodies 
+-------   99 / REPLICATE  DO NOT REMOVE this and next 11 lines
+ / name. Must have no blanks
+ / Visual Magnitude of host star
+ / Distance from Earth to host star. Lightyears
+ / Time of periastron as full Julian date     2000 Jan 1 noon UTC= 2451545.0 
+ / Semi-Major axis in A.U.: a
+ / Orbital period in days
+ / Eccentricity of orbit : e
+ / Obliquity of planet pole, degree
+ / Season (Ls) at periastron, degree
+ / Sideral rotation period, hours
+---------
+Gliese 581 g   Kepler-22b
+
+A list of host stars is at 
+http://en.wikipedia.org/wiki/List_of_exoplanetary_host_stars 
+
+A table of known exo-planets is at
+http://exoplanets.org/table
+
+List of Goldilocks planets:
+http://en.wikipedia.org/wiki/List_of_Goldilocks_planets
+ 
+------------------
+
+http://en.wikipedia.org/wiki/List_of_exoplanetary_host_stars 
+Star      Const         RA               Dec    Mag. Ly  #p
+Upsilon Andromedae      01h 36m 47.84s   +41 	4.09 44   4
+82 G. Eridani Eridanus  03h 19m 55.65s   -43 	4.25 19.7 3 << use
+HD 40307      Pictor    05h 54m 04.24s 	 -60 	7.17 42   6	
+HD 69830 	Puppis 	08h 18m 23.95s 	 -12 	5.95 41   3
+55 Cancri 	Cancer 	08h 52m 35.81s 	 +28 	5.95 40   5
+47 Ursae Majoris Ursa 	10h 59m 27.97s   +40 	5.10 46   3
+Gliese 433 	Hydra 	11h 35m 26.95s 	 -32 	9.79 29   2
+61 Virginis 	Virgo 	13h 18m 24.31s 	 -18 	4.74 28   3
+Gliese 581 	Libra 	15h 19m 26.83s 	 -07   10.56 20   4-4 4 orbits known
+Gliese 667 C   Scorpius 17h 18m 58.69s	 -34   10.22 23   3 Triple star
+Gliese 785 Capricornus 	20h 15m 17.39s 	 -27 	5.72 29   2 Nept
+Gliese 876 Aquarius 	22h 53m 16.73s 	 -14   10.17 15.3 3  no Eart

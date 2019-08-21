@@ -1,0 +1,93 @@
+0 0 1 / KOLD: season to start with;  KEEP: continue saving data in same disk file
+0 0 1 0 7 0   debug codes
+Version 352 Europa test of eclipse and planetary load. 3 lats
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .67      1.00     200.0      2.77     928.0 3.5511810      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5   27.9546     0.001      .055      200.     180.0     1711.
+      TAUD     DUSTA    TAURAT     TWILI  ARC2/Pho ARC3=Safe     SLOPE    SLOAZI
+       0.3       .90      0.25       0.0       0.0     0.801       0.0       45.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET       DDT       GGT     DTMAX
+    1.1500      .100       3.0       0.0       0.0     .0020       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+   7305.00 35.511810      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24       IIB       IC2
+        22      1536        15         3        20        96         0       999
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN/Flx15     KPREF
+         3        24         0        18         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -3      9999         5         0                                       0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+    0.0   30.0   60.0
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7
+     0.0   0.0    0.0   0.0     0.0
+PORB:2014jun10 2017 Mar 16 22:11:24 IPLAN,TC= 105.0 0.20000 Jupiter:Europa
+   105.0000      0.2000000       1.754315      0.2275961E-01  -1.496513    
+  0.4835973E-01   5.202864      0.4090926       0.000000       1.125922    
+   4.678847       0.000000       0.000000       4334.724       4095.201    
+   85.22835       0.000000       2.136487      0.5414962E-01   0.000000    
+   0.000000     -0.5359988     -0.8429813     -0.4569179E-01  0.8442187    
+ -0.5352132     -0.2900995E-01   0.000000     -0.5412316E-01  0.9985343 
+2 2 6144 'N2' / 
+8 5 0 './out/EurH.t52' / Disk file name for Run 
+0 /  
+1 23 30. 'Slope' /
+0 /  
+1 23 0. 'Slope' / flat
+15  0.156 0. 0.  0.464 0.464 0.   12. / Jupiter heat load on Europa for 12 H
+0 /
+2 7 100. 'IIB' / heat flow. 
+0 /^^^^ 4 
+14  1 5.2026 71492. 0.6711D6 3121.6 3.551 0.00 7500. 12. 1 / Europa Daily
+0 /
+2 7 0 'IIB' / no heat flow.
+0 / 
+14  1 5.2026 71492. 0.6711D6 3121.6 3.551 0.00 7500. 13. 0 / Europa Daily
+0 /  ^^^
+14  1 5.2026 66854. 0.6711D6 3121.6 3.551 0.63 7500. 12. 0 / Europa Daily
+0 / ---------------------------
+16 1 '00N' / Tsurf every time step  
+2 7 100. 'IIB' / heat flow. Need non-zero to test TFINE base options
+14  3 5.2026 71492. 0.6711D6 3121.6 3.551 0.00 7500. 12. 1 / rare
+0/
+2 7 100. 'IIB' / heat flow. Need non-zero to test TFINE base options
+14  3 5.2026 71492. 0.6711D6 3121.6 3.551 0.00 -7500. 12. 0 / rare, base constant
+0/
+0 /  ======================= end of run  
+
+
+15  0.156 0. 0.  0.464 0.464 0.   12. / Jupiter heat load on Europa for 12 H
+0 /
+15  0 / planHeat off
+2 7 100. 'IIB' / heat flow. 
+14  3 5.2026 71492. 0.6711D6 3121.6 3.551 0.01 7500. 13.  2 / Europa Rare 
+16 1 '00N' / output TOUT (input file stem will be added in front)
+0 /^^^^7 
+14  3 5.2026 71492. 0.6711D6 3121.6 3.551 0.01 -7500. 12. 1 / Rare keep bot T
+0 / 
+16  0 'off' / turn off output TOUT
+14  1 5.2026 71492. 0.6711D6 3121.6 3.551 0.01 7500. 13.  1 / Europa Daily 
+15   0.156 0. 0.  0.464 0.464 0.  13. / Jupiter heat load on Europa for 14 H 
+1 23 30. 'Slope' /
+0 /
+14 0 / eclipse off 
+15 0 / PlanHeat off 
+2 7 0 'IIB' / no heat flow.  Case should be identical to case 2
+0 /
+
+
+DJUL   7305.00  is 2020 jan 01
+DELJUL 35.511810 is 10 Europa days, or  1/122.004 of Jovian year
+Jupiter inclination  3.13 degree
+Europa inclination .466 degree, node precession 30.1 years 
+

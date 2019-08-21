@@ -1,0 +1,42 @@
+###################################
+# Script and comments for making a distribution package of the KRC thermal
+# model file system. See the file AAREADME for additional description
+# Step 1 creates the distribution directory tree
+# Note: these directories will contain largely soft links 
+#   exception is aaa, which will contain a copy of the spource aaa directory 
+#
+#_Hist 2006jan25 Hugh Kieffer Evolve from ROLO distribution system
+# 2006jan25 Hugh Kieffer   Not running under Suse 9.3
+# 2006apr12 HK Have running under Suse9.3
+# 2009may11 HK Using CentOS 5.2 on 64-bit hardware
+# 2011oct17 HK Move aaa to ~/krc/aaa  and move DIST to a work disk
+# 2013jan25 HK Divide idl directory into two
+# 2013oct02 HK Revise IDL section 
+###################################
+
+set FAM='/home/hkieffer/krc'    # family to be distributed
+set RTOP='/work2/DistKRC'	# Top of the distribution tree 
+#        note , this could be shared between projects
+# set BIG='/work1/krc/'		# Large files, rarely backed up
+
+echo "RTOP="$RTOP
+
+# The FAM/aaa subdirectory contains all
+#  the results of designing this system!   NEVER delete it.
+
+cd $RTOP
+mkdir aaa	# scripts to build distribution set and install it at new site
+mkdir addon     #  make-up files missing in step 3
+mkdir big       # large files to go in separate tar
+mkdir doc	# documentation
+mkdir doc/prt   #   print files from runs using distribution input files 
+mkdir idl    	# idl programs and startup
+mkdir idl/extern  # routines to go into shared object library
+mkdir idl/krc	# IDL code specific to KRC
+mkdir idl/subs	# IDL general subroutines
+mkdir run	# binary executable, input files, test print files
+mkdir run/out   # binary files output by runs
+mkdir src	# source code and include files and Makefile (as soft links)
+mkdir src/cfiles  # C code for low-level I/O
+
+exit

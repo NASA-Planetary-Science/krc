@@ -1,0 +1,88 @@
+0 0 1 / KOLD: season to start with;  KEEP: continue saving data in same disk file
+0 0 0 0 0 0   debug codes
+Earth and Moon lunar eclipse  5 lats
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .12       .95      55.0     0.070    1800.0     29.53      800.     1100.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5   27.9546     0.001      .055      200.     180.0      800.
+      TAUD     DUSTA    TAURAT     TWILI Heny-Gren ARC3=Safe     SLOPE    SLOAZI
+       0.3       .90      0.25       0.0       0.5     0.801       0.0       45.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET    PhotoF       GGT     DTMAX
+    1.1500      .100       3.0       0.0       0.0       0.0       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+   7305.00 35.511810      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+ 0.0023471 0.0012847 5.8396e-4 8.8478e-5 0.0045689 0.0025008 0.0011367 0.0001722
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+   790.701   578.508   208.610   66.0619   790.701   578.508   208.610   66.0619
+        N1        N2        N3        N4        N5       N24       IIB       IC2
+        22      1536        15         5        20        96         0       999
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN/Flx15     KPREF
+         3        24         0        18         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -3      9999         5         0                                       0
+     LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+   -60.   -30.0     0   30.0   60.0
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7
+     0.0   0.0    0.0   0.0     0.0   
+PORB:2014jun10 2018 Feb 21 21:13:11 IPLAN,TC= 103.0 0.20000 Earth:Moon
+   103.0000      0.2000000       0.000000     -0.4545965E-04   1.797730    
+  0.1670245E-01   1.000004      0.4090926       0.000000       1.161374    
+   4.712311       0.000000       0.000000       365.2584       6942.444    
+   655.7199       0.000000       1.261200      0.3769714E-03   0.000000    
+   0.000000      0.3046746     -0.9524564     -0.3590488E-03  0.9524565    
+  0.3046746      0.1148536E-03  -0.000000     -0.3769713E-03  0.9999999    
+2 2 1536 'N2' / 
+8 5 0 './out/MoonA.t52' / Disk file name for Run 
+16 3 '00N' / Tsurf every time step  
+0 / 
+2 7 20. 'IIB' / heat flow. 
+0 /
+15 .05157 .005 20   0.011 0.011 0    12  / Earth flux onto Moon at lunar midday
+0 /
+14 1 1. 6371.008 384.4e3 1737. 29.53 0.0    6000 12. 7 / Moon lunar
+0 /^^^^ 4
+14 1 1. 6371.008 384.4e3 1737. 29.53 0.5 6000 12. 7 / Moon lunar
+0 /
+14 3 1. 6371.008 384.4e3 1737. 29.53 0.5 6000 12. 7 / Moon lunar
+0 /
+1 3 200. 'Inertia' / 
+0 /
+1 3 55. 'Inertia' / reset
+14 3 1. 6371.008 384.4e3 1737. 29.53 0.5 6000 15. 7 / Moon lunar
+15 .05157 .005 20   0.011 0.011 0  15  / Earth flux onto Moon at 15 H
+0 / ^^^^ 8
+14 1 1. 6371.008 384.4e3 1737. 29.53 0.5 6000 12. 7 / Moon lunar midday
+15 .05157 .005 20   0.011 0.011 0    12  / Earth flux onto Moon at lunar midday
+2 8 7 'IC2' / First layer of lower zone
+1 8 1275. 'Dens' / upper zone
+1 5 1625. 'Dens' / lower zone
+3 10 1 'LKofT / use T-dep properties    
+0 / 
+0 /  ======================= end of run  
+
+
+0 /  
+1 23 30. 'Slope' / 
+
+
+I find Haynes c_p derived from his surface inertia, total conductivity (at 220K)  and density to be  179.675, much too low. His polynomial for sp.heat at 220 is 791
+
+Haynes density changes most rapidly about 0.05m 
+Haynes K-phonon changes most rapidly about 0.05m 
+ above = .0015, below= .0029  
+ps Quat=      1100.00      1275.00      1450.00      1625.00      1800.00
+kz Quat=  0.000740000   0.00140500   0.00207000   0.00273500   0.00340000
+
+switch depth 1/2=exp(-zz/capH)   0.0415888
+
+kk1   0.00234712   0.00128470  0.000583956  8.84783e-05
+kk3   0.00456894   0.00250083   0.00113674  0.000172234
+qt2=[0.0045689,0.0025008,0.0011367,0.0001722] ; rounded for KRC input
+ 5.29950e-08  3.02750e-08  mean and stdev of resid after rounding

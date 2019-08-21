@@ -1,0 +1,197 @@
+
+\section{Theory for thick slab}
+\subsection{Summary}
+Had the concept that a ``quenched slab'' model could forecast the convergence temperture for layers below the annual skin-depth. Developed and tested this (early Jan 2016) but found that the existing KRC asymptotic exponential prediction (EPRED) algorithm did a better job.
+
+\subsection{Introduction}
+
+For real planets with eccentric orbits and obliquity, multi-year runs are
+required to address the lower boundary. No practical way to set the lower
+boundary exactly, and the numerical approach can be slow.
+
+ However, ignoring both the diurnal and annual variation, the approach of the
+ lower (insulating) boundary to equilibrium is similar to the problem of
+ quenching a thick slab, that is, start with a slab of thickness 2l of uniform
+ temperature $T_0$ (the KRC initial T) and force both boundaries to a
+ different (and unknown) ultimate lower boundary average. Without loss of
+ generality; the ultimate temperature can be taken as 0.
+
+There is an analytic solution for slab quenching which I will call $
+S(\eta,\tau)$ where the dimensionless variables are $\eta=x/L$ where x is
+distance from the ``surface'' and L is the slab [half] thickness , and $\tau =
+\kappa t/L^2$ where $\kappa$ is the diffusivity and $t$ is time. $S$ predicts
+the normalized temperature at a location $X$ from the center of the slab that
+started a $T=1$ and is boundary-quenched to $T=0$ at $t=0$. The slab center is
+the location of no heat flow and thus corresponds to the bottom of a IB=0 KRC
+model. For a KRC run with NRSET $<$ N3 and IB=0, the time of quenching is
+effectively the last layer reset, which will happen one or more times during the
+first season of a run; for normal KRC runs quenching happens after sol 3.
+
+The average [annual] of the lower layers will approach the surface temperature
+average only if the thermal properties are temperature independent and there is
+no heat flow; for a fixed geothermal heat flow $H_g$, the gradient of the average
+temperature will be $H_g/k$.
+
+If T-constant properties and no geothermal heat flow, all layers and the surface
+should have the same annual-average temperature. In this case; after each few
+years one could offset the layer temperatures by $\langle T_S \rangle - \langle
+T_i \rangle_a$ (this is done in KRCSIMPLE). Otherwise, need a forecast of the
+$U_i$, then ultimate value of $ \langle T_i \rangle_a$ if the model were to run
+forever. This forecast may be made though matching curve-shape of the S model
+to determine what fraction of the approach to $U_i$ was accomplished in the prior
+N years of run.
+
+Convenient units for using S are $x$ as layer center depth from the bottom of
+the model in diurnal scale-heights ($D$), which requires that the $\kappa t$
+input be in unitsof SI$/D^2$, DIFFU * 86400.*PERIOD * J5*DELJUL / SCALE**2 . Then S
+is the fraction of the way that T has changed between the starting (or last reset
+??) time and the ultimate value:
+
+\qb T_t=T_0+(1-S_t)(T_U-T_0) \mc{or}  T_U= T_0 + (T_t-T_0)/(1-S_t)  \mc{or} \qe 
+\qbn \Delta T \equiv T_U-T_t = (T_t-T_0)(\frac{1}{1-S_t}-1) \ql{S1}
+where $\Delta T$ is the perturbation to be applied to a layer.
+
+If unsure of what to use for $T_0$, can try a two-point solution of: \  $1-S_i = (T_i-T_0)/(T_U-T_0)$. Change variable to $Q=T_U-T_0$ yielding 
+\qbn Q= (S_2-S_s)/(T_2-T_1) \mc{and} T_0 = T_1-(1-S_1))Q \ql{S2} 
+\qbn T_U=T_0+Q \mc{and}   \Delta T \equiv T_U-T_2 \ql{S3} 
+
+May need to estimate the annual mean temperature corresponding to the first
+season of the run. Do this by assuming that the offset (for each layer) between
+the annual mean and the first season remains virtually constant over the
+years. Test this by ... ?? NOPE
+
+
+
+
+\subsection{Approach}
+
+KRC saves the maximum and minimum diurnal temperature for all physical layers at
+the end of each season, as well as the midnight temperature. From these can
+easily derive a good estimate of the diurnal average temperature $P_{i,k}$ where
+$i$ is the layer index and $k$ is the sol count (error negligable well below the
+diurnal skin depth $D$); and the annual average $Y_{i,y}$ where $y$ is the year
+count.
+
+
+
+For the moment ignoring the jump perturbation KRC normally makes during the
+first season, the annual layer temperatures after a few years and a few more
+years.
+
+Input values to the S model (effectively $\eta$ and $\tau$) can be computed
+from the KRC parameters and the season index.
+
+ 
+There is no point in adjusting the temperature for layers shallower than a few annual skin-depths 
+
+Using diurnal (Tmin+Tmax)/2 as an average temperature may be poor until below
+several (5 ?) skin-depths. Because temperature near Tmax are brief compared to
+those near Tmin, this ``average'' is expected to decrease with increasing depth
+until deep enough into the soil that the diurnal curve is virtually sinusoidal.
+
+
+The 60S latitude without atmosphere is an extreme test in that the T range is about 100 to 240.
+
+
+
+\subsection{The S model}
+
+\vspace{-3.mm} 
+\begin{verbatim}
+Solutions found 2014mar9 in: 
+ http://www.ewp.rpi.edu/hartford/~wallj2/CHT/Notes/ch05.pdf
+   saved as /work2/Reprints/TherMod/Wallj2ch05.pdf
+
+Similar treatment at found 2016jan12
+http://www.ewp.rpi.edu/hartford/~ernesto/C_Su2003/MMHCD/Notes/Notes_pdf/s02.pdf
+
+CJ:2.4-3 refers to Carslaw and Jaeger, Conduction of Heat in Solids, 2nd Edition: Section 2.4, equation 6.
+\end{verbatim}
+
+Here assume constant thermal properties.
+
+\subsubsection{The semi-infinite case} Mathmatically:
+\qb \frac{\partial T}{\partial t}= \kappa \frac{\partial^2 T}{\partial x} \qe
+With boundary conditions 
+\qb T(x,0)=T_0 \mc{and} T(0,t)=0 \qe
+Solution is \qbn \frac{T(x,t)}{T_0}= \mathrm{erf} \left( \frac{x}{2 \sqrt{\kappa t}} \right)\mc{CJ:2.4-3}  \ql{sic}  where the error function erf, available as a function in IDL and Fortran, is: 
+\qb \mathrm{erf}(z) =\frac{2}{\sqrt{\pi}}\int_0^z \exp \left( -\xi^2\right) d \xi \qe
+
+\subsubsection{The finite slab case}
+
+\qb \frac{\partial T(x,t)}{\partial t}= \kappa \frac{\partial^2 T(x,t)}{\partial x} \qe
+Slab thickness $L$ with boundary conditions 
+\qb  T(0,t)=T(L,t)=0  \mc{and} T(x,0)=f(x) \qe
+Solution (\S 4.1, p.7) is
+\qb T(x,t)=\sum_{n=1}^\infty \left[B_n \sin \left(\frac{n \pi x}{L} \right) \right] \exp \left( -\left( \frac{n \pi}{L} \right)^2 \kappa t \right) \qe
+
+where \qb B_n =\frac{2}{L} \int_0^L f(x) \sin \left( \frac{n \pi x}{L} \right) dx\qe
+
+For the special case of $f(x)=T_i =$ constant, $ B_n=-T_i\frac{ 2 (-1+(-1)^n)}{n \pi} $. Alternate terms are 4 and 0, which yields
+
+\qb \frac{T(x,t)}{T_i}=\frac{4}{\pi} \sum_{n=0}^\infty \underbrace{ \frac{1}{2n+1} \sin \left( \frac{ (2n+1)\pi x}{L}\right)}_{fx} \underbrace{  \exp \left( -\left( \frac{n \pi}{L} \right)^2 \kappa t \right)}_{ft} \qe
+ Coded as IDL \np{slabdiffu} of $L$, vector of $x$ and vector of $\kappa t$.
+
+
+CJ 3.3-6 is for  slab from 0 to l, initial temperature $v$= constant $V_0$, and boundaries held at 0. Solution must be symmetric around $x=l/2$
+
+
+\qb \frac{T(x,t)}{T_i}=\frac{4}{\pi} \sum_{n=0}^\infty \frac{1}{2n+1} \sin \left( \frac{ (2n+1)\pi x}{2l}\right) \exp \left( -\left( \frac{(2n+1) \pi}{2l} \right)^2 \kappa t \right)  \mc{CJ:3.3-6} \qe
+
+CJ 3.3-8 is for slab from -l to +l Solution must be symmetric around $x=0$. CJ 3.4-2 is basically the same relation. 
+ 
+\qbn \frac{T(x,t)}{T_i} \equiv S =\frac{4}{\pi} \sum_{n=0}^\infty  \underbrace{\frac{-1^n}{2n+1} \cos \left( \frac{ (2n+1)\pi x}{2l}\right)}_{fx}  \underbrace{  \exp \left( -\left( \frac{(2n+1) \pi}{2l} \right)^2 \kappa t \right)}_{ft}   \mc{CJ:3.3-8} \ql{Smod}
+
+Using dimensionless parameters:
+
+\qb S =\frac{4}{\pi} \sum_{n=0}^\infty  \underbrace{\frac{-1^n}{2n+1} \cos \left( \frac{ (2n+1)\pi}{2} \eta \right)}_{fx}  \underbrace{  \exp \left( -\left( \frac{(2n+1) \pi}{2} \right)^2 \tau \right)}_{ft}  \qe
+
+
+Within the summation, the initial factor and the sine or cosine term are of
+order unity; and the exp term decreases in magnitude with increaseing $n$. The
+summation error will be of order the last term in the exp factor;
+$E \sim \exp \left( - \left( \frac{(2n+2) \pi}{L} \right)^2 (\kappa t)_\mathrm{min} \right) $.  
+Treating $E$ as a fractional tolerance; need 
+$ n \geq \frac{L}{\pi} \sqrt{-\ln E / (\kappa t)_\mathrm{min} } -\frac{1}{2}$
+
+
+\subsubsection{Beware}
+Slab are commonly defined as extending from -l to +l, or ) to L; which yield different equations. 
+
+\vspace{-3.mm} 
+\begin{verbatim}
+http://www-unix.ecs.umass.edu/~rlaurenc/Courses/che333/lectures/Heat%20Transfer/Lecture9.pdf 
+\end{verbatim} 
+ gets a similar results ( using dimensionless variables), but then exp term has $(2n+1)^2$ rather than $n^2$
+ 
+\begin{verbatim}
+http://www-unix.ecs.umass.edu/~rlaurenc/Courses/che333/lectures/Heat%20Transfer/Lecture9.pdf
+\end{verbatim}
+use a slab thickness of 2H. Page 14 also has in effect $(2n+1)$ rather than $n$ in the exp term.
+
+
+\subsection{Extreme case: 6\qd S with no atmosphere}
+ Several characteristics are shown in Figures  \ref{tm644s}, \ref{tm644l}, \ref{tm644a}, \ref{tm644h}and \ref{tm644y}.
+
+The Slab model seems not as successful as the asymptotic exponential prediction
+algoritm used by KRC for prediction to the end of each season; see
+Fig. \ref{tm652}.
+ 
+\begin{figure}[!ht] \igq{tm652}
+\caption[Layer predictions]{Forward predictions for layer temperatures for KRC
+  run D, 60S no atm.. In legend: T1= annual mean temperature at time 1, year 2;
+  T2= annual mean temperature at time 2, year 10; T0= initial temperature
+  derived using 2-point S-model,; TU1= ultimate temperature using 1-point
+  S-model; TU= ultimate temperature using 2-point S-model; Tep= asymptotic
+  exponential prediction to the last year using time 2 and the two years prior;
+  Tfin= annual mean temperature for the last year of the KRC run, year 16.
+\label{tm652} tm652.png  }
+\end{figure} 
+% how made:  kv3 ... 6   pari[21:22]=2,10  tttmod 644 65 652
+
+\subsection{Asymptotic exponential prediction: EPRED } %-----------------------
+
+tthmod @651
+case and latitude set by pari[7] and 17
+pari[21:22] set the first and last years for the pivot point, ; code will limit to safe values.
+

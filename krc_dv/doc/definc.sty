@@ -1,0 +1,118 @@
+% definc.sty   Hughs  LaTex style and shorthand
+% 2010jan25 move in many things from KRC paper %x << %y is replace y with x
+% 2013may19 extract Mars-related to defmar.syt
+
+%\textheight=10.38in \topmargin=-1.33in         %  hulk printer extreme limits centos 5.3
+%\textwidth=7.80in  \oddsidemargin=-0.7in \evensidemargin=-0.7in % 2012jan20 printest.tex
+%\topskip=0.0in  \footskip=0.2in
+
+% the following for normal margins lp q.ps
+%\textheight=9.3in  \topmargin=-0.4in
+\textheight=10.0in \topmargin=-1.in
+\textwidth=7.70in  \oddsidemargin=-0.7in \evensidemargin=-0.7in % 2012jan20 printest.tex
+%\textwidth=7.0in  \oddsidemargin=0.0in \evensidemargin=-0.0in 
+\parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
+
+%       modes, spacing, size
+\newcommand{\qb}{\begin{displaymath}}    % begin & end un-numbered equations
+\newcommand{\qe}{\end{displaymath}}
+\newcommand{\qbn}{\begin{equation}}      % begin & end numbered equations
+\newcommand{\qen}{\end{equation}}
+
+% Used in place of  \qen for development to identify equation labels 
+%\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+\newcommand{\qr}[1]{Eq. \ref{eq:#1}}  % refer to Eq.: both dev and final
+
+  %- \newcommand{\qs}{\sqrt}           % squareroot
+  %- \newcommand{\ql}{\left(}          %  left (
+  %- \newcommand{\qr}{\right)}         %  right )
+% \nv << \newcommand{\ct}{\texttt}         % code variable names in text
+% \nvf << \newcommand{\cf}{\mathtt}         % code variable names in formulae (math mode)
+  %\def\cfm{\mathtt}                % code variable names in math mode
+  %\def\code{\texttt}               % code variable names
+%np << \newcommand{\pname}{\textbf}      % program names
+
+\newcommand{\qi}{\\ \hspace*{2.em}}      % indent 1
+\newcommand{\qii}{\\ \hspace*{4.em}}     % indent 2
+\newcommand{\qiii}{\\ \hspace*{6.em}}    % indent 3
+\newcommand{\qiiii}{\\ \hspace*{8.em}}   % indent 4
+
+%commented commands retired 2015apr23
+\newcommand{\qst}{\tiny}
+\newcommand{\qsT}{\scriptsize}  %\newcommand{\qnn}{\scriptsize} 
+\newcommand{\qsf}{\footnotesize}
+\newcommand{\qss}{\small}       %\newcommand{\qsm}{\small}  
+\newcommand{\qsn}{\normalsize}  %\newcommand{\qno}{\normalsize}  % end note
+\newcommand{\qsl}{\large }      %\newcommand{\qn}{\Large }   % begin note
+\newcommand{\qsL}{\Large }      %\newcommand{\qn}{\Large }   % begin note
+
+\newcommand{\qv}{\overline}       % vector. must be in math mode
+\newcommand{\qf}{\overleftarrow}  % to from vector in math mode
+\newcommand{\qq}{\leftrightarrow}  % equivalence between symbol and code, math
+\newcommand{\qt}{$ \leftrightarrow $}  % equivalence between symbol and code, text
+%\newcommand{\qx}{ \qn MORE \qq }  % large MORE
+%\newcommand{\bq}{ \qn ??? \qq }   % big question marks
+\newcommand{\ec}{\hspace{1cm} \equiv \mathtt } % == code name within math mode
+%\newcommand{\qomit}[1]{\hspace{0.0mm}} % omit the material
+
+\def\qm{\vspace{-1.0mm}} % close up rows
+\def\qp{\vspace{1.0mm}}  % open  up rows
+%       individual symbols.  Keep alphabetic   \qc... are chemical symbols
+\newcommand{\at}{\textbf{@}}       % bold at sign, for code sections
+%^^^ \at conflicts with AAS something
+\newcommand{\qd}{$^\circ$}        % degree symbol
+\newcommand{\qtf}{\qsm $_\circ$ \qno $ \! ^\circ \! $ \qsm $_\circ$ \qno } % therefore
+\newcommand{\um}{$\mu$m}          % micrometer
+\newcommand{\mm}{\sharp} % symbol for matrix multiply 
+\newcommand{\mr}{\otimes} % symbol for rotation
+\newcommand{\mc}[1]{\hspace{7mm} \mathrm{#1} \hspace{7mm}} % word between equations
+
+\newcommand{\qab}{\langle}    % begin average value
+\newcommand{\qae}{\rangle}    %  end  average value
+\newcommand{\abs}[1]{\mid \! #1  \! \mid }  %  Absolute value: only in Math mode
+
+\newcommand{\np}{\textbf}  % name of program or routine
+\newcommand{\nf}{\textit}  % name of file
+\newcommand{\nv}{\texttt}  % name of code variable in text
+\newcommand{\nvf}{\mathtt} % name of code variable in equation
+\newcommand{\nj}{\textsf}  % name of input parameter in text
+\newcommand{\njf}{\mathsf} % name of input parameter in equation
+
+%       general definitions with parameters
+\newcommand{\hmm}[1]{\hspace{#1mm}}     % horizontal space # mm.
+\newcommand{\hcm}[1]{\hspace{#1cm}}     % horizontal space # cm.
+\newcommand{\vcm}[1]{\vspace{#1cm}}     % vertical space # cm.
+\newcommand{\E}[1]{$10^#1$}             % 10^#  (not inside equation)
+\newcommand{\Em}[1]{$10^{-#1} $}        % 10^-#   ditto
+\newcommand{\xEm}[1]{$\times 10^{-#1}$} % x10^-#  ditto
+\newcommand{\xE}[1]{$\times 10^#1$}     % x10^#   ditto
+\newcommand{\Pm}[1]{$^{-#1}$} % Power minus: negative exponent, as on units
+\newcommand{\sx}[1]{$^{-#1}$} % exponent -n  for use in units
+\newcommand{\kgm}[1]{kg/m$^{#1}$}  % kilogram / m2
+\newcommand{\qcite}[1]{#1=\cite{#1}}  % show my .bib name
+
+%\newcommand{\qrm}[2] {\overline {\mathbf{ {#1} \hspace{-1.0mm} {#2} }} } % rotation matrix within math
+
+% \input{[.tex]} incorporates file with no break.  \include starts a new page
+% \cinput  Material encased between begin and end statements
+% \ninput  Skip input, with small box notice. 
+% \sinput  Skip input, with small box notice  Reserves a section number
+% \xinput  Input material, with artifical start/stop subsubsections in index
+%    Put two blank lines at end of the file being included
+
+\newcommand{\cinput} [1] {\begin {center} \fbox{ \itshape { Input: #1 } } \end{center} \input{#1} \hrulefill\ \textit {End of input: #1 } \hrulefill\ }
+
+\newcommand{\ninput} [1] { \fbox{ \itshape { Input: #1 }  NOT INCLUDED }} % if not to be printed
+
+\newcommand{\sinput} [1] {  \section{Reserved for: #1} \begin {center} \fbox{ \itshape { Skipped: #1 } }  \end{center} }
+
+\newcommand{\xinput} [1] { \subsubsection{---------------input  #1}  \input{#1}   \subsubsection{---------------end  #1} } % with notice in Index
+
+\newcommand{\xinclude} [1] { \subsubsection{--------------include  #1}  \include{#1} \subsubsection{---------------end  #1} } % with notice in Index
+
+% --------- specific to topic
+
+\newcommand{\qcc}{CO$_2$}
+\newcommand{\qch}{H$_2$O}
+\newcommand{\pname}{\textbf}  % name of program or routine OBSOLETE

@@ -1,0 +1,762 @@
+\documentclass{article} 
+\usepackage{underscore} % accepts  _ in text mode
+\usepackage{ifpdf} % detects if processing is by pdflatex
+\usepackage{/home/hkieffer/xtex/newcom}  % Hughs conventions
+% \newcommand{\qj}{\\ \hspace*{-2.em}}      % outdent 1
+\newcommand{\erfc}{\mathrm{erfc}}  % error function inside math
+\newcommand{\qeq}{\hspace{25.mm}} % space original equation number to the right
+% Use only one of the following two
+\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+\newcommand{\bq}{$ < \! > \!   \! >$ } %  begin quote
+\newcommand{\eq}{ $< \! \! < \! > $ } %  end quote
+\newcommand{\eqq}{ \ < \! \! < \! > \ } %  end quote within equation
+
+\title{An essay on slope distributions and visibility}
+\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/DV3/slopes.tex  2016oct}
+\begin{document} %==========================================================
+\maketitle
+\tableofcontents
+\listoffigures
+%\listoftables\hrulefill .\hrulefill
+% \pagebreak
+\begin{abstract}
+ Rough slopes and their effect on photometry and temperatures have been largely
+ studied from a statisical approach, yielding results from modest to great
+ mathmatical complexity; pragmatic simplifications are often involved. Yet,
+ results that might represent a range of geologic morphologies are difficult to
+ find. The goal here is to develop relatively simple mathmatical representations
+ of slope distributions and ``hiding'' and visibiliity that can span [most] of
+ the range of surfaces likely to be encountered on asteriods and that could
+ be applied to thermal models without the invocation of radiosity.
+\end{abstract}
+
+The symbols \bq and \eq are used here to bound direct quotes from
+articles. Ellipsis, ``...'' indicate omitted material.
+
+``p nnnn.f a'' indicates the beginning location of a quote where nnnn is the
+page number, f is the decimal fraction of the way down the page, and a/b
+indicates the left/right column if on a two-column page.
+
+Equation numbers mildly right of an equation are from the cited work; equation
+numbers at the right margin are sequential in this work.
+
+\section{History}
+
+Be alert that the rough-surface shadow function $S$ commonly mentioned in the literature and here is the probability of NOT being in shadow.
+
+\subsubsection{Gaussian Distribution}
+
+Gaussian distribution: mean $\mu$ and stdDev $\sigma$
+\qb G_{( \sigma,\mu )}=\frac{1}{\sigma \sqrt{2 \pi}}e^{-\frac{(x-\mu)^2}{2 \sigma^2}} \qe
+
+
+Considering the solid angle at each slope, using a mean of zero, 
+weighting by $\sin \theta$ 
+so $\overline{\theta}=\int_{x=0}^{\pi/2} \frac{1}{\sigma \sqrt{2 \pi}}e^{-\frac{x^2}{2 \sigma^2}} \sin x dx $  ?? where did this come from ??
+
+
+\subsection{Smith  1967} %-------------------------------------
+
+Derives analytically the shadowing probability for a surface having a Gaussian
+distribution of elevations. [these old (slow computer era) guys were good at
+  math!] His results are used by Bandfield, Davidsson and others? .
+
+p 4059.8a \bq The density of surface height deviations $(\xi)$ from the mean
+plane in the $z$ direction is described by a continuous probability function
+$P_1(\xi)$, of zero mean, chosen to be Gaussian for computational ease, where
+the probability of finding a height deviation within the range $\Delta \xi$
+about $\xi$ is 
+\qb P_1(\xi) \Delta \xi = \frac{1}{(2 \pi) ^{1/2} \sigma}
+e^{-\xi^2/2 \sigma ^2} \cdot \Delta \xi \qeq (1) \qe 
+where $\sigma$ is the root-mean-square height deviation. \eq
+
+p 4060.1a \bq The problem is the following: what is the probability $ S( \xi_0,
+p_0, q_0, \theta)$ that a point $F$ on a random rough surface, of given height
+$\xi_0$ above the mean plane and with local slopes $p_0, q_0$ will not lie in
+shadow when the surface is illuminated with a parallel beam of radiation at an
+angle of incidence $\theta$ to the mean plane? \eq
+
+%p 4061.4b  
+\qb 2 \Lambda(\mu)=\left( \left(\frac{2}{\pi}\right)^{1/2} \cdot \frac{w}{\mu}
+e^{-\mu^2 / 2w^2} -\erfc \left(  \mu / \sqrt{2} w \right) \right)  \qeq (21) \qe
+
+p 4059.7, after Eq. 3:  \bq where $w^2$, [is] the mean square surface slope
+% , is $[ -p''(0)]$, the primes denoting double differentiation with respect to $r$. 
+\eq
+
+p 4060.5b, after Eq. 9: \bq where $h$ is the unit step function and $\mu = \cot
+\theta $ \ \eq
+ 
+\qb S(\theta) = \frac{ \left[ 1- \frac{1}{2} \erfc \left( \mu / \sqrt{2} w
+    \right) \right]} {\left[ \Lambda(\mu) +1 \right] } \qeq (24) \qe
+
+p 4062.7a: \bq ... the probability that a point on the surface with local slopes
+$p, q$ will be illuminated by a beam of incidence angle $\theta$ is
+\qb S(p, q, \theta) = \frac{h(\mu-q)}{\left[ \Lambda(\mu)+1 \right]} =
+S(q,\theta) \qeq (25) \qe (independent of $p$) where the subscripts have been
+dropped from $p$ and $q$. \eq
+
+The basic function $S(\theta)$ of \qcite{Smith67} is shown in Fig.
+\ref{hids}
+\begin{figure}[!ht] \igq{hids}
+\caption[Shadow function]{The basic shadow relation of \qcite{Smith67} as a
+  function of $x\equiv \mu/w$ or cotangent of the incidence angle divided by the
+  RMS roughness angle, plotted as logrithm of 1-$S(\theta)$ , For small values
+  of x $S$ asymptotically approaches 0 and $S \rightarrow 1$ at large values of
+  $x$. $S$ difference from 1 is beyond the limit of single precision for $x >
+  5$.
+\label{hids}  hids.png  }
+\end{figure} 
+% how made: hiding.pro  parh=[1.,33.,-0.5,45.,90.,35.,2.]
+
+The terms with $S(\theta)$ are shown in Fig.
+\ref{hidp}
+\begin{figure}[!ht] \igq{hidp}
+\caption[Terms within the shadow function]{Terms within the basic shadow hiding
+  function. cef (white) is the $ \erfc \left( \mu / \sqrt{2} w \right)$; d1
+  (blue) is $\frac{1}{2} \sqrt{2/\pi} \cdot \frac{w}{\mu}
+  e^{-(\mu^2/2w^2)}$, the first term in the denominator and is $>1$
+  for $x\equiv \mu/w < 0.37$; 1.-sth (green) is 1-$S(\theta)$ .
+\label{hidp}  hidp.png  }
+\end{figure} 
+% how made: 
+
+In beaming.pro @48 I reproduce Fig. 2 of \qcite{Smith67} by calling
+\np{hiding.pro} with parameter[2]=-3, shown in Fig.  \ref{SmithFig2}
+\begin{figure}[!ht] \igq{SmithFig2}
+\caption[Smith Fig. 2]{Reproduction of the theory part of \qcite{Smith67}
+  Fig. 2. Abscissa is the ``grazing angle'', or 90\qd~ minus the incidence
+  angle; the ordinate is the fraction of the surface that is illuminated. Curves
+  are for specific RMS slope of roughness; see legend. \label{SmithFig2}
+  SmithFig2.png }
+\end{figure} 
+% how made: beaming.pro @481 parh=[0.,55.,15.,45.,177.,75.,1.]
+
+ I should extract his results for both illumination and viewing shadows,
+ although they are only for in the principal plane.
+
+\subsection{Hansen  1977} %-----------------------------------------
+Uses spherical crater sections and normalizes wavelength to $\lambda_{max} =2900
+$ \um \qd K $/0.905 T_{max}$ where the .905 is empirical based on earlier
+thermal observations of asteriods.
+
+Fig 6 has his beaming functions.  His appendix contains the crater model, which
+is solved numerically.
+
+\subsection{Hapke 1984} %-------------------------------------
+
+p43.4a \bq (4) It is assumed that the surface is made up of facets tilted at a
+variety of angles which have no preferred direction in azimuth but can be
+described by a Gaussian distribution in zenith angle. \eq 
+
+p43.0b \bq No other assumptions about the geometry of the roughness are
+made. The present treatment attempts to keep the morphology as general as
+possible.
+
+The general procedure of the derivation will be as follows. First, expressions
+which are mathematically rigorous will be derived and the parameters necessary
+for their evaluation defined. Since the effects are maximum at grazing
+illumination and viewing, these expressions will be evaluated exactly under
+these conditions. To obtain useful approximations the equations will also be
+evaluated for vertical viewing and illumination. The resulting expressions will
+be connected by analytic extrapolation to give a solution for intermediate
+angles.  \eq
+
+p43.6b \bq The normals to the facets are tilted at various angles $\theta$ with
+respect to the local vertical ...  Let $a(\theta)$ be the function which
+describes the distribution of tilts.  ...  Let the slope distribution function
+be normalized so that 
+\qb \int_0^{\pi/2} a(\theta) \ d \theta \ = \ 1 \qeq (4) \qe
+ and characterized a mean slope angle $\overline{\theta}$  defined by 
+\qb  \tan \overline{\theta} =(2/\pi) \int_0^{\pi/2} \tan \vartheta \ a(\vartheta) \ d \vartheta \ \qeq (5, 12.5) \qeq  \eqq   \qe 
+
+Where two equation numbers are given, the first is for \qcite{Hapke84} and the
+second for \qcite{Hapke93}.
+
+p50.3: \bq Define the average value of any function $ F(\theta)$ as $ \langle F(\theta) \rangle = \int _0^{\pi/2} F(\theta ) a(\theta ) d\theta $ . \eq
+
+p50.9a \bq Since (43) contains only averages of trigonometric functions weighted
+by $a(\theta)$ the equations are insensitive to the exact form of $a(\theta)$
+used. Two distribution functions, Gaussian and exponential, which have been
+widely used in planetary applications (Saunders, 1967; Hagfors, 1968) were
+investigated. The numerical differences between the two turned out to be quite
+minor; hence, the Gaussian was chosen. \eq
+
+p51.5a:  ... the distribution of slopes on any vertical cut with arbitrary azimuth
+through the surface \bq is assumed to be of the form
+$ a_1(\theta ) \ d \theta  = A \exp \left[ - \tan^2 \theta /  B \tan^2 \overline{\theta} \right] \ d \ ( \tan \theta ) $, 
+where $A$ and $B$ are constants. In general, if $ a_1(\theta ) \ d \theta$ is the 
+one-dimensional distribution, then the corresponding two-dimensional, 
+azimuth-independent slope distribution function is  
+$ a_1(\theta )  \sin \theta d \theta d \zeta$  (Hagfors, 1968). 
+Thus $ a(\theta )$ is taken as 
+\qb a( \theta) = A \exp \left[ - \tan^2 \theta \ / \ B \tan^2 \overline{\theta} \right] \sec^2 \theta   \sin \theta . \qeq(44) \qe
+
+Assumption (2), that the mean slope $ \overline{\theta}$ is not too large, will
+now be used for the first time.  ... it is found that to second order in $ \overline{\theta}$,  
+\qi $A=2/\pi \tan^2 \overline{\theta} $
+\qi $B=\pi$  \ \  \eq
+
+ And he proceeds to use approximations to second order in
+ $\overline{\theta}$. For the remainder of Hapke roughness development I use his
+ book as the formulation is clearer.
+
+\subsection{Jakosky 1990} %---------------------
+\qcite{Jakosky90} Measures brightness temperatures of natural and artificial
+surfaces at several angles near simultaneously. Rougher surfaces showed the
+strongest incidence and azimuth angle effects.
+
+\subsection{Hapke 1993} %-------------------------------------
+  \qcite{Hapke93} is a book compiling his work on scattering. 
+
+Distinguishes ``tilt shadow'', when a surface normal is more than 90\qd~ from
+the illumination or observation direction, from ``projected shadow'' when
+another part of the surface obstructs the ray.  KRC 3.4 fully accounts for
+tilt-shadow but does not treat projected shadow.
+
+ \qcite{Hapke93} chapter 12 is mild rewrite of \qcite{Hapke84}.
+
+p326.6 \ \bq Then, in general (Hagfors, 1968) if $a'(\vartheta)$ is the
+one-dimensional function that describes the distribution of slopes on any
+vertical cut through the surface made at an arbitrary azimuth angle, the
+corresponding two-dimensional, azimuth-independent distribution function can be
+written in the form 
+\qb a(\vartheta) \ d \vartheta \ d \zeta 
+= a'(\vartheta) \sin \vartheta \ d \vartheta \ d \zeta. \qeq (12.1) \qe
+It will be assumed that $a'(\vartheta)$ can be described by a Gaussian
+ distribution of the form
+\qb a'(\vartheta ) \ d \vartheta  = \mathcal{A} \exp \left[ - \mathcal{B} \tan^2 \vartheta \right] \ d (\tan \vartheta), \qeq (12.2) \qe
+ where $\mathcal{A}$ and $\mathcal{B}$ are constants to be determined. Then
+
+\qb a(\vartheta ) =\mathcal{A} \exp \left[ - \mathcal{B} \tan^2 \vartheta \right]
+\sec^2 \vartheta  \sin \vartheta \qeq (12.3) \eqq \qe
+
+Normalizing so that the total distribution over 0:$\pi/2$ is unity, he finds 
+ \qb \mathcal{A}=2/\pi \tan^2 \overline{\theta} \mc{and} \mathcal{B}=1/\pi \tan^2 \overline{\theta} \qeq (12.6a,b) \qe 
+
+Using (12.6) yields the same relation as in \qcite{Hapke84} near Eq. 44.; a
+relation similar to that shown in \qcite{Shepard95} Eq. 13 and
+\qcite{Bandfield15} Eq. 1; the latter is repeated reformed here for convenience
+\qb P(\theta)=\frac{\tan \theta}{\tan^2 \theta_0} \exp \left[ -\frac{\tan^2 \theta}{2 \tan^2 \theta_0} \right]  \qe
+
+Note:  substitution of (12.6) into (12.3), yields 
+\qbn a(\theta ) = 
+ \frac{2}{\pi} \cdot  \frac{1}{\tan^2 \overline{\theta} } \exp \left[ -\frac{\tan^2 \vartheta}{\pi \tan^2 \overline{\theta}} \right] \cdot \sec^2 \theta   \sin \theta \qen
+identical to 1984 work with substitution of $A$ and $B$ into (44). Substituting this result into (12.5), I get
+
+\qbn \tan \overline{\theta}  = \frac{2}{\pi} \int_0^{\pi/2} \frac{2}{\pi} \cdot 
+\underbrace{ \frac{\tan \vartheta}{\tan^2 \overline{\theta} } \exp \left[ 
+- \overbrace{ \frac{\tan^2 \vartheta}{\pi \tan^2 \overline{\theta}} }^{Z} \right]}_{\sim P(\theta)} \sin \theta \cdot \underbrace{ \sec^2 \theta \ d \vartheta}_{d \ \tan \theta} \ql{mytb}
+This has the same form but different constants, including in the exponent, as
+the above two citations. It produces a normalized distribution distinct from
+them because of the $\pi$ rather than 2 in the exponent. $Z$ is a term that differs between \qcite{Hapke93} and \qcite{Bandfield15} and which must be constrained to avoid underflow.
+
+% if and only if those are weighted with $\Delta \tan \theta$ rather than $\Delta \theta$ .
+
+\vspace{3.mm}
+
+P 331.8 \ \bq ... we will try to write the rough-surface bidirectional
+reflectance $r_R(i,e,g)$ as the product of a shadowing function $S(i,e,g)$ and
+the bidirectional reflectance $r(i_e,e_e,g) $ of a smooth surface of effective
+area $A_e$ tilted so as to have effective angle of incidence $i_e$ and angle of
+emergence $e_e$, and with the same phase angle $g$. That is, we will seek
+expressions for $i_e(i,e,g)$, $e_e(i,e,g)$, and $S(i,e,g)$ that will make the
+following equation true: 
+\qb r_R(i,e,g)= r(i_e,e_e,g)S(i,e,g) \qeq (10,12.10) \eqq \qe 
+
+ In chapter 12, Photometric effects of large-scale roughness, at the start of 
+his derivation, \qcite{Hapke93} states:   
+p 333.7 \\
+\bq We shall follow Sanders (1967) and assume that any facet that is not in a
+tilt shadow has a statistical probability of being in a projected shadow that is
+independent of the slope or azimuth of its tilt. \eq
+
+ Eq. (12.29): relative azimuth dependence $f(\Psi)=\exp
+  \left( -2 \tan \frac{\Psi}{2} \right)$, which is a pragmatic function that
+  \bq decreases linearly from a value $f(0)=1$ to
+  $f(1)=1-\frac{2}{3}=\frac{1}{3}$ and then decreases to zero as $\Psi
+  \rightarrow \pi$ \eq.
+
+  Finds solutions for two conditions: first \textbf{when} $\mathbf{i \leq e}$
+
+ \qb S(i,e,\psi) = \frac{\mu_e}{\mu_e(0)} \frac{\mu_0}{\mu_{0e}(0)} 
+\frac{\chi(\overline{\theta})} {1-f(\psi) + f(\psi) \chi(\overline{\theta})Z} \qeq (12.50) \qe
+ where my $Z$ is his $[ \mu_0 / \mu_{0e}(0)] $
+
+\qb f(\psi)=\exp (-2 \tan \frac{\psi}{2}) \qeq (12.51) \qe
+
+\qb \chi(\overline{\theta}) = \langle \cos \vartheta \rangle = 1/\sqrt{1 + \pi \tan^2 \overline{\theta}  } \qeq (12.45a) \qe obtained by assuming $(\overline{\theta}$ is small and expanding to second order, as discussed before Eq (12.41a)
+
+\qb E_1(x)=\exp \left( -\frac{2}{\pi} \cot  \overline{\theta} \cot x \right) \qeq (12.45b) \qe
+
+\qb E_2(x)=\exp \left( -\frac{1}{\pi} \cot^2  \overline{\theta} \cot^2 x \right) \qeq (12.45c) \qe
+
+\qb \mu_{0e}(\psi)=\chi(\overline{\theta}) \left[ \cos i +\sin i \tan \overline{\theta}
+\overbrace{\frac{\cos \psi E_2(e) + \sin^2(\psi/2)E_2(i)}{2-E_1(e) -(\psi/\pi)E_1(i)} }^{r46}\right]   \qeq (46,12.46) \qe
+
+\qb \mu_e(\psi)=\chi(\overline{\theta}) \left[ \cos e +\sin e \tan \overline{\theta}
+\overbrace{\frac{E_2(e) - \sin^2(\psi/2)E_2(i)}{2-E_1(e) -(\psi/\pi)E_1(i)} }^{r47} \right]   \qeq (47,12.47) \qe
+
+In the above two equations I have added the $(\psi)$ to the left side for clarity
+
+\qb \mu_{0e}(0)=\chi(\overline{\theta}) \left[ \cos i +\sin i \tan \overline{\theta}
+\frac{ E_2(e) }{2-E_1(e)} \right]   \qeq (48,12.49) \qe
+
+\qb \mu_e(0)=\chi(\overline{\theta}) \left[ \cos e +\sin e \tan \overline{\theta}
+\frac{ E_2(e) }{2-E_1(e)} \right]   \qeq (49,12.48) \qe
+
+ \textbf{When} $\mathbf{ e \leq i}$:
+ 
+\begin{itemize}      % ticked items    
+\item 
+ (12.46) is modified by replacing the term r46 with r47 and exchanging $i \Leftrightarrow e$ therein to make  (12.52 )
+\item    (12.47) is modified by replacing the term r47 with r46 and exchanging $i \Leftrightarrow e$ therein to make  (12.53)    
+\item my $Z$ in (12.50) becomes $[ \mu / \mu_e(0)] $ to make (12.54)
+
+\end{itemize}
+These equations were implemented in \np{hapkes.pro}; results covering a wide
+range of $i$,$e$, and $\psi$ are shown in Figures \ref{hapkes} and
+\ref{hapkes2}. The function generally decreases with increaseing incidence angle
+and the variation alnog azimuth increases with increaseing emergence angle.
+
+The increase toward large azimuths for high emergence angles seems non-physical.
+
+\begin{figure}[!ht] \igq{hapkes}
+\caption[Hapke shadow function]{Hapke shadow function for incidence and
+  emergence angle of 5 to 75\qd~ and relative azimuths 5 to 175\qd~ for a
+  roughness mean slope of 30\qd. Each color (see left legend) is for a single
+  incidence angle; emergence angle is indicated by line type (see right legend)
+\label{hapkes}  hapkes.png  }
+\end{figure} 
+% how made:
+
+\begin{figure}[!ht] \igq{hapkes2}
+\caption[Hapke shadow function]{Hapke shadow function, see caption for
+  Fig. \ref{hapkes}. Each curve (see legend) is for a single incidence angle;
+  azimuth increase radiply to the right repeatedly, each section is for an
+  emergence angle indicated by labels near the bottom of the chart.
+\label{hapkes2}  hapkes2.png  }
+\end{figure} 
+% how made:
+
+The azimuth function is shown in Fig.  \ref{hida}
+\begin{figure}[!ht] \igq{hida}
+\caption[Azimuth functions]{The azimuth function $f(\Psi)$ of \qcite{Hapke93},
+  Eq. (12.29).  Below 0.1, the solid line shows the approach to 0 in the forward
+  scatter direction on a linear scale and the dashed line on a logrithmic scale
+  (20 orders of magnitude; scale at the left margin. The $-\cdots$ line shows
+  the simplistic function with continuous derivatives $\frac{1+ \cos \psi}{2}$
+  and the dotted line is a compromise function $\frac{1+ \cos (\psi (1+.3 \sin
+    \psi)) }{2}$ closer to $f(\Psi)$. \label{hida} hida.png }
+\end{figure} 
+% how made: hiding.pro parr[2]=-2
+
+\subsection{Shepard 1995} %-------------------------------------
+
+Based on the concept of fractal sufaces.  
+Fractal surface statistics based on uniform separation of points in the
+horizontal plane, so that a $\cos \theta $ term is not needed to in finding the
+mean angle or slope.
+
+ In \S 2.1 defines several terms: \bq
+
+5. Variance $( \sigma^2 )$. The variance of all points on a surface or profile aboutn the mean value: 
+\qb \sigma^2= \langle [ z- \overline{z} ]^2 \rangle \qeq (1) \qe
+
+
+9. Slope histogram $(P(s) = P( \tan \theta) )$ . A function describing frequency
+or number slopes within any angular interval.  Note that s is the slope or
+tangent of slope angle $ \theta) $ 0.
+
+10. Slope density function or slope distribution $(p(s) = p( \tan \theta) )$.  A
+function describing frequency or number of slopes within any solid-angle
+interval. The slope density function is essentially the slope histogram
+normalized by solid angle. The difference will become apparent when
+unidirectional and adirectional slope distributions are discussed. \eq 
+
+
+In \S 3.3 discusses three slope distributions of fractal surfaces:
+\begin{description}  % labeled items    
+\item [Unidirectional]  
+p11714.3 b \bq Efford [1990] notes that synthetic fractal surfaces have
+unidirectional slope histograms that are accurately represented by Gaussian
+functions. \eq
+
+p11714.5 b \bq Therefore, the unidirectional slope distribution of a fractal
+surface is Gaussian, with (slope) variance $<(\Delta z / \Delta x)^2>$ .  The
+rms slope is just the square root of this variance and is typically converted
+to degrees by taking the inverse tangent. \eq
+
+p11714.7 b \bq Although seemingly a trivial distinction, the unidirectional
+slope angle distribution of a fractal surface will not be Gaussian, except in
+the limit as $\theta _\mathrm{rms} \rightarrow 0 $. This is because the inverse
+tangent is increasingly nonlinear at higher slopes. \eq
+
+ \item [Adirectional] Closely follows a Rayleigh distribution: 
+\bq ... defined by \qb P(s)=\frac{s}{s_0^2}e^{-(s^2 / 2s_0^2)} \qeq (13) \qe
+where $P$ is the slope histogram function, $s$ is the slope of the surface
+normal polar angle, and $s_o$ is the mode of the distribution, equal to the
+unidirectional rms slope. \eq
+
+ \item [Effective] \bq We define the effective surface slope following Campbell
+and Garvin [1993] as:
+\qb s_\mathrm{EFF}=\frac{\sqrt{2} \sigma}{l} \qeq (18) \qe
+where $l$ ... is the autocorrelation length \eq
+
+\end{description}
+
+Refers to:  Simpson, A., and G. L. Tyler, Radar scattering laws for the lunar surface. IEEE Trans. Antennas Propagat., AP-30, 438-448, 1982
+
+
+\subsection{Bandfield 2008} %-------------------------------------
+\S 2.4, \P 2 \bq We chose to use the $\theta$ -bar parameter described by Hapke
+(1984) as a model for surface slopes (Fig. 2). This model is based on a Gaussian
+distribution of slopes along a surface cross-section that is expanded to a full
+three dimensional surface assuming that the azimuths of slopes are random. This
+model is independent of length scales and can be described using a single
+parameter. While this simplicity is well suited for the derivation of surface
+slope distributions from the data, it is not adequate for geological
+interpretation of surfaces as it does not account for the scale at which the
+roughness occurs. \eq
+
+\subsection{Bandfield 2015} %-------------------------------------
+\qcite{Bandfield15} uses the relations of \qcite{Smith67} for shadowing at nadir
+view. The relative azimuth dependence for off-nadir illumination and viewing comes from \qcite{Hapke84}.
+
+p 358.9b: \S 2.1 \\ 
+\bq Our thermal model assumes radiative equilibrium to predict surface
+temperatures. Sloped surfaces include a downwelling radiative component
+proportional to the fraction of the hemisphere filled by adjacent surfaces
+rather than space. To maintain computational efficiency, the solar and thermal
+infrared downwelling radiance is calculated assuming it is coming from a
+horizontal surface at radiative equilibrium. \eq
+
+p 359.4a \S 2.2. Surface roughness model \\ 
+\bq We use a simple Gaussian roughness model
+that is similar to that described by Helfenstein and Shepard (1999) and has been
+used for comparison to martian TIR datasets (Bandfield and Edwards, 2008;
+Bandfield, 2009). Surface temperatures are predicted for slopes of 0–90\qd~ at
+2\qd~ intervals and azimuth orientations of 0–360\qd~ at 20\qd~ intervals. The
+radiance of each slope/azimuth combination is calculated, and its contribution
+to the total modeled radiance is weighted by the statistical probability of its
+occurrence. This reduces the surface slopes/roughness to a single parameter (RMS
+slope) that is independent of length scales while maintaining reasonable
+fidelity to natural surfaces.
+
+The probability distribution $P$ for a given slope angle, $\theta$, is described
+by the following (derived from Eq. (13) of Shepard et al. (1995)):
+
+\qb P(\theta)=\frac{\tan \theta}{\tan^2 \theta_0} \cdot e^{-\frac{\tan^2 \theta}{2 \tan^2 \theta_0} }  \qeq (1) \qe
+
+where $\theta_0$ is the tangent of the RMS slope angle. This describes the
+adirectional distribution of slopes, which closely approximates a
+Gaussian distribution of unidirectional slopes for a RMS slope angle
+of $\theta_0$ (Shepard et al., 1995). For our purpose, the azimuth direction
+for the slope of any given surface has no preferential orientation
+and our measurements are sensitive to an adirectional distribution
+of slopes with random azimuths rather than the slope distribution
+along any particular transect or orientation. \eq
+
+The above statement `` $\theta_0$ is the tangent of the RMS slope angle'' seems to be in error as his Eq. 1 would then be taking the tangent of a tangent.
+
+p 359.9a  \\ \bq 
+We use a shadowing approximation methodology modified from that developed by
+Smith (1967) and Hapke (1984) . This model assumes that any slope/azimuth
+surface that would otherwise be illuminated has the same statistical chance of
+being within a shadow cast by another surface. This is a relatively simple
+approach for nadir observations described by the following (derived from
+Eqs. (21) and (24) of Smith (1967)):
+
+\qb S(\theta)=\frac{1-\frac{1}{2}  \erfc \left( \mu / \sqrt{2} \omega \right) }
+{\frac{1}{2} \left( \sqrt{2/\pi} \cdot \frac{\omega}{\mu} e^{-(\mu^2/2\omega^2)}
+ - \erfc \left( \mu / \sqrt{2} \omega \right) \right) +1 } \qeq (2) \qe
+
+where $S(\theta)$ is the fraction of the shadowed surface, $\mu$ is the
+cotangent of the solar incidence angle, $\omega$ is the RMS surface slope
+distribution, and $\erfc(x)$ is the complementary error function (the integral
+between 0 and x of a Gaussian distribution function).
+
+This equation can only be applied as is to nadir observations where no surface
+is hidden from the spacecraft view (assuming no overhanging surfaces). \eq
+
+
+
+p 359.4b \\ 
+ To account for viewing orientation effects, we use an approach similar to that
+ described by Hapke (1984). Where the viewing emission angle is greater than
+ the solar incidence angle, the shaded fraction observed at nadir,
+$ S_{nadir} (\theta)$, is modified by the following:
+\qb S_{view} (\theta) = S_{nadir} \cdot \left( 1 - e^{-2\tan \left[ \frac{1}{2 }\left( \phi_{sun}-\phi_{obs} \right) \right] } \right) , \qeq (3) \qe
+
+where $S_{view} (\theta)$ is the fraction of shadowing that is present within
+the field of view, $\phi_{sun}$ is the azimuth angle of the Sun with respect to
+the surface, and $\phi_{obs}$ is the azimuth angle of the spacecraft with
+respect to the surface. Where the viewing emission angle is less than the solar
+incidence angle, the following applies:
+
+\qb S_{view} (\theta) = S_{nadir} -S_{obs} \cdot e^{-2\tan\left[
+    \frac{1}{2}\left( \phi_{sun}-\phi_{obs} \right) \right] } \qeq (4) \qe 
+
+where $S_{obs}$) is the shadowing function described in Eq.  (1) , except as
+applied to the viewing incidence angle of the spacecraft rather than the Sun.
+ \eq
+
+\S 3.2.3, p360.6b \\ \bq
+Modeling indicates that surface roughness has little effect where solar
+incidence is less than $\sim 30$\qd, and these observations can be considered
+free of its interfering effects (Davidsson et al., submitted for publication) \eq
+
+Fig 6 has some effects of slopes of 10,15,20,15 \qd.
+
+\S 4.2.1. Day, p 363.9a \\ \bq 
+The six daytime EPF observations acquired with moderate angles of
+solar incidence (Table 2 and Fig. 7) all show a distinct asymmetry in
+brightness temperature about the nadir observation.  In each case, the
+measurement pointing equatorward has lower brightness temperatures than the
+equivalent emission angle observation that points poleward. \eq
+
+p 363.4b \\ \bq 
+As expected, both the model and Diviner measurements show a trend of increasing
+temperature differences at higher opposing emission angles. Temperature
+differences reach $\sim 63$ K for the EPF observation near 98\qd E, 52\qd S at
+opposing 7\qd~ up- and down-track emission angle observations. The modeled
+temperature differences also predict increasing temperature differences for
+higher RMS surface slope distributions. The six daytime EPF sequences compare
+most closely with modeled surface slope distributions of $\sim 25 - 35 $ \qd
+(Fig. 9). \eq
+
+\section{Outline of pragmatic formulations}
+Divided into two major sections
+\qi Distribution of slopes; i.e. the physical surface independant of its temperature 
+\qi Temperatures of the seen surface, and effect upon that of the far field it sees
+
+Distributions should cover the complete range of physical likelyhood. E.g. dips
+(slope relative to horizontal) from 0 to 90\qd, will ignore overhangs; all
+azimuths, both abolute ( e.g., from North) and relative ( from the plane of
+incidence). Functions must be continuous, and it is desireable that at least the
+first dervative be continuous. Yet, the presence of ``ponded deposits'' of zero
+slope would require a discontinuous first derivative in slope abundance
+
+
+\subsection{Devils enumeration of approximations} %----------------------------
+\begin{description}    % numbered items  
+\item [UniAlb] Material albedo is the same for all slopes. \ \   Unknown.
+\item [UniPhot] Material reflectance function is the same for all slopes. \ \   Unknown.
+\item [UniLay] Material subsurface properties are the same for all slopes. \ \   Unlikely but magnitude unknown.   
+\item [SlopeElev] Slope probablility is not related to elevation.  \ \ Depends upon geology.
+\item [ffT] Far-field temperature is the same at all azimuths. \ \ Poor; address. 
+\item [ShadeTilt] Temperature in the shade independent of tilt. \ \  Poor; address.
+\item [ShadeTime] Temperature in the shade independent of hour.  \ \ Poor.
+\item [EmissLamb] Thermal emission of a facet is Lambertian. \ \  Reasonable, accept. 
+\item [AbsAzi] Absolute azimuth does not matter. \ \  Thought to be excellent.
+\item [KofT] Conductivity not a function of temperature. \ \ Addressed by KRC.
+\item [Homog] Material is homogeneous with depth.  \ \  Addressed by KRC.
+\item [Sphere] Object is spherical. \ \ Knowable and addressable; harder if concave. 
+\item [Geography] Object is the same at all locations (lat/long) / / OK initially. Addressable by mapping models. 
+
+\end{description}
+
+\subsection{Distribution of elevations and slopes} %----------------------------
+
+I generate the IDL routine \np{hiding.pro} to compute shadow and hiding functions;  negative incidence angles generate various plots.
+
+ 
+ [concave / convex] As a multiplier of the theoretical distribution
+
+\subsection{RMS slope of a sphere} %-------------------------------------
+Using \qcite{Hapke84} definition of mean slope angle (his Eq. 5), the mean slope of the visible half of a sphere (or a hemispherical crater) is  
+\qbn \overline{\theta} \equiv \int_0^{\pi/2} \tan \theta  \cdot \sin \theta  \ \cos \theta  \ d \theta 
+\Rightarrow  \int_0^{\pi/2} \sin^2 \theta \ d \theta 
+\Rightarrow \bigg[_0^{\pi/2} \frac{\cos^3 \theta }{3}- \cos \theta 
+= \frac{2}{3} \mc{and} \theta=33.7^\circ \qen
+
+\subsection{Probability of hiding} %----------------------------
+
+\subsection{Aside on Hiding}  %-------------------------------------
+
+A hiding function can be used on the incidence angle $i$ to calculate the
+likelyhood that a tile segment in shadow; but existing functions say nothing
+about how long has it been in shadow.  A hiding function can be used on the
+emergence angle $e$ to calculate the population of tilt facets that the viewer
+sees. The hiding function should be symmetric with respect to $i$ and $e$.
+
+In the morning, a facet it has probably been in shadow through the prior night,
+so using the pre-dawn temperature would be appropriate. In the afternoon, would
+need to estimate when that tilt might have entered shadow; this would require
+integrating the probability that it was in shadow from noon to the current
+time.
+
+\subsubsection{Implication of geology}
+Hapke shadowing formalism is used by several authors. I have a problem with the
+p333.7 assumption as my experience is that in rugged terrain steeper slopes have
+a lower probability of being shadowed; this is partially because steep slopes
+are commonly higher in the terrain where there is less terrain above them to
+generate debris that would bury them to make shallower slopes! This results when
+surface degradation rates are relatively uniform over area, as for example by thermal fracturing.
+
+One inportant exception on Earth includes ``hill and valley'' terrain, where
+erosion is dominated by rainfall and fluid flow, a strongly non-linear process,
+and surfaces become convex upward apart from the negative cusp of the
+stream/river itself.
+
+Since this is an effect of gravity, it might be less important on asteroids; but
+the modest set of high-resolution images from small bodies (e.g., the Rosetta
+mission, 433 Eros imaging by NEAR) suggest that gravity has some effect on them
+as well. Diurnal thermal cycling will tend to disaggregate blocks larger than a
+modest fraction of the diurnal skin depoth. Disaggregation and motion due to
+seismic waves from impacts is discussed by \qcite{Richardson05}.
+
+This leads me to wonder if a ``hiding'' function weighting visibility as a
+function of facet slope would be appropriate.  
+
+For dark objects, where multiple scattering is unimportant, visibility
+increasing with slope would lead to limb brightening relative to a Lambertian
+sphere.
+ 
+\subsubsection{Discussion}
+
+If radiative equilibrium is assumed, then all solar shadows are at 0K; modelers
+usually assume some realistic fixed value, \qcite{Bandfield15} uses 100K.
+ 
+ To improve on this would require treating what tilt is in the shadow and how
+ long it had been is shadow.
+
+ A limiting realistic case is to set the temperature of a tilt that is in shadow
+ to the minimum diurnal temperature for that site and conditions. This is not
+ impractical with the KRC formalism used here.
+ 
+\subsection{Distribution of tilt within visibility} %---------------------------
+Visibility $V$ is here defined as simply 1.-hiding, or $V\equiv 1-H$
+
+Allow a modification of hiding related to tilt under the requirement that the
+total hiding or visibility does not change.
+
+$H$=$H_0 F(x)$ where $x$ is the dip angle of a facet, and require
+$\int_0^{\pi/2} F(x)p(x) =1$ where $p(x)$ is the population function of dips and
+$\int_0^{\pi/2} p(x) =1$.
+
+A simple implemenation is $F$ as a Chebyshev polynomial of the first kind in
+$x=2p/p_\mathrm{max} -1$; i.e., $Y=c_0+c_1x+c2(2x^2-1) + ...$, $F=
+Y/\int_0^{\pi/2} Y(x)p(x)\ dx $ and degree 2 should be enough. Without loss of
+generality, can let $c_0=1$ and this will be convenient.  $F$ must not be
+negative anywhere.
+
+\subsection{Effect of azimuth} %----------------------------
+
+The azimuth function derived by \qcite{Hapke93}, Fig. \ref{hida}, has a
+discontinuous slope crossing the backscatter plane; which might be physical only
+for zero phase angle.  A simplistic function that as continuous derivatives and
+the same limits as his Eq (12.51) is $\frac{1+ \cos \psi}{2}$.
+ 
+ To account for the tendency of a slope in rough terrain to be facing slopes of
+ the opposite azimuth, e.g., a west-facing slope near dusk is likely to view
+ warm east-facing slopes in the far field, generate KRC models wherein each tilt
+ facet uses a far-field with a tilt near the RMS slope value and an azimuth
+ different by 180\qd.
+
+\subsection{Nature of the far field} %----------------------------
+\begin{description}  % labeled items   
+\item [None] The far field (below the horizon) has zero radiance. This is
+  non-physical but is simple to do and has been done in some asteroid papers to
+  estimate the magnitude of the far-field effect. KRC has not had this
+  capability, but version 3.4 could emulate it by using a far-field file with a
+  negligable temperature.
+  
+\item [Self] The far field is the same temperature as the tilted surface. This
+  was done in KRC before version 3
+
+\item [Flat] The far field has the temperature of a flat (zero dip) surface of
+  the same material. KRC 3+ has the option for the far field surface temperature
+  to be that of any prior run, and normally this would be a run with identical
+  materials with zero slope.
+
+\item [Opposite] Assign the far field the temperature of the RMS slope at same
+  time of day but 180\qd~ difference in azimuth from the subject facet. This
+  could be closely approximated by running a set of KRC models first flat, then
+  with the RMS slope using flat as the far field at all azimuths, then a full
+  set of tilts with each azimuth using the opposite-azimuth RMS slope model as
+  the far-field file.
+
+\end{description}
+
+\section{numerical results}
+Slope distributions were calculated several ways, using slope angles every 0.1\qd~ from 0.1 to 89.9. For each distribution, the terms were separated into elements variable with angle, whose product is $F_i$ and all those constant with angle. The 
+
+
+$d \tan \theta$ was implimented both numerical based on mid-point between each angle $\theta$  and $\sec^2 \theta d \theta$; the two differ by less than one ppt below 88.3\qd/
+
+ \begin{description}  % labeled items  
+\item [Hapke]  Equation \qr{mytb}. Constant= $(2. \cdot  2.)/( \pi \cdot \pi \cdot$ $d. \ tan \theta$ numerical based on mid-point between each angle $\theta$ 
+\item [Bandfield] Similar to Equation \qr{mytb} except the $\pi$ in exponent
+  section replaced with a 2. All else the same as above, His $\theta_0$ is taken
+  to be the RMS slope angle
+\item [literal]   Similar to Bandfield version, except Bandfield $\theta_0$ is taken literally to be tangent of the tangent of the RMS slope angle. 
+
+\end{description}
+
+\subsubsection{Averaging}
+ In each case, first compute a distribution that totals to unity over the set of uniform angles used. All except ``Hapke'' below use this distribution $F$
+ 
+\begin{description}  % labeled items   
+\item [Hapke]  As shown in Eq. \qr{mytb}, then convert to angle and to degrees
+\item [MnAng]  Mean angle: $ m=\sum_{i=1}^N p_i F_i $
+\item [RMSan]  $ r=\sqrt{ \sum_{i=1}^N p^2_i F^2_i }$
+\item [RMSsl] 
+\item [RMStd] 
+\end{description}
+
+
+
+
+
+\begin{table}
+\caption[Mean Roughness]{Mean roughness for three distribtions averaged five ways. See text for explanations   }
+\label{tab:ruf}
+\begin{center}
+\begin{tabular}{ | r r r r r r r r r r | } \hline
+i & Theta-bar in & 1.000 & 2.000 & 5.000 & 10.000 & 15.000 & 20.000 & 25.000 & 30.000 \\ \hline
+0 & Hapke:Hapke & 0.999 & 1.994 & 4.914 & 9.385 & 13.211 & 16.400 & 19.043 & 21.247 \\
+1 & Hapke:MnAng & 1.998 & 3.988 & 9.817 & 18.732 & 26.436 & 33.030 & 38.730 & 43.743 \\
+2 & Hapke:RMSan & 2.169 & 4.326 & 10.617 & 20.093 & 28.103 & 34.827 & 40.548 & 45.517 \\
+3 & Hapke:RMSsl & 2.169 & 4.331 & 10.694 & 20.573 & 29.270 & 36.791 & 43.288 & 48.941 \\
+4 & Hapke:RMStd & 2.504 & 4.992 & 12.214 & 22.930 & 31.782 & 39.051 & 45.115 & 50.286 \\
+5 & 2angl:Hapke & 0.508 & 1.014 & 2.516 & 4.904 & 7.086 & 9.037 & 10.769 & 12.306 \\
+6 & 2angl:MnAng & 1.595 & 3.186 & 7.891 & 15.322 & 22.065 & 28.104 & 33.526 & 38.446 \\
+7 & 2angl:RMSan & 1.731 & 3.456 & 8.544 & 16.493 & 23.579 & 29.815 & 35.328 & 40.265 \\
+8 & 2angl:RMSsl & 1.731 & 3.459 & 8.586 & 16.770 & 24.318 & 31.168 & 37.358 & 42.964 \\
+9 & 2angl:RMStd & 1.999 & 3.990 & 9.843 & 18.888 & 26.807 & 33.646 & 39.587 & 44.817 \\
+10 & 2slop:Hapke & 0.507 & 1.011 & 2.461 & 4.517 & 5.991 & 6.908 & 7.370 & 7.485 \\
+11 & 2slop:MnAng & 1.595 & 3.182 & 7.835 & 14.950 & 21.083 & 26.308 & 30.805 & 34.746 \\
+12 & 2slop:RMSan & 1.731 & 3.452 & 8.484 & 16.103 & 22.573 & 28.014 & 32.647 & 36.674 \\
+13 & 2slop:RMSsl & 1.731 & 3.455 & 8.524 & 16.363 & 23.243 & 29.217 & 34.446 & 39.098 \\
+14 & 2slop:RMStd & 1.998 & 3.985 & 9.774 & 18.457 & 25.737 & 31.798 & 36.925 & 41.364 \\
+ \hline
+\end{tabular} \end{center} \end{table}
+%  \multicolumn{#cols}{lcr}{text}
+
+
+\ref{rough}
+\begin{figure}[!ht] \igq{rough}
+\caption[Roughness models]{Mean angle of roughness for three kinds of slope distributions and 5 measures of the mean. data from Table \ref{tab:ruf}
+\label{rough} rough.png  }
+\end{figure} 
+% how made: beaming, @45, bbb=[1.,2.,5.,10.,15.,20.,25.,30.] @451,454
+
+\bibliography{heat,moon,mars}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev 
+\end{document} %===============================================================
+
+\ref{}
+\begin{figure}[!ht] \igq{}
+\caption[]{
+\label{}  .png  }
+\end{figure} 
+% how made: 
+
+% \pagebreak
+
+\appendix %====================================================================
+
+\subsection{bits}
+For a fractal surface Gaussian Uni-directional ...

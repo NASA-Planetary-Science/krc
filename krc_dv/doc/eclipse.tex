@@ -1,0 +1,1866 @@
+\documentclass{article} 
+\usepackage{underscore} % accepts  _ in text mode
+\usepackage{ifpdf} % detects if processing is by pdflatex
+\usepackage{/home/hkieffer/xtex/newcom}  % Hughs conventions
+% \newcommand{\qj}{\\ \hspace*{-2.em}}      % outdent 1
+
+\textheight=10.00in \topmargin=-1.1in % bot need 0.1 more        %OK
+\textwidth=7.20in  \oddsidemargin=-0.4in \evensidemargin=-0.4in  %OK
+
+% 1 of next 2 used in place of  \qen for development to identify equation labels
+ 
+\newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+\newcommand{\bq}{$ < \! > \!   \! >$ } %  begin quote
+\newcommand{\eq}{ $< \! \! < \! > $ } %  end quote
+
+% absorb is the verb, absorption is the process
+
+\title{KRC Version 3.5.5 with eclipses, planetary fluxes and Photometric functions under an atmosphere}
+\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/v35/eclipse.tex  2017mar12:2018feb22}
+\begin{document} %==========================================================
+\maketitle
+\tableofcontents
+\listoffigures
+%\listoftables
+\hrulefill .\hrulefill
+% \pagebreak 
+
+\begin{abstract}
+
+KRC has been expanded to handle two kinds of eclipses. Rather than wait for
+Version 4 with full longitude support, Version 3.5 has been generated with
+one-longitude-at-a-time support for three types of eclipses:
+\qi 1) Lunar, or Daily: as for Jovian satellites.
+\qi 2) Rare: in that the lead-up days did not have eclipse, as for Earth-lunar. 
+\qi 3) Solar: when the satellite casts a shadow on the planet.
+\\ The insolation profile through an eclipse has been modeled in considerable
+detail. However, PORB has not been changed, so the user will have to do some
+work to calculate the eclipse ``bias'' from perfect alignment. 
+For Jovian (and similar) satellites, reflected and thermal radiation from the
+planet can be significant, especially during eclipse; a sinusoidal approximation
+for these in the form $F=c_1 + c_2 \cos (\nu -c_3)$ has been included for each. 
+Atmospheres on the eclipsed body are treated for lunar eclipses but are ignored over the duration of a rare or solar eclipse. Other changes:
+\\ - Added the capability to write binary files of surface temperatures at every
+computed time-step on the last day of the last season for any set of cases.
+\\ - Separated the photometric function parameter from atmospheric parameters so
+that non-Lambertian surfaces may be used when there is an atmosphere. However,
+the atmosphere calculations still assume a Lambertian lower boundary, as this is
+a predicate for the 2-stream delta-Eddington calculations.
+\\ Version 3.5.5 is largely backward compatible with earlier versions 3.x, so that
+non-eclipse use is unchanged with the exception that the photometic function
+parameter which had been overloaded with the Henyey-Greenstein value is now
+change-line 1 38, (was DDT).
+
+Documentation of 3.5.x before 2017dec08 has several important errors. Bugs related to eclipses were found in 3.5.4; and any results from that version should be redone. 
+
+% This development has addressed many of the numerical issues associated with the rapid insolation changes of an eclipse. 
+\end{abstract}
+
+% \subsection{Remaining issues}
+
+\section{Introduction}
+
+Terminology: 
+\\ \textbf{Occulting body: OB} The body casting the shadow.  % For daily eclipses, this is typically a planet. For rare eclipses, this is commonly a satellite. 
+\\ \textbf{Eclipsed body: EB} The body in shadow.  % For daily eclipses, this is typically a satellite.  For rare eclipses, this is commonly a planet.
+\\ \textbf{Eclipse body Surface Point: ESP} The location on the EB for which calculations are done. 
+\\ \textbf{Bias} The Sun:EB center line closest approach to the OB center, as a fraction of the OB radius; + is North.
+\\ \textbf{Central hour} The KRC hour at ESP at the center of eclipse.
+
+Eclipse insolation profile includes the full geometry for round body occulting a round Sun. Simplifying assumptions for eclipse insolation profile.
+\qi 1. Assume circular, uniform irradiance source (Sun)
+\qi 2. Effect of planet atmosphere treats Sun as a point source. ? [atmosphere not implimented]
+\qii  Convolve this with the geometric extinction.
+
+NOTE: The OB atmosphere effects became too messy, and are currently omitted!
+
+KRC 3.5 assumes synchronous rotating satellites, so longitudes are not all the
+same as in earlier versions of KRC. For simplicity, specify surface longitudes
+as Hours from the sub-solar point at inferior conjunction (from the Sun) and
+increasing eastward (right-hand about the North pole).
+
+The finite size of the EB is included in computing distances; in the Solar
+System, this is important only for Phobos shadow on Mars.
+
+The symbols \bq and \eq are used here to bound direct quotes from articles or
+prior documents.
+
+\section{3.5.5}
+\subsection{Things not backward compatible}
+ The convergence parameter DDT has been firm-coded in KRC and real parameter 38 is now the reflectance photometric function key.   
+
+\section{Users Guide}
+
+This guide is a supplement to prior KRC User Guides; it repeats virtually
+nothing. The basic model is that described in \qcite{Kieffer12}
+
+Version 3.5 is mostly backward compatible with earlier versions 3.x, so that
+non-eclipse use is unchanged. 
+\subsection{Input file}
+Suggest starting with an input file from the distribution, e.g.,\nf{eurD.inp},
+and modifying as you wish.
+
+\begin{enumerate}    % numbered items  
+\item Generate the geometry matrix for the planet:satellite of interest, and
+  cut-and-paste it into the input file. A matrix for Europa is in
+  \nf{PORBCM.mat} and in the suggested input file.
+
+\item To invoke an eclipse, insert a change line 14 ; see \S \ref{eline}. This
+  eclipse will be in following cases until a change line '14 0 /' is used.  If a
+  Rare eclipse is specified, a binary file named \nf{tfinexx.bin5} will appear
+  in the running directory, where \nf{xx} is the case number.
+
+\item To invoke planetary fluxes, insert a change line 15; see \S \ref{pline}.
+  This will apply to following cases until a change line '15 0 /' is used.
+  \\ It may be helpful to look at the discussion in \S \ref{nomp} calculating
+  the flux values.
+
+\item To output a binary file containing the detailed surface temperature versus
+  hour for one latitude, insert a change line 16; see \S \ref{tline}. This will
+  apply to following cases until a change line '16 0 /' is used.
+
+\end{enumerate}
+
+ If both eclipse and planetary heating are invoked in a case; the longitudes
+ (expressed in Hours) should be the same. KRC does not check for this
+ consistency.
+
+
+\subsection{Output files \label{tline}}
+Controlled by change lines:
+
+KRC has traditionally output temperatures and other values every Hour (1/24th of
+the bodies day) or sub-multiple thereof, down to 1/4 Hour, the firm-code limit
+for N24 being 96. To track surface temperatures through an eclipse requires
+higher resolution. While the Daily eclipse calculations are done with a small
+modification of TDAY with no special output, a Rare eclipse will output a file
+of temperatures at high resolution (every fine-time step) for times around the
+eclipse.
+\begin{description} 
+ 
+ \item [.t52] The normal KRC type 52 file specified by a change line '8 5 0
+   name'.  To maintain compatiblity with earlier versions of KRC, this file is
+   not changed. It will contain the eclipse results for ``lunar'' eclipses, but
+   ignores ``rare'' or ``solar'' eclipses.
+ 
+ \item [tfine] ``rare'' or ``solar'' eclipses invoke fine-resolution in time and
+   depth using the routine TFINE which outputs an additional binary file
+   $<$run$>$\nf{tfinexx.bin5} where xx is the 1-based case number. This file
+   contains ASOL, FINSOL and upper layer temperatures at every fine time-step
+   within eclipse for each latitude where an eclipse occurs. Header contains two
+   ASCII vectors
+\qi caret-separated: N2, fine-time factor KFT, spare, followed by triples of: 
+[ J7,J9, latitude index] for each latitude that has an eclipse (and was stored).
+\qi !-separated: PARC, the values from input change-line 14 including the two defined by KRC.
+\qi `-separated: Depth of the fine layers stored; the first depth value will 
+be negative, corresponding to the virtual layer, 
+\qii but the first temperature value is the surface temperature.
+
+Main array is REAL*8 [2 + [upper] fine layers, fine-time, latitude]. The first
+dimension will be up to MAXFK[=20], firm-coded in TFINE. The 2nd dimension is
+set by the longest eclipse possible, computed by ECLIPSE for a bias $b'=0$, then
+doubled to cover the recovery phase after an eclipse.  The number defined for a
+latitude is (J9-J7+1)*KFT. The 3rd
+dimension is latitudes stored, which may be limited if the array size would
+exceed MAXCCC[=5000000] 8-byte words, firm-coded in TFINE.
+
+The hour associated with fine time-step I (1-based) in this file is: (J7+ I/KFT) * 24/N2
+
+ \item [tout]
+To address this in a generic way, the existing array \nv{TOUT} that is already
+in a COMMON can now be written to a binary file on the last day of the last
+season for one latitude.  This is invoked by a change line 16, containing the
+1-based index of the latitude desired and the central part of the file
+name. Output file name will be $<$run$><$central$><$ \nf{cxx.bin5} where \nf{xx}
+is the case number, generated automatically by KRC. The 'run' will be the
+leading part of the output print file name.  The recommended central part is
+\qi object
+\qi + 'lat'
+\qi + latitude in degrees with a following N or S as appropriate
+
+Example: \vspace{-3.mm} 
+\begin{verbatim}
+16 1 'eurDlat0N'  / output file for Tsurf every time-step on last day of last season
+\end{verbatim} 
+
+This will generate an output file in the running directory for each case untill
+stopped by a change-line: ``16 0 / ``
+ 
+\end{description}
+\subsection{fort.nn  Debug output files}
+
+Controlled by debug codes in the optional 2nd line of an input file.
+
+WARNING; these file names are intrinsic to the FORTRAN language and will be the
+same for each run. You must rename any you wish to retain.
+
+Data in each file is cumulative within a KRC run.
+
+\subsubsection{fort.42}
+Done IF (IRET.LT.1 .OR. IDB5.GE.2). Written in TFINE in layer loop 3.
+\\  WRITE(42,'(A,I4,2G12.5,F8.1)') 'J,BLAF,SCONVF,QA',J,BLAF(J),SCONVF(J),QA 
+\qi J: layer
+\qi BLAF: layer thickness
+\qi SCONVF: safety factor before consideration of doubling
+\qi QA: doubling factor
+\\ J drops to 2 for each new case.
+
+\subsubsection{fort.43}
+ Done IF (IDB5.GE.4). Written in TFINE at start of each day loop.  
+\\ Cases are appended. Format is:
+\qiii 22   FORMAT(99F8.3)
+\qiii 23   FORMAT(99G12.4)
+\qi  ,*)  'N1...YTF',N1,FLAY,RLAY, KFL,N1F,RLAF
+\qi  ,23)(XCEN(I),I=1,N1) center depth
+\qi  ,22)(TTJ(I),I=1,N1)  starting temperature of each coarse layer
+\qi  ,23)(YTF(I),I=1,N1)  temperatures of the upper N1 fine layers
+\qi  ,23)(BLAY(I),I=1,N1) thickness of coarse layers
+\qi  ,23)(BLAF(I),I=1,N1) thickness of the upper N1 fine layers
+\qi  ,23)(XCEF(I),I=1,N1) center depth of the upper N1 fine layers
+\qi  ,*)'C_END'
+\qi  ,23)(XCEF(I),I=1,N1F) center depth of all fine layers
+\qi  ,22)(TTF(I),I=1,N1F) starting temperature of all fine layers
+\qi  ,23)(FA1(I),I=1,N1F) FA1  for all fine layers
+\qi  ,23)(FA3(I),I=1,N1F) FA3  for all fine layers
+\\ ' N1...YTF' at start of each new case
+
+\subsubsection{fort.44}
+Done IF (IDB5.GE.6 .AND. (JJ.LT.(J7+3)  .OR. ABS(JJ-J8).LT.3))
+\\ Written in TFINE at end of each fine-time loop, for each day.
+\\ WRITE(44,244) JFI,FINSJ,TSUR,ABRAD,SHEATF,POWER,FAC7,KN 
+ \\ 244      FORMAT(I6,f7.4,F8.3,3F11.5,G12.5,I4)
+\qi JFI fine time index
+\qi FINSJ fraction of sun visible
+\qi TSUR  Surface temperature
+\qi ABRAD surface absorbed radiation
+\qi SHEATF upward heat flow to surface
+\qi POWER  unbalanced flux at surface
+\qi FAC7 = KTF(2)/XCEF(2)  thermal conductivity/thickness of fine layers 
+\qi KN bottom layer for this time interval
+\\  JFI jumps up to skip central eclipse. JFI drops to 1 for each new case. 
+
+\subsubsection{fort.46}
+Done IF (J7.GT.0 .AND. IDB5.GE.7) 
+\\ Only on last day of last season for Rare eclipse.
+\\ Written in TDAY at the end of the time loop 
+\qiii FORMAT(I6,  F9.4,F8.3,2F10.4      ,F10.5,G12.5,I4) 
+\qi JJ  coarse time index
+\qi ATMRAD  hemispheric downwelling IR flux
+\qi TSUR Surface temperature 
+\qi ABRAD surface absorbed radiation
+\qi SHEATF  upward heat flow to surface
+\qi POWER  unbalanced flux at surface
+\qi FAC7 = KTT(2)/XCEN(2)  thermal conductivity/thickness. Will be redone if not LALCON
+\qi KN  bottom layer for this time interval
+\\ JJ drops to 1 for each new case.
+
+\subsubsection{fort.47}
+Done (IDB5.GE.4) . Written in TDAY each day at the start of eclipse
+\qiii 22   FORMAT(99F8.3)
+\qi (TTJ(I),I=1,N1)  coarse  T 
+\\ Written in TFINE after end of time loop
+\qi (TTF(I),I=1,N1F)  fine  T
+\qi (TRET(I),I=1,JLOW)  T spline interpolated onto coarse layers
+\\ JLOW is returned by TFINE(2,..) as the last argument, then printed to IOSP
+as the 2nd item on line starting 'End eclipse: JJ,KG...'
+\\ Cases are concatonated
+
+\subsection{New routines} 
+
+There are two major new routines:
+\begin{description}  % labeled items  
+ \item [ECLIPSE] eclipse.f  \ Calculates the detailed insolation history of a circular body occulting a uniform round source.  
+
+\item [TFINE] tfine8.f  \ Increases the depth (layer) and time resolution beyond that of TDAY to follow the details of a Rare eclipse.  
+
+\item [EVMONO3D] evmonod.f \ Evaluation of 3rd-degree polynomial with
+  scaling. This is a modification of EVMON03 that has the scaling coefficients
+  firm-coded, thus two less arguments, and is 9\% faster.
+
+\item[ORLINT8] orlint8.f \ Linear interpolation over ordered (increasing) input X  for ordered  output X. Optional interpolation method between coarse and fine layer T profiles.
+\end{description}
+
+ Also utility routines \textbf{STRUMI} and \textbf{STRUMR8}, and two routines
+ uses only in testing that can modify parameters: \textbf{GETPI4} and
+ \textbf{GETPR8}.
+
+\section{Liens}
+1)  Type 52 output for Rare eclipses in version 3.5.5 contains un-eclipsed
+values until a discontinutity at the end of the eclipse, with the proper details
+in a separate binary file; these are merged in a post-run IDL routine. The TFINE
+algorithm could be moved into an optional (LRARE only) loop entirely within TDAY
+so that the Type 52 file had the eclipse results.
+
+2) The layer TMIN and TMAX do not consider temperatures during a Rare eclipse; they
+do consider the remainder of the eclipse day. However, only the near-surface
+TMAX would likely be affected by rare eclipse.
+
+3) Use of a special change line to toggle TOUT binary file is crude. Should be
+moved to an integer when the size of KRCCOM ID is increased.
+
+4) Eclipse obscuration calculations are done in time steps scaled to the orbit
+period whereas they are applied in time steps scaled to the sol of the EB. Thus
+lunar eclipses apply only to synchronous rotating satellites.
+
+5) How to describe eclipse that grazes an EB pole, where all
+hours are eclipsed, but only briefly! ?
+
+
+\subsection{Approximations}
+
+Bodies are spherical. However, one could use appropriate radius for the OB at the “bias” of interest.
+
+Planetary radiation considered to come from point source at center of OB. See \S \ref{obliq} Crescent shape of reflected sunlight not considered.
+
+Center-of-body timing: attenuation of insolation does not consider the offset on
+EB surface point from the OB:EB centerline. Tiny effect. A good approximation is
+to offset local hour by $\frac{r}{2 \pi M)} \cos([\frac{H}{12} -1] \pi) \cos
+\theta/ 24 $ where $\theta$ is latitude on EB; this is less than 3.E-5 Hour for
+Europa.
+
+\section{Eclipse design} 
+
+Length input parameters are in physical units of km, but within the ECLIPSE
+routine, all distances are arbitrarily scaled to a characteristic length taken
+as the semi-major axis (radius, in this simplified case) of the mutual orbit of
+the occulting and eclipsed bodies.
+
+\subsection{Notation}
+``time-step'' means as used in TDAY unless specifically called a fine time-step (or f-time) as used in TFINE.
+
+Define a few angles and variables:
+\\ $b$: Bias: closest approach of the sun-line to the center of OB, as a fraction of OB radius.
+\qi $b'$ is the value at a specific latitude on EB.
+\\ $H_c$: KRC hour at the center-of-eclipse for the satellite surface point of interest. 
+\\ $H_U$:  the heliocentric range in Astronomical Units
+\\ $J_7 $=J7: Last 1-based time step before the start of eclipse phenomona
+\\ $J_8$=J8: First 1-based time step after the end of eclipse phenomona 
+\\ $K_L$: fine layer factor for rare eclipse
+\\ $K_T \equiv K_L^2$; fine-time factor for rare eclipse
+\\ $M$: mutual orbital radius between the centers-of-mass of the OB and EB. 
+\qi This is the normalization scale for all distances
+\\ $N_2$=N2: KRC number of time-steps per sol
+\\ $p$: co-latitude of the sub-OB point on EB
+\\ $P_O$: co-orbital period (days) 
+\\ $Q$: Distance from center of OB to ESP
+\\ $R,r$: Angular radius of the larger/smaller of the Sun and OB seen from the EB
+\\ $R_O, r_O$: radius (km) and normalized radius of the OB 
+\\ $R_E, r_E $: radius (km) and normalized radius of the EB
+\\ $r_S$: Normalized radius of the Sun in the working plane; $\approx \alpha M$
+\\ $U$: the Astronomical Unit in km.
+\\ $x$: In-plane separation of OB and EB at first contact. ??
+\\ $z$: Zenith angle of the center of OB at ESP (level surface)
+\\ $ \alpha $: Angular radius of the Sun from OB:EB system, radians 
+\\ $\beta$: orbital angle from center to outer edge of eclipse penumbra
+\\ $\nu$: orbital longitude; zero when EB is at inferior conjunction as seen from the Sun 
+\\ $ \phi $: Angle of ESP from noon, radians
+\\ $ \psi$: orbital angle from the center of the eclipse $\psi=\nu -\pi$
+\\ $\theta$: Latitude on the EB
+% \\ $ $: 
+% \\ $ a_B$: Angular radius of the OB from the EB; identical to the EB orbital angle from center to edge of eclipse when bias is zero.
+
+
+\subsection{Basic eclipse phenomenon equation}
+ Basic assumption is that a round source (the Sun) is being blocked by a round
+ Occulting Body (OB). The formula from the intersection of two circles is taken from
+ http://mathworld.wolfram.com/Circle-CircleIntersection.html
+
+\qb A= r^2 \underbrace{ \arccos \left( \frac{d^2+r^2-R^2}{2dr} \right)}_{ANG2} 
+      + R^2\underbrace{ \arccos \left( \frac{d^2+R^2-r^2}{2dR} \right)}_{ANG1} \qe
+\qbn -\frac{1}{2}\underbrace{ \sqrt{(-d+r-R)(-d-r+R)(-d+r+R)(d+r+R)} }_{SQP} \ql{e14}
+where $r$ and $R$ are the radii of the two circles and $d$ is the separation of their centers.
+
+Implement using $B$ for the radius of the Bigger circle (which might be either
+$r_O$ or $r_S$) and $R$ for the other, with many intermediate variables and
+tests for speed and avoiding faults.
+
+If $d \geq (B+R)$ then $A=0$ ; if  $d \leq (B-R)$ then $A=\pi R^2$ .
+
+The fraction of sun-light reaching the surface of EB is $F=1-A/(\pi r_S^2)$ . 
+
+If B is the Sun, then have an annular eclipse and $ F_{min}= 1.-(R/B)^2$.  If R
+is the sun, then have total eclipse with $F=0$ for some finite time.
+
+\subsection{Geometric relations} 
+Define an ``L-plane'' that goes through the center of the OB and, is normal to
+the direction to the Sun, has its Y axis in the plane of the OB:EB mutual orbit,
+its +X away from the Sun and its +Z axis toward the right-hand mutual revolution
+axis. This plane contains the OB terminator.
+
+The Sun is considered infinitely far away .
+
+Define the ``eclipse surface point'' (ESP) as the point of interest on the
+surface of the EB at local hour $H_C$, and latitude $\theta$.
+
+For solar eclipses by Phobos on Mars, need to consider the radius of Mars as it
+is a significant fraction of the radius of Phobos' orbit. So, include these
+geometric relations in the code, they will be trivial for most objects.
+However, do not include the small variation through an eclipse of the relative
+angular size of Phobos and the Sun as seen from the surface of Mars, just use
+the sizes at the center of an eclipse.
+  
+The angular radius of the Sun is $\alpha=R_S/(H_UU)$ where $R_s$ is the radius
+of the Sun (km), $H_U$ is the heliocentric range in Astronomical Units, and U is
+the Astronomical Unit in km.
+
+Bias at latitude $ \theta$ is $b'=b+ (R_E/R_O) \sin \theta $, assuming zero
+obliquity and EB pole normal to orbital plane.
+
+Zenith angle of center of OB for an ESP at $(H,\theta)$ is $\cos z = \sin p \ \cos \phi $. (spherical law of cosines); where:
+\qi Longitude from noon is $\phi =\pi(H/12 -1)$
+\qi Co-latitude of sub-OB point on EB is  $ p= \frac{\pi}{2}- \theta -\arctan(b'R_O/M)$ 
+\\ And this angle is static for synchronus satellite.
+
+Half-extent of an eclipse in the Y direction in km, is:
+\qbn y_h=\sqrt{\left( R_O+r_S \right)^2-(b' R_O)^2} \mc{and} \beta=\arcsin(y_h/M)  \ql{beta}
+
+ At any time $t$ from mid-eclipse, the center of the EB is at $y= M \sin \psi$ and $\psi=\frac{2 \pi t}{P_O}$. The Y offset to the ESP is approximately $- R_E \cos \theta \sin \phi$, which is generally small; ?? .
+ 
+Distance between center of OB and ESP is approximately $Q= M-R_E\cos(z)$
+omitting terms on the order of $R_E \cdot \beta^2$, the $R_E$ term is important
+only for Mars in the shadow of Phobos.
+% \\ Exact solution $Q=\sqrt{m^2+R_E^2-2M R_E \cos z}$, but if $\phi \neq 0$ then ESP is out of the orbital plane.
+
+The apparent size of the Sun in this plane, as seen from the surface of the EB,
+is $r_S= \alpha Q $. There will be some eclipse effect if the bias $|b'|<(1+r_S/r_O)$
+
+Define the angle from noon: $\phi \equiv \frac{H-12}{12}\pi $ radians
+
+Anomaly at the center of eclipse for ESP at Hour H. 
+\qi $ X=\sqrt{ m^2+R_E^2-2MR_E\ \cos \phi } $
+\qi $ \psi=\arcsin(\phi \frac{R_E}{X} ) $
+
+The general case, when $R_O$ and $R_E$ could both be a significant fraction of 
+$M$, is a trigonometric mess. Real cases of interest in the solar system are: 
+\qi ``Lunar'': satellites in shadow; then $R_E \ll M $, and can treat $Q=M$ 
+\qi ``Solar'': Earth or Mars satellites casting shadow. Only Phobos shadow requires considering the radius of the EB in distance $Q$, and then the OB is tiny.
+
+At any time, the position of the ESP is $y=Q \sin \psi $ and $\psi=2 \pi t/P $
+where $t$ is time from mid-eclipse and $P$ is the EB orbital period.  Also,
+$\psi=2 \pi (J-J_C)/N_2 $ where J is the c-time count and $J_C$ is the c-time of
+mid-eclipse.
+
+During or near eclipse, the Sun:OB center separation in the L-plane is [km]  
+\qb d=\sqrt{y^2+\underbrace{(b'R_O)^2}_\mathrm{BIKM} } \qe
+
+Eclipse is symmetric about orbital angle of $\nu = \pi$ but the eclipse function
+must be centered about ESP at the satellite surface hour requested.
+
+In the KRC diurnal system, if surface point of interest is at hour $H_c$ when
+the middle of eclipse occurs, and there are N2 time steps in a sol, with the
+last at midnight, then fractional (1-based) indices at the beginning and end of
+eclipse are $ \left(\frac{H_c}{24} \pm \frac{t_h}{\mathrm{sol}} \right)  N_2$.
+
+[ V 3.5.4 did not handle a sol different from P, but 3.5.5 does.]
+
+To allow any resolution in the satellite surface position, KRC uses fractional
+orbit angles that are on the time grid, but shifts application in TLATS or TDAY
+by integral time steps.
+
+\subsubsection{Lunar eclipse}
+
+For an eclipse with zero bias, the transition to totality, as a fraction of the orbit period, is $\alpha /\pi$. In these units, the full eclipse lasts $(r_o
++\alpha)/\pi$. For Europa, the values are roughly 1/3500 and 1/30. Thus, to begin
+to resolve the penumbral phase would require N2$>7000$.
+
+For a synchronous satellite, the half-time of an eclipse is $t_H= \beta
+P_O/(2\pi)$ days, where $P_O$ is the co-orbital period (presumed small compared
+to the planet year). The half-time in KRC normal time-steps is $H_L= N_2
+t_H /P_S $ where $P_S$ is length of a sol; thus in this case $H_L= \beta N_2 / (2 \pi)$.
+
+\subsubsection{solar eclipse}
+When a satellite casts a shadow on a planet, the planet rotation period must be considered. Eclipse half-duration if bias=0:  $t_H=y_h /(v_2-v_1)$ 
+where surface velocity is $ v_1 = 2 \pi \cos \phi \cos \theta R_E / P_S$ 
+and the shadow velocity is approximately $v_2= 2 \pi M /  P_O$ .
+
+The half-time in KRC normal time-steps is $H_S \equiv N_2 t_H/P_S$
+
+For Phobos shadow on Mars, the full eclipse lasts less than a minute, so a
+typical $N_2=1536$ ,would be un-workable. Thus, need much larger $N_2$ or
+process the eclipse indices as real values and use a fine-layer factor of at least 4
+ to get about 20 fine-time points through an eclipse.
+
+\subsection{Implementation}
+In general, for any eclipse, set N24 as large as allowed (MAXNH=96).
+
+ To deal with rapid insolation changes, shorten the time-steps by some
+ factor. Do not need to change the layering for stability, but should change it
+ for responsiveness. To keep same stability factor, divide each layer by
+ integral factor f and increase the number of times/day by $f^2$.
+
+To resolve the penumbra stage, there should be several time steps within it; if
+this is impractical, there should be many (more than a dozen?) time steps within
+the entire eclipse.
+
+ Ideally N2 would be roughly length-of-a-sol / 2t, where t is the time for
+ the satellite orbital phase to change by the angular diameter of the Sun
+ $\theta_S$ . $t=P \ 2\alpha /(2 \pi)$ where $P$ is the satellite period (seconds) and N2$=P/t \ = \pi/\alpha$ . E.g., for Jupiter, N2 (min) is 3515
+
+Daily: Handle entirely in Tlats, with consideration for the large N2 required to
+see the shape of insolation through an eclipse.
+
+. \\ Planet thermal load into new array: PLANH, compute in TLATS 
+\\ Planet reflected solar load into new array: PLANV, compute in TLATS.
+\qi For daily eclipses, these are incorporated in TDAY, see \qr{wbe}
+\qi For rare eclipses, TFINE combines the two and does linear interpolation to fine time.
+
+Satellites are assumed synchronus. Yet, both PERIOD and PARC(4) must be
+specified and should be the same.
+
+\subsubsection{Vector geometry}
+ The coordinate system used by TLATS is the ``Day'' system
+\qi +Z toward body right-hand spin axis (north pole),
+\qi +X in the true solar midnight meridian,
+\qi +Y is Z cross X, and is in the equatorial plane
+\\ Sun at declination $\delta$ at midnight: $M=[ \cos \delta, 0., \sin \delta]$
+\qi Sun diurnal progress is left-hand   $\phi=- \frac{2 \pi}{24} t$ where $t$ is in hours, rotating around +Z
+\\ Local surface normal at latitude $\theta$, in the noon meridian: $F =[ -\cos \theta, 0, \sin \theta]$
+\\ To get the normal to a surface with slope (dip) $\beta$ facing toward azimuth $\psi$ measured east from North:
+ \qi rotate $F$ around +Y by $\beta$ , generates temporary vector $Q$
+\qi  then rotate $Q$ around the original $F$ by $-\phi$ to get tilted surface normal  $T$
+
+For an ESP at hour $H_C$, $\omega=\pi H_c/12$ a planetary heat source above the
+equator at noon would have a unit vector $P=[\cos \omega, \sin \omega, 0]$
+
+\subsubsection{Time indices for eclipses}
+
+Time indices passed between routines are always in TDAY units, in some places
+called coarse time or ctime. Where they are converted to/from fine-time (or
+ftime), they are treated as refering to the start of a time interval, before the
+diffusion calculation.
+
+KRC time indices refer to the END of the interval they represent. Thus the Hour
+of an index is 24.*j/N when N is the number per sol. Insolation for index $j$ is
+computed at the middle of an interval; i.e., the rotation angle is $
+\frac{j-.5}{N}2 \pi$ from midnight.
+
+ECLIPSE and TFINE are the only FORTRAN routines that deal with fine-time,
+however, transfers in/out of these routines use TDAY units; N2 per sol. The same
+hour and insolation conventions as above are used for fine time. See Figure
+\ref{tindex} . For fine-time eclipse calculations, the origin is reset to J7 and
+the geometry calculations are done at the center of each fine interval.
+
+\begin{figure}[!ht] \igq{tindex}
+\caption[Diagram of time indices]{Time of day runs from midnight to
+  midnight. The center of an eclipse is real index CN2, with the first and last
+  contact at F$_7$ and F$_8$, all expressed in coarse-time units; these last two
+  are rounded out to J7 and J8.  The circle-dot symbols indicate the times of
+  insolation calculations. The upper CN2 line is in ctime units; the lower in
+  ftime units. Ftime index I=0 at the end of a ctime interval and I= 
+\label{tindex}  tindex.png }
+\end{figure} 
+
+ECLIPSE calculates the time of first and last contact in floating-point ctime;
+first contact is rounded down to JBE(3) and last contact is rounded up to
+JBE(4); JBE is passed between routines; the rounding ensures that the indices in
+JBE capture the full optical eclipse. ECLIPSE returns an array for the
+insolation factor FINSOL; the fraction of insolation that makes it past the
+occulting body to the Eclipse Surface point (ESP).  FINSOL is 1 outside the
+eclipse.
+
+ Hour $H$ of insolation calculations in 1-based indices
+\qi Coarse time: $H=(J-\frac{1}{2})\frac{24}{N_2}$.
+\qi Fine time: $H=J_7 \frac{24}{N_2} + (I-\frac{1}{2})\frac{24}{K N_2}$ where $K$ is the fine-time factor.
+
+ Radiation values at the center of fine-time intervals are computed by linear
+ interpolation, but ctime pair interpolated switch at the middle of each ctime
+ interval.
+
+The TFINE routine continues grid calculation beyond J8=JBE(4) by an amount of time
+equivalent to J8-J7 to cover the thermal response to the possibly-rapid
+insolation changes near the end of eclipse.
+
+\subsection{Eclipse Specification, \label{eline}}
+
+Eclipse specification: 
+\qi 1:  Eclipse Style: 0=none  1=Daily  1.3+=rare, round of value is layer factor
+\qii Time factor is square of layer factor to retain stability
+\qi 2:  Distance to sun,  AU (used to get  Sun angular diameter)
+\qi 3:  Occulting body (OB) radius, km
+\qi 4:  Mutual center-of-mass orbit radius, km $=M$
+\qi 5:  Eclipsed body (EB) surface radius, km
+\qi 6:  Mutual solar synodic period, days
+\qi 7:  Eclipse Bias
+\qi 8:  [ J2000 date of Rare eclipse ] Assumed to be on the last ``season''
+\qii KRC 3.5 uses the sign as a flag for base treatment. + is maintain heat-flow
+ - is maintain temperature. 
+\qi 9:  Eclipse central hour
+\qi 10:  Debug code.  ne.0 prints constants and $>1$ prints one point,
+\qii Negative runs a `` null eclipse'' test mode in which the OB is considered transparent.
+\qi 11: Current latitude on EB, degrees [replaced by TLATS]
+\qi 12: Solar period of the EB  [replaced by KRC]
+\qi x:  Extinction scale height of  OB's atmosphere, km. \  NOT implimented 
+
+These will be input as a change line 14: first real value being non-positive means turn off.  Typical input line: 
+\qi  14  1 5.2026 71492. 0.6711D6 1560.8 3.551 0.01 6000. 12.  2 77 77 / Europa
+
+The latitude on the EB affects the bias $b'$ and hence the timing of the eclipse
+so that ECLIPSE must be called for each latitude in KRC. When the OB is smaller
+than the EB, only a narrow range of latitudes can have eclipses.
+
+\subsection{Eclipses: Daily}
+
+For ``Daily'' (typically long) eclipses, fine-time is never used; the user can
+set N2 as large as they want to get the eclipse details. FINSOL covers the
+entire day in ctime steps; it is unity outside ot the JBE range.
+
+Binary output files are the same as earlier versions of KRC.
+
+\subsubsection{Details} 
+
+TLATS: Handles only daily eclipse: Sets LECL flag if PARC(1) $ 0.8 < x< 1.2 $. If set, then
+\qi Calls ECLIPSE once per latitude, which generates FINSOL insolation factor for each time-step
+\qii and duplicates as SOLAU the variable for solar flux at current AU
+\qi Each time step, multiplies the solar insolation by FINSOL(JJ)
+
+TDAY: No change for daily eclipses. 
+
+\subsection{Eclipses: Rare}
+For ``Rare'' (typically short), the uses specifies a fine-layer factor $K_L$
+(rounding the eclipse ``style'' parameter); the fine-time factor $K_T$ is the
+square of the layer-factor. FINSOL covers in fine-time steps from the beginning
+of ctime JBE(3)+1 to the end of JBE(4).
+
+Because of the rapid changes that can follow the return of sunlight at the end
+of eclipse, the detailed calculations of TFINE are continued for the number of
+ctime steps of the optical eclipse (at least one) KRC output interval after last
+contact. ???
+
+\subsubsection{Details} 
+
+To ensure catching all the eclipse effects, expand the fine-time range by one
+earlier TDAY timestep and later by the duration of the eclipse JBE(4)-JBE(3);
+TDAY switches to and from TFINE before the diffusion loop. TFINE uses linear
+interpolation of upper boundary conditions to fine time-steps.
+
+In TFINE, as in TDAY, the surface temperature is stored in layer index 1, but
+that layer is reconstructed as the virtual layer in each time-step.
+
+TFINE is a modified copy of TDAY, with a single ``day''. It increases the layer
+and time resolution, interpolating in time and depth as
+needed, then steps through the eclipse. It calls ECLIPSE to get the detailed
+obscuration profile.
+
+Number of fine layers: virtual layer + (number of physical TDAY layers * layerFactor)
+\qi  N1F=1+(N1-1)*KFL   and must store one more for the base
+
+. LRARE is normally False. and TDAY(1 normally sets switch trigger JSW=-1
+\\ - If PARC(1) is $\geq$1.3 then TDAY(1 sets flag LRARE True and will do a RARE
+eclipse. It calls ECLIPSE to get JBE which contains the ctime steps before
+and after the eclipse. It calls TFINE(1 to do all that can be done without
+having layer temperatures.
+\\- The eclipse is entirely within ctime JBE(3) to JBE(4), which could be the same for a very short eclipse.
+\\ - In TDAY(2 day loop, if LRARE, then on the last season, at the start of the
+last day, TDAY(2 sets JSW to JBE(3)+1 .
+\\ - In TDAY(2 time loop, when JJ equals JSW, if JSW $=$  JBE(3)+1, TDAY transfers
+the layer temperatures to TFINE.
+\\ - TFINE executes 2(JBE(3)-JBE(4)) ctime loops
+\\- After TFINE returns, TDAY sets JSW equal to the end of eclipse followon
+and proceeds normally until the (JJ equal JSW) test is again satisfied, when
+(before diffusion) it sets the temperature profile to the final from TFINE, and
+finishes the last day normally, leaving a discontinuity in temperature at the
+end of the eclipse.
+TFINE has a large storage buffer, and for each rare eclipse case stuffs the
+eclipse factor and temperature profile (up to MAXKF=20 fine layers) into this
+for writing to a .bin5 fileThis file covers every ftime step computed.
+
+The output file is always named ``$<$input file name$>$tfinexx.bin5'' where xx is the
+case number.
+
+Eclipse length of MAXN2 or more ftime steps, or eclipse that reaches midnight
+(theoretically possible at high latitudes) will cause an error.
+
+\subsubsection{Extra printout}
+
+Rare eclipse cases put additional material in the print file, apart from debug
+options. Below, left-adjusted lines are example printout and inset lines are
+explanations.
+
+. 
+\\ TFINE IQ,J4=           1           2
+\qi IQ is the TDAY action requested: 1=setup, 2=do the time and layer loops
+\qi J4 is latitude index; not reliable or relevant for IQ=1  
+\\ TFINE layers: Num,lowest center[m]   82    0.8995
+\qi TFINE(1: the number of fine layers, including virtual. Depth to the center of the lowest (not base) layer
+\\  Min safety: layer,factor= 1       0.000       0.000
+\qi  TFINE(1: Minimum convergence safety factor: layer, factor, 
+\\  TFINE low lay of time doubli:  12 20 27 34 42 49 57 64 72 82
+\qi Deepest layer for each fine-time doubling
+\\    -777      3     10      2      4    760    776    792     82
+\qi  TFINE(1: tag, NCASE, J5, J4(+1), J3, JBE(3:4), J9, N1F, LATOK
+\\  TFINE exit \ \ \ notification of exiting TFINE
+\\  TFINE IQ,J4=           2           1 
+\qi
+\\  TTJ(1)...   260.19471582799264        258.02291589626202       -0.0000000000000000 
+\qi  Virtual layer T for TDAY and fine layer system. Delta T at fine base   
+\\ LZONE,LALCON,J5, IK1:4=  F  T    10     0     0     0     0
+\qi In TDAY(2: last 4 are the T-dep. layer specifications.
+\\ TFINE: Case= 3  JJJ=    3   83  306    1    0    0    0    5   80    0
+\qii JJJ is the set of 10 integers given to BIN5F
+\\  TFINE wrote tfine03.bin5  iret=            0
+\\  TFINE exit
+\\ End eclipse: JJ,KG,delT,delE  793  28    0.63383E-01     8067.1 
+\qi KG is the lowest  TDAY layer represented in the fine layer system   
+\qi delT is the T discontinuity of the lowest TDAY layer at end of eclipse
+\qi delE is the delta thermal energy in the lowest TDAY layer at that time.
+
+\section{TFINE}
+ TFINE interacts primarily through the many KRC common's. Subroutine arguments are used to transfer in:
+\qi the stage index: with value 1 or 2
+\qi the physical properties of each layer.
+\\ and transfer out:
+\qi the coarse layer temperatures after eclipse
+\qi the number of reliable output temperatures, or a negative values indicating an error.
+
+The initial call to ECLIPSE returns the last original time step before the
+eclipse starts and the first after it ends. When TDAY on the last day of
+convergence reaches the starting time step, it calls TFINE which proceeds
+through all of its time steps and returns the temperature depth profile that it
+gets, TTF, which is remembered by TDAY. TDAY proceeds with its normal
+calculations until it reaches the time step after those covered by TFINE, when
+the temperature profile is reset to TTF, and TDAY runs through the rest of the
+last day.
+
+TFINE ignores any atmosphere, except for any effect TLATS may have included on
+collimated insolation. It does handle far-field radiation.
+
+There can be a small non-physical effect if the number of finer layers
+1+(N2-1)*PARC(1) would exceed the firm-code size MAXFL. The bottom of the fine
+system is considered insolating during the eclipse, whereas the normal interface
+at that depth would be conducting. The non-physical change in system energy is
+roughly $B_j \rho_j C_j \Delta T_j$ where the last term is the amount that the
+temperature of the deepest original layer treated by the fine system $j$ is
+changed at the end of the eclipse.
+
+Note that continuation to another season using the asymptotic predictor would be
+inappropriate after a ``rare'' eclipse.
+
+The temperature gradient that existed in the TDAY system at the depth of the
+bottom of the TFINE layers at the start of the eclipse is held constant at the
+bottom of TFINE through the eclipse.  
+
+\qbn \nabla T \ = \ \frac {T_{j+1}-T_j}{ ( B_{j+1}-B_j)/2}= \frac{ T_{i+1}-T_i}{ ( B_{i+1}-B_i )/2} \qen 
+where the i subscripts are for the TFINE values at it lowest two layers and the 
+j subscripts are for the TDAY layer values at the corresponding depth. Thus  
+\qbn T_{i+1}=T_i+ \underbrace{(T_{j+1}-T_j)\frac{B_{i+1}-B_i} {B_{j+1}-B_j}}_{delbot}  \ql{tbot}
+
+When TFINE starts an eclipse period , it uses cubic spline (or linear)
+interpolation with natural boundary conditions (zero 2nd derivative at top and
+bottom). To avoid interpolation failure, all fine layer centers must be within
+range of the TDAY layer centers; thus maximum I is $K(N_1-1)+1+K/2$ .
+
+% \clearpage
+\subsection{Details}
+
+Design with two sections, similar to TDAY. TFINE(1 does everthing that does not
+require the starting temperature profile of the time-dependent radiation
+field. TFINE(2 does the timesteps.
+
+Has access to commons
+\\ Creates finer layers and has an inner timeloop for the finer time steps.
+
+Needs the original center depths of each layer, and must generate the center
+depths of the new layers for interpolation and the bottom depths for the
+diffusion equations.
+
+Anything that is defined in TDAY (vrs defined in commons) is not available in
+TFINE unless an argument.
+
+Zone table logic is complex, could duplicate them in TFINE but better to pass in
+as arguments the ultimate products: KTT, DENN, CTT as arguments; TTJ, XCEN and
+BLAY are in common
+
+Each TDAY layer of thickness $B_j$ is divided into K layers with thickness $B_i
+\equiv B_{j_k}=f_iB_j$
+
+K fine layers must have a geometric ratio $r$ that yields the same full-layer
+ratio as $R\equiv$ RLAY.
+
+\qbn r^K= R \mc{or} r=\exp \frac{\ln R}{K} \ql{rk}
+and the sum of $f_k$ must be 1.
+
+The sum of a geometric series of ratio $r$, first term 1 and $n$ terms is 
+\qbn S \equiv \sum_{j=0}^{n-1} r^j = \frac{1-r^n}{1-r}  \ql{sumr}
+
+\qbn f_1 =  1/S=  \frac {r-1}{r^K-1}  \ \Rightarrow \ \frac{r-1}{R-1}   \ql{f1}  
+and $f_i=rf_{i-1}$
+
+Each time-dependent input is linearly interpolated to the fine-time steps:
+\qi ALBJ \ Surface albedo, which may vary with incidence angle
+\qi ASOL \ Collimated flux onto (sloped) surface
+\qi FARAD \ Far-field radiance
+\qi SOLDIF \ Diffuse solar flux
+\qi $\epsilon$ PLANH + $(1-A_s)$PLANV \ absorbed Planetary flux 
+
+TFINE always writes to print file 
+\qi  Number of fine layers and depth[m] to center of deepest layer
+\qi If any T-dependent layers, the first and number of the A and B layers
+\qi Low layers for fine-time doubling
+\qi -777, Indices for: case,season,latitude,converg.day, eclipse hour range ...
+
+Layers temperatures $j$ returned by TFINE, after TSUR as the layer (1) the rest of the layers are from the fine layers $i$. This could be based on:
+\qi if K odd, $i= jK - 3(K-1)/2$
+\qi if K even, average of layers $i= jK - 3K/2$ and $i+1$
+\\ However, simpler (and better for even K) to use spline interpolation.
+
+\section{Planetary fluxes}
+
+For synchronous satellites, the temperatures depend strongly on longitude but
+KRC version 3.5 does not treat longitude explicity.  For the side facing the
+planet (the ``near-side''), the peak reflected radiation comes at midnight and
+eclipses come near noon. For the side away from the planet, there is no
+reflected or thermal planetary heat load and no eclipses.
+
+Since there are two bodies in addition to the Sun, must treat the effect of
+solar reflection and thermal emission from the ``planet''.  Version 3 will
+assume these are sinusoidal with orbital phase.  E.g., in the form $F=c_1 + c_2
+\cos (\nu -c_3)$ and in units of W m$^{-2}$. Orbital longitude $\nu$ is zero
+when the satellite is at inferior conjunction as seen from the Sun (is this the
+general convention?).
+
+\subsection{Planetary Flux specification \label{pline}}
+ Solid angle of OB from EB is approximately $\pi \beta^2$ 
+where $\beta = \arctan(r_O)$; exact is $\Omega=2 \pi (1.- \cos(\beta))$
+
+Must specify 7 values: ('average' is the diurnal average)
+\qi 1: Average thermal flux from OB (planet) at the EB (satellite) $W m^{-2}$
+\qi 2: \ \ half-amplitude of variation with phase
+\qi 3: \  \ Phase lag, in degrees from peaking at OB sub-solar meridian. 
+\qi 4: Average solar flux from OB at the EB $W m^{-2}$
+\qi 5:  \ \ half-amplitude of variation with phase
+\qi 6:  \ \ Phase lag (as above)
+\qi 7: The longitude (in Hours) of the EB surface point.
+\qiii  Zero is opposite the sub-OB point; the sub-OB point is at 12.
+ 
+These will be input as a change line 15: the first real value being non-positive
+means turn off.  
+
+Example: \vspace{-3.mm} 
+\begin{verbatim}
+15   0.156 0. 0.  0.464 0.464 0.  12. / Jupiter heat load on Europa at Sub-J
+\end{verbatim}
+
+\subsection{Zenith angle of occulting body at the eclipse point}  
+Spherical law of cosines: \ 
+$ \cos z = \cos 90 \cos \theta + \sin 90 \sin \theta \cos \pi (H/12-1) \equiv 
+  \sin \theta \cos (\pi (H/12-1)) $ 
+\qi where $\theta$ is latitude on EB.
+
+\subsection{Planetary load away from zenith \label{obliq} }
+Assume the absorption surface is Lambertian. For a point source, the effect
+varies with zenith angle as $\cos z$. For a modest source of radius R
+radians whose center is at zenith angle $z_1$, the effect is 
+\qbn W(z_1) =\frac{\int_y^\pi \cos z \cdot 2 R \sin
+  \theta \ R \sin \theta \ d \theta }{ \pi R^2} = \frac{2}{\pi} \int_y^\pi \cos
+(z_1 + R \cos \theta ) \cdot \sin^2 \theta \ \ d \theta \qen
+
+where $\theta$ is the angle around the center of source measured from the lowest
+point and $y $ is the horizon limit of $\arccos \left( (\frac{\pi}{2}-z_1)/R
+\right)$ if $z > (\frac{\pi}{2}-R)$ and 0 otherwise.
+
+As $R \rightarrow 0$, 
+\qb W  \rightarrow  \frac{2}{\pi} \cos z_1 \int_0^\pi \sin^2 \theta \ d \theta
+= \frac{2}{\pi} \cos z_1 \left. \coprod_0^\pi \frac{x}{2}-\frac{\sin 2x}{4} \right] 
+= \frac{2}{\pi} \cos z_1 \cdot \frac{\pi}{2}  = \cos z_1  \qe
+as expected. Here $ \coprod _l^u \cdots \ ] $ stands for evaluation at the upper
+  limit minus evaluation at the lower limit
+
+\vspace{2mm}
+
+Expanding $ \cos (z_1 + R \cos \theta ) \Rightarrow  \cos z_1 \cos( R \cos \theta ) -   \sin z_1 \sin( R \cos \theta ) $ The form of the integral becomes 
+
+\qb c \int \cos ( a\cos x) \sin^2x \ dx \ + \ s \int  \sin ( a \cos x) \sin^2x \ dx \qe
+ for which I could not find an analytic solution.
+
+Numerical solution coded in IDL \np{planheat.pro}; see Fig. \ref{planheatb}. For
+Europa, finite size makes at most 2\% difference, and greater than 1\% only when
+within 1.5\qd~ of the horizon.  Until the lower edge of the planet nears the
+horizon of the satellite, the normalized factor is virtually constant; the
+effect is about 0.13\% for Europa and barely 1\% for a 0.3 radian source
+
+Because the effect of a finite angular size is small, I elected to omit it for
+version 3.5; the influence follows the cosine of the incidence angle for the OB
+center onto the [tilted] surface, $\mu_P$.
+ 
+\begin{figure}[!ht] \igq{planheatb}
+\caption[Effect of extended size of planet]{Normalized heat-load for
+  finite-sized round sources as a function of zenith angle. Lambertian surface
+  assumed. Legend shows the radius of the source in radians; for Europa the
+  value is 0.1067. Infinitesimal source follows a cosine relation. Larger source
+  are slightly less than cosine except near the horizon.
+\label{planheatb}  planheatb.png }
+\end{figure} 
+% how made: planheat  b
+\subsection{Static geometry for synchronous rotation}
+ Only synchronous satellites are considered.
+
+In TLATS, a planet source is assumed to be in the equatorial plane and above
+``noon'' so that it has a fixed relation to the target (tilted) surface with
+cosine of angle onto tilted surface $\mu_P$=COSP.   IR and visual
+fluxes are initially set to zero for each latitude. If the logical flag LPH is
+True, then Planetary fluxes computed for orbital phase at each time-step and
+multiplied by $\mu_P \geq 0$.
+
+In TDAY, if LPH is True, then both the plantary fluxes are multiplied by their
+absorption coefficents and added to the surface energy budget.
+
+\subsection{How it works}
+TLATS: Sets the flag LPH True if PARW(1) positive. At each time step, if LPH
+True, \qi sets PLANH(JJ)= $ w_1 +w_2 \cos( \theta - w_3/\mathrm{RADC})$ where
+RADC is degrees/radian.  
+\qi add to the diffuse light SOLDIF(JJ) $ w_4 +w_5\cos( \theta - w_5/\mathrm{RADC})$
+
+TDAY:  Sets the flag LPH in the same way as TLATS.  At each time step, if LPH True
+\qi adds to the absorbed hemispheric downwelling IR flux ABRAD the amount FAC6*PLANH(JJ) where FAC6 is fraction of the sky visible times surface emissivity.
+
+In version 355, TLATS computes the bias for each latitude on the EB. 
+
+\section{Examples}
+
+Example runs for a few planet/satellite pairs were run; these input files are included in the distribtion
+\subsection{Jupiter / Europa}
+
+The results for sample input file EurH.inp are shown in 
+Figure \ref{EurH22}; the cases are listed in Table \ref{tab.Erun} 
+
+Example runs were done with realistic conditions. E.g., for the sub-Jovian
+longitude on Europa, using the nominal values listed in \S \ref{nomp} with
+thermal inertia 200 in MKS and 22 layers to a total depth of 11.8 diurnal skin
+depths. 
+
+\begin{table} 
+\caption[Europa runs]{Europa run cases. Case 8 uses Jupiters polar radius and bias is near the maximum possible. The last two cases are physically impossible}
+\label{tab.Erun}
+\begin{center}
+\begin{tabular}{ || l  c | c  r r r | } \hline \hline
+Num. &  name &    slope  & Jup. flux & Heat flow & eclipse hour \\ \hline
+1    &  Base &   0       & 0         & 0         &  none  \\
+2    & Slope & 30\qd~ NE & 0         & 0         &  none  \\
+3    &  Flat &   0       &  yes      & 0         &  none  \\
+4    &  P.Flux &   0     &  yes      & 100       &  none  \\
+5    &  Daily PF+100 &   0     &  yes      & 100       &  12   \\
+6    &  Daily  &   0     &  yes      & 0       &  12   \\
+7    &  Daily 13H&   0     &  yes      & 0       &  13   \\ 
+8    &  Biased &   0     &  yes      & 0       &  12,  bias=.63   \\ \hline
+9    &  Rare &   0     &  yes      & 100       &  12   \\
+10   &  Rare:con &   0     &  yes      & 100       &  12   \\ \hline
+\end{tabular} \end{center} \end{table}
+ 
+\begin{figure}[!ht] \igq{EurH22}
+\caption[Europa eclipses]{Europa diurnal surface temperatures at the equator
+  using the \nf{EurH.inp} input file; run used N2=6144. The 2nd column in legend indicates the case number. Temperatures from the \nf{.t52} output
+  file. The slope is dip of 30\qd~ toward northeast.
+\label{EurH22}  EurH22.png }
+\end{figure} 
+% how made: krc35 115 123  then 22
+
+An eclipse of Europa with zero bias, on the equator, eclipse center at 13 H is
+shown in Figure \ref{EurGcase7}.  Although physically impossible, this ``rare''
+eclipse demonstrates the high-time-resolution mode on a KRC eclipse run.
+\begin{figure}[!ht] \igq{EurGcase7}
+\caption[Example of all outputs for an Europa eclipse] {Diurnal surface
+  temperature for Europa ``rare'' eclipse with zero bias, on the equator with
+  eclipse center at 13 H.The plus signs show the points output in the normal
+  .t52 file. Red line (6144 points) are from the \nf{tout} file, orange line is
+  from the \nf{tfine} file (3835 points).
+\label{EurGcase7}  EurGcase7.png }
+\end{figure} 
+% how made: krc35@252 253 51 
+% how made: krc35 PhoH 114 123 @51 case 2, 53  51 case 4, 54  
+ 
+
+During development, many runs were done with all the eclipse debug options
+enabled, which generates 6 ``fort.xx'' text files; the results can be viewed using the
+IDL routine krv35.pro.
+
+Some results are shown in Figures \ref{eurFTs} and Figure \ref{eurClats}. Some
+effect on Tsur of changes are shown in Fig. \ref{eurCD}.  With the values of
+\nf{EurH.inp} (N2=6144), at the equator basal heat-flow of 100 mW/m$^2$ increases T about 0.5
+K, and radiation from Jupiter increases T about 1.3 K. 
+
+To see the details of eclipse onset, cases were run in the ``rare'' mode (which never actually occurs for Europa), with a fine-layer factor of 3 which  yields a fine-time factor of 9. 
+
+The surface temperatures
+for the two methods of handling the lower boundary condition for [impossible]
+Rare eclipses differ by $<$ 1 nK. The temperature jump at the lowest layer in
+common with TDAY and TFINE (layer 22, depth 0.67m or 11.1 diurnal skin depths)
+was 9 mK when the bottom of TFINE preserves heat flow and 11 mK the bottom of
+TFINE is held at a constant temperature. 
+
+\begin{figure}[!ht] \igq{eurCD}
+\caption[Effect of changes conditions]{Diurnal change in Tsur for 6 case-pairs,
+  for the last season. Blue and green show the effect of 100mW/m2 basal heat
+  flow.  White show the effect of the planetary flux. The effect
+  to the two options for bottom conditions during eclipse is below
+  double-precision roundoff except for the lowest layers.
+\label{eurCD} eurCD.png  }
+\end{figure} 
+% how made: kv3 krc35 @27
+
+\begin{figure}[!ht] \igq{eurFTs}
+\caption[Europa surface T]{Europa surface temperatures for several conditions
+  for the equator, with eclipse at local noon. Legend has an abbreviation for
+  the conditions; see Table RUN for description.  Input file eurF.inp . For
+  ``rare'' sclipses, the .t52 file has surface temperatures which ignore the
+  eclipse; the eclipse temperatures are in \nf{tfinexx.bin5} where xx is the
+  case number (1 larger than the values in the legend) these are shown as the
+  lowest curve in the legend.
+\label{eurFTs} eurFTs.png }
+\end{figure} 
+% how made:
+
+\begin{figure}[!ht] \igq{eurClats}
+\caption[Europa 3 latitudes]{Europa surface temperatures for several conditions for latitudes 0, 30 and 60. Input file eurF.inp . See Table RUN for cases. 
+\label{eurClats}  eurClats.png }
+\end{figure} 
+% how made: kv3 krc35@26  eurF
+
+\clearpage
+\subsection{Mars / Phobos}
+
+For Mars/Phobos, with nominal physical properties for each, a ``lunar'' eclipse is
+shown in Figure \ref{PhoLun} and a solar eclipse in Figure \ref{PhoH54}.
+ 
+\begin{figure}[!ht] \igq{PhoLun}
+\caption[Phobos lunar eclipse]{Phobos surface temperatures at the equator
+    through an eclipse by Mars.  The temperatures for a run with N2=1536 and no
+    eclipse are shown in green (only 3 points). Normal \nf{.t52} file results
+    shown as white + sign. An eclipse with zero bias \nf{tout} file as red
+    dots. ); the vlaues from the \nf{tfine} file are shown in yellow. The
+    results for a run with bias 0.95 are shown in blue.
+\label{PhoLun}  PhoLun.png }
+\end{figure} 
+% how made:  krc35 PhoH 114 123 @51 case 8, 53  51 case 7, 54 but by hand with psym=3  
+
+\begin{figure}[!ht] \igq{PhoH54}
+\caption[Phobos solar eclipse]{Mars surface temperatures at the equator through
+  a solar eclipse by Phobos. Note the plot time range covers only 1/2 Hour. The
+  temperatures for a run with N2=1536 and no eclipse are shown in green (only 3
+  points). For an eclipse with layer factor 7, the values at each time step
+  (from the \nf{tout} file are shown as red squares (mostly hidden); the values
+  from the \nf{tfine} file are shown as yellow + sign. The results for a run
+  with layer factor 3 are shown in blue.
+\label{PhoH54}  PhoH54.png }
+\end{figure} 
+
+\clearpage
+
+\subsection{Earth/Moon}
+
+ Earth lunar eclipse runs are shown in Figure \ref{Moon56}. The run uses nominal lunar surface properties similar to \qcite{Hayne18} surface, but homogenous with depth. Latitudes -60, -30, 0, +30 and +60\qd~ were run,.  Cases are:
+\qi 1: No eclipse
+\qi 2: Add 20mW m$^{-2}$ basal heat flow
+\qi 3: Add Earth radiation
+\qi 4: Same as case 3 with a lunar eclipse at noon and no bias
+\qi 5: Same as case 4 with a bias of 0.5, so that Lunar latitude +60 is just outside the umbra
+\qi 6: Same as case 5, but run in 'Rare' Mode
+\qi 7: Same as case 6, except thermal inertia is 200.
+\qi 8: Same as case 6, except Moons surface meridian is at 15 hours
+\qi 9: Same as case 6, except using two zones of T-dependent material
+
+
+Figure \ref{Moon22} shows the diurnal surface temperature variation for all cases
+\begin{figure}[!ht] \igq{Moon22}
+\caption[Moon models]{Diurnal surface temperature for all example Moon cases;
+  case numbers in the first column of legend.  In many cases, the changes are
+  small and the curves are overwritten by latter cases; substantial changes
+  occur for I-200 and Two-zones.
+\label{Moon22}  Moon22.png }
+\end{figure} 
+% how made
+  
+
+\begin{figure}[!ht] \igq{Moon56}
+\caption[Earth Lunar eclipses]{ SUrface temperature through lunar eclipses using
+  nominal homogeneous properties; input file \nf{MoonA}; case 6. Five latitudes
+  are shown, with curves covering the hour range of the \nf{tfine} file. Because
+  of the positive bias (+.5) totality becomes shorter to the north, and is not
+  reached at 60N.
+\label{Moon56}  Moon56.png }
+\end{figure} 
+% how made:
+
+The effects of minor energy sources are shown in Figure \ref{Moon27a}.
+  
+\begin{figure}[!ht] \igq{Moon27a}
+\caption[Effect of heat flow and Earth radiation]{Change in diurnal surface
+  temperature due to lunar heat flow (white curve) and radiation from Earth
+  (blue curve), latitude 0. Although the radiation is largest near lunar midday,
+  the effect on surface temperature is smallest then. The effect of Earth
+  radiation is several times larger than lunar heat flow.
+\label{Moon27a}  Moon27a.png }
+\end{figure}  
+% how made: @27, MoonA   CLOT,qq[*,0:1],qid[0:1],locc=[.4,.7,-.04,.06],xx=xxh,titl=['Hour ','Delta Tsurf',kite+' from ttt  latitude '+slat[jlat]], tsiz=1.5,yran=[0.,.25]
+% oplot,[0.,24.],[0.,0.],line=1
+
+ A 2-zone case was created using \qcite{Hayne18} values at 1/4 and 3/4 of the way through their continuous density profile. The KRC layer table is below. 
+
+Figure \ref{Moon27b} shows the change in diurnal surface Temperature from the homogenous case to a two zone case; lower zone starts at  0.0328.
+\begin{figure}[!ht] \igq{Moon27b}
+\caption[Effect of T-dependance]{Difference of diurnal surface temperature from a homogenous material to two zones of temperature dependent materials. 
+\label{Moon27b}  Moon27b.png }
+\end{figure} 
+% how made: krc35 @27 
+
+
+ \vspace{-3.mm} 
+\begin{verbatim}
+  
+ 1.020E+06=Dens*Cp   2.908E-09=Diffu.      0.0486=Scale       55.00=Inertia
+ Beginning at layer   7  At      0.0328 m.
+ 1.300E+06=Dens*Cp   5.385E-08=Diffu.      0.2091=Scale      301.66=Inertia
+         ___THICKNESS____    __CENTER_DEPTH__  Conductiv. Density Sp.Heat     Total Converg.
+ LAYER  D_scale     meter   D_scale     meter      W/m-K   kg/m^3   J/kg     kg/m^2  factor
+    1    0.0870    0.0042   -0.0435   -0.0021 0.2966E-02  1275.00  800.00     0.000   0.000
+    2    0.1000    0.0049    0.0500    0.0024 0.2966E-02  1275.00  800.00     6.196   2.445
+    3    0.1150    0.0056    0.1575    0.0077 0.2966E-02  1275.00  800.00    13.321   3.233
+    4    0.1322    0.0064    0.2811    0.0137 0.2966E-02  1275.00  800.00    21.514   4.276
+    5    0.1521    0.0074    0.4233    0.0206 0.2966E-02  1275.00  800.00    30.937   5.655
+    6    0.1749    0.0085    0.5868    0.0285 0.2966E-02  1275.00  800.00    41.773   3.739
+    7    0.2011    0.0421    0.7748    0.0538 0.7000E-01  1625.00  800.00   110.123   4.945
+    8    0.2313    0.0484    0.9910    0.0990 0.7000E-01  1625.00  800.00   188.724   3.270
+    9    0.2660    0.0556    1.2397    0.1510 0.7000E-01  1625.00  800.00   279.116   4.324
+   10    0.3059    0.0640    1.5256    0.2108 0.7000E-01  1625.00  800.00   383.067   5.719
+   11    0.3518    0.0736    1.8545    0.2796 0.7000E-01  1625.00  800.00   502.610   3.782
+   12    0.4046    0.0846    2.2326    0.3587 0.7000E-01  1625.00  800.00   640.085   5.001
+   13    0.4652    0.0973    2.6675    0.4496 0.7000E-01  1625.00  800.00   798.180   3.307
+   14    0.5350    0.1119    3.1677    0.5542 0.7000E-01  1625.00  800.00   979.991   4.374
+   15    0.6153    0.1287    3.7428    0.6745 0.7000E-01  1625.00  800.00  1189.073   5.784
+   16    0.7076    0.1480    4.4043    0.8128 0.7000E-01  1625.00  800.00  1429.517   3.825
+   17    0.8137    0.1702    5.1649    0.9718 0.7000E-01  1625.00  800.00  1706.027   5.058
+   18    0.9358    0.1957    6.0396    1.1548 0.7000E-01  1625.00  800.00  2024.015   3.345
+   19    1.0761    0.2250    7.0456    1.3651 0.7000E-01  1625.00  800.00  2389.700   4.423
+   20    1.2375    0.2588    8.2024    1.6070 0.7000E-01  1625.00  800.00  2810.238   5.850
+   21    1.4232    0.2976    9.5328    1.8852 0.7000E-01  1625.00  800.00  3293.857   3.868
+   22    1.6367    0.3423   11.0627    2.2052 0.7000E-01  1625.00  800.00  3850.019   5.116
+\end{verbatim} 
+
+Most of T variation is above 0.02m, seen at KRC35@401
+
+\clearpage
+
+\section{Summary of code changes}
+
+. \\
+KRC:
+\qi  In the case Loop, after TCARD and TPRINT, if any eclipse or planetary heat 
+  is active, will print:  'Eclipse or PlanHeat on',PARC(1),PARW(1)
+\qi Update PARC(12) with sol of EB in days
+\qi   Calls TDAY(1
+\\ \\
+TSEAS:  none
+\\ \\
+TLATS:
+\qi   [un]set LPH (planetary heat) and LECL=Daily flags
+\qi   Before the latitude loop, if Daily and first season, call ECLIPSE to get FINSOL
+\qi   In lat loop, update PARC(11) with current latitude
+\qi   In the time loop:
+\qii      If LECL,  multiply Sun by insolation factor; can affect TEQUIL
+\qii      If LPH, calc PLANH(JJ) and PLANV(JJ).
+\qi   After time Loop
+\qii      If LPH, incorporate the average absorbed planetary heating into TEQUIL
+\qi after TDAY(2 call: If at NLAD latitude and last season. Write TOUT to binary file
+\\ \\
+TDAY(1:
+\qi    [un]Set the LPH flag, [un]Set the LRARE flag
+\qi    If LRARE, 
+\qii    call ECLIPSE to get the time-step range of eclipse, JBE
+\qii    Set full eclipse range to start 1 time step earlier and end after 2nd duration
+\qii    call TFINE(1 to do what can be done without temperatures
+\\ \\
+TDAY(2:
+ \qi  If the last day and LRARE and the last season, set JSW to start of eclipse
+ \qi  In the time loop, when reach JSW, then 
+ \qii  if at start of eclipse call TFINE(2, before layer loop, then set JSW to end of eclipse followon J9
+    else, transfer TFINE results into layer temperatures, set JSW negative
+\qi After the layer loops: if LPH, add in the planetary heating at each time step
+\qi After last day, exit even if daily convergence tests fail (as they should) 
+\\ \\
+TFINE(1: [called only for LRARE and only at start of eclipse on last day of last season] 
+\qi  call ECLIPSE to get both time range JBE and FINSOL
+\qi  setthe range of ctime to treat. Set max possible eclispe for array size.
+\\ \\
+TFINE(2:  Diffusion calculations.   
+\qi  Interpolates current T/depth profile.
+\qi Uses FINSOL and steps forward in fine-time until end of eclipse J8
+\qi  Throughout the follow-on (J8 to J9) treat FINSOL as unity. 
+\\ \\
+TFINE(3:  Called by TLATS after latitude loop to write the \nf{tfinexx.bin5} file. 
+
+Layer relations: 1-based
+\qi  fine, first in set = I = (J-1)*KFL +1 where J is TDAY layer. KFL is layer factor
+\\ 
+Time relations: 1-based.  KFT=KFL$^2$
+
+\subsection{Coarse- and fine-time handoffs}
+
+ECLIPSE returns JBE;  JBE(3) is the index of the last ctime interval before
+the start of eclipse. So, the handoff from TDAY to TFINE should occur at the
+start (before layer calculation) of the next ctime interval. JBE(4) is the index
+of ctime interval which contains the end of eclipse. JBE(1:2) contain the
+corresponding indices for the longest possible eclipse with the bodies and orbit
+specified, and are used to set storage array dimensions.
+
+TFINE calls ECLIPSE to run in the ``rare'' mode, and TFINE covers ctime steps 
+JBE(3)+1 through 2*JBE(4)-JBE(3) in fine-time.
+
+On the last day of the last season: 
+\begin{description}  % labeled items   
+\item [to TFINE] When ctime JJ reaches JBE(3)+1 but before the layer
+  calculations, so the temperature profile is that at the end of JBE(3), call
+  TFINE(2 .
+\item [from TFINE] When JJ reaches 2*JBE(4)-JBE(3)+1, before the layer
+  calculations, replace the T depth profile with that returned by TFINE.
+\end{description}
+
+\subsection{Other}
+
+TCARD: reads and prints a 14 or 15 line, loads the values into PARC or PARW in
+HATCOM
+
+Because the first real value is used as a test for activation, either effect can
+be turned off by a single negative value. e.g.  
+\qi 14 0. / turn off eclipses
+
+Hour-dependant values computed in TLATS. Constant factors applied in TDAY.
+\\ In some cases, rather than logic tests for eclipse or Planetary loads, it is
+easier to always add them, but ensure they are zero when not invoked.
+
+FINSOL in common used differently for daily and rare eclipses, which cannot be
+invoked at once.  ECLIPSE calculates values only through the eclipse, so FINSOL
+must be replaced with 1.0 during the follow-on.
+
+In TDAY, the insolation is evaluated at the instant of the middle of each time
+interval and the upper boundary condition evaluated after the diffusion $\Delta
+T$ is applied. Thus the assessment in ECLIPSE should also be at the middle of a
+TDAY interval. Strictly, the interpolation in TFINE should use the same instant,
+which can be done with no extra logic because eclipses cannot occur near the end
+s of the day (except at the poles)
+
+As with TDAY, the upper boundary condition is applied after the layer loop for
+each timestep. In TDAY(2, TFINE(2 is called ???
+
+A change 15 lien, 
+
+
+??? MORE \\ 
+TFINE stores detailed output in CCC, but fine=time steps is 2nd dimension and this varys with latitude. So, need to compute longest possible eclipse for any latitude on EB and use that as dimension. For each latitude, save the eclipse-limit $ b'=0$ indices and put that in header.
+
+ Thus, ECLIPSE must compute maximum eclipse only for ``rare'' eclipse, but just as easy to do in either case.
+
+ For ``solar'' eclipse, shadow velocity is greater, and in the same direction, than surface velocity  all solar-system cases, 
+
+
+\section{Formulation}
+
+Starting with Equation wb=27 and some associated text of V34UG: \bq \ 
+
+\qb \underbrace{W}_{POWER}=  \underbrace{(1.- \overbrace{A_{h(i_2)}}^{ALBJ} )}_{FAC3}
+ \overbrace{ S_M  F_\parallel \cos i_2}^{ASOL}
++  \underbrace{(1-\overbrace{A_s}^{SALB} )}_{FAC3S} \underbrace{ S_M 
+  \left( \overbrace{ \Omega F_\ominus^\downarrow  }^{DIFFUSE}
++ \overbrace{ \alpha A_s (G_1 \cos i F_\parallel
++ \Omega F_\ominus^\downarrow ) }^{BOUNCE}  \right)  }_{SOLDIF}
+\qe
+
+\qbn
++ \underbrace{\Omega \epsilon}_{FAC6} \underbrace{ R_{\Downarrow}^0}_{ATMRAD}
++ \underbrace{k \frac{\partial T}{ \partial z}_{(z=0)}}_{SHEATF}  
+- \underbrace{\epsilon \sigma}_{FAC5} T^4  
++ \overbrace{\underbrace{(1-\Omega) \epsilon \sigma \epsilon_x }_{FAC5X} T_x^4}^{FARAD}   \ql{wb} 
+where the overbrace items are computed in TLATS and
+transfered in COMMON. All terms up to and including ATMRAD make up the total
+absorbed radiation ABRAD.  When frost is present, its albedo replaces $A_h$ and
+$A_s$ on a time-step basis except the $A_s$ in SOLDIF (from TLATS) is on a
+season basis; however, the $A_S$ term includes the far-ground fraction $\alpha$
+which is small except for steep slopes.
+
+Assumes that normal albedo is the same for the sloped and the flat surfaces.
+
+The fraction of solar flux reflected ALBJ$\equiv A_h =$ALB*AHF is composed of
+two factors, ALB$\equiv A_0$ and AHF$=A_h(i)/A_h(0)$, a hemispherical
+reflectance function.  Likewise, the spherical albedo is $A_s=$ ALB*PUS where
+the second factor is $P_s$.
+
+The floor of a ``pit'' does not see the flat terrain, but rather the same slope
+at all azimuths, and therefor different temperatures. The most practical
+assumption is that the average radiation temperature of the pit walls is the
+same as flat terrain. This will be an under-approximation. In a later version of
+KRC with more input parameters, a radiation scale factor could be included; if
+practical, code to include a constant factor, initally unity for v 3.4.
+
+Because \nv{FARAD} is not dependent upon the calculation of $T$, it can
+pre-computed for a given day. $T_x$ is interpolated to the proper season in
+\np{TSEAS}; \np{TLATS} selects the proper latitude, multiplies by \nv{FAC5X} for
+each of its stored hours, and interpolates to each time-step to form
+\nv{FARAD}$_t$ transfered to \nv{TDAY}. However, to then accomodate variable
+frost emission, need to multiply by $\epsilon_f/\epsilon$ for the frost case
+(relatively rare).
+\eq
+
+Version 3.5, add eclipse attenuation of solar insolation FINSOL$=F_X$ and add
+visual and IR planetary fluxes, PLANV$=P_V$ and PLANH$=P_H$.  For daily
+eclipses, TLATS includes $F_X$ into $S_M$, so that TDAY needs be no different. TLATS does nothing for rare eclipses and  $F_X$ in handled
+entirely within TFINE.
+
+
+\qb \underbrace{W}_{POWER}=  \underbrace{(1.- \overbrace{A_{h(i_2)}}^{ALBJ} )}_{FAC3}
+ \overbrace{ S_M  F_\parallel \cos i_2}^{ASOL}
+ \ + \ \underbrace{(1-\overbrace{A_s}^{SALB} )}_{FAC3S} \left[  \underbrace{ S_M 
+  \left( \overbrace{ \Omega F_\ominus^\downarrow  }^{DIFFUSE}
++ \overbrace{ \alpha A_s (G_1 \cos i F_\parallel
++ \Omega F_\ominus^\downarrow ) }^{BOUNCE}  \right)  }_{SOLDIF}  + \ \mu_P P_V e^{-\tau_v/ \mu_P}
+ \right]  \qe
+
+\qbn
++ \epsilon \mu_P P_H e^{-\tau_R/ \mu_P} \ +  \underbrace{\Omega \epsilon}_{FAC6} \underbrace{ R_{\Downarrow}^0}_{ATMRAD}
+ + \ \underbrace{k \frac{\partial T}{ \partial z}_{(z=0)}}_{SHEATF}  
+- \underbrace{\epsilon \sigma}_{FAC5} T^4  
++ \ \overbrace{\underbrace{(1-\Omega) \epsilon \sigma \epsilon_x }_{FAC5X} T_x^4}^{FARAD}   \ql{wbe} 
+
+However, in version 3.5, the atmosphere effects on planetary fluxes are ignored,
+and the $\mu_P$ term is handled in TLATS.
+
+ABRAD accumulates terms until SHEATF.
+
+%\clearpage
+\subsubsection{Synopsis of TLATS radiation calculations}
+%\vspace{-3.mm} 
+\begin{verbatim}
+TLATS
+      LATM=PTOTAL.GT.1.0        ! atmosphere present flag
+      LPH = PARW(1).GT.0.      ! doing planetary heat loads
+      LECL= (ABS(PARC(1)-1.).LT. 0.2)       ! doing daily eclipses
+      IF (LATM) allow twilight, else TWILFAC = 1. and LTW is False
+      IF (LOPN3) setup TFAR8 and set LINT iff will need to interpolate in time
+      SOLAU=SOLR=SOLCON/(DAU*DAU)! solar flux at this heliocentric range
+      SALB=PUS*ALB              ! spherical albedo, for diffuse irradiance
+        CALL ECLIPSE(PARC,PARI JBE, FINSOL) only if DailyEclipse and first season
+in Lat. loop
+ in time loop
+  calc PUH= PhotFunc for horizontal surface using COSI
+  calc AVEA=ALB*PUH and ensure 1-A cannot be negative
+  If LATM do delta-Eddington, else  
+             TOPUP=COSI*AVEA         ! upward solar 
+             BOTDOWN=0.         ! no atm scattering
+             ATMHEAT=0.         ! no atm absorbtion
+             COLL=1.D0          ! no atm attenuation of beam
+             DIRFLAT=COSI ! incident intensity on horizontal unit area 
+  if day or twilight 
+           DIFFUSE=SKYFAC*BOTDOWN ! diffuse flux onto surface
+             G1=1.0D0
+           BOUNCE=(1.D0-SKYFAC)*SALB*(G1*DIRFLAT+DIFFUSE) 
+  else 
+           DIFFUSE=0.
+           BOUNCE=0.
+
+  if  target is directly illuminated
+   calc PUH=PhotFunc for (sloped) surface using COS2, HALB=ALB*PUH
+           DIRECT=COS2*COLL    
+         IF (LECL) SOLR=SOLAU*FINSOL(JJ) ! eclipse factor     Daily only
+         QI=DIRECT*SOLR         ! collimated solar onto slope surface
+
+         ASOL(JJ)=QI            ! collimated insolation onto slope surface
+         ALBJ(JJ)=MAX(MIN(HALB,1.D0),0.D0) ! current hemispheric albedo
+         SOLDIF(JJ)=(DIFFUSE+BOUNCE)*SOLR ! all diffuse, = all but the direct.
+
+         IF (LPH) THEN ! calc planetary heat loads and add to day sum
+           PLANH(JJ) and PLANV(JJ)
+
+         ADGR(JJ)=HUV=ATMHEAT*SOLR ! solar flux available for heating of atm. H_v
+ end of time loop 
+        IF (LPH)  add in absorbed planetary heating
+        IF (LATM)  set BETA and TEQUIL and other equilbrium temperatures 
+          else BETA=0. and set TEQUIL
+         If first season TATMJ=77.7.  If no atm, no routine changes this
+         CALL TDAY8 (2,IRL)      ! execute day loop
+         Predict and store results
+End of latitude loop
+
+\end{verbatim}
+ 
+%\clearpage
+\subsubsection{Synopsis of TDAY radiation calculations}
+%\vspace{-3.mm} 
+\begin{verbatim}
+TDAY(2
+      FAC9=SIGSB*BETA           ! factor for downwelling hemispheric flux
+      if no atm, ATMRAD=0.
+Top of day loop
+        IF (LDAY) THEN if LRARE and last season then JSW=JBE(1)-1 
+IN time loop:
+       IF (JJ.EQ.JSW) and  JSW .LE. JBE(1)  CALL TFINE8  the reset JSW
+                     else Transfer layer T's and set JSW=1 
+after layer loops: when no frost
+            ABRAD=FAC3*ASOL(JJ)+FAC3S*SOLDIF(JJ) ! surface absorbed radiation
+            IF (LATM) THEN 
+              ATMRAD=FAC9*TATMJ**4 ! hemispheric downwelling IR flux
+              ABRAD=ABRAD+FAC6*ATMRAD ! add absorbed amount
+            ENDIF 
+            IF (LPH) ABRAD=ABRAD+EMIS*PLANH(JJ)+FAC3S*PLANV(JJ)
+            SHEATF= FAC7*(TTJ(2)-TSUR) ! upward heat flow to surface
+            POWER = ABRAD + SHEATF - FAC5*TSUR*TS3 ! unbalanced flux
+            IF (LOPN3) POWER=POWER+FARAD(JJ) ! fff only
+
+          IF (LATM .AND. LSELF) THEN  !v-v-v-v-v  Adjust atmosphere temperature
+            TATM4=TATMJ**4
+C  ADGR is solar heating of atm
+            HEATA=ADGR(JJ)+FAC9*(EMIS*TSUR4-2.*TATM4) ! net atm. heating flux
+            TATMJ=TATMJ+HEATA*DTAFAC ! delta Atm Temp in 1 time step
+          ENDIF                 !^-^-^-^-^
+
+  IF (LATM) THEN  DOWNIR(IH,J4)=ATMRAD ! save downward IR flux  ELSE left as was!
+
+            DOWNVIS(IH,J4)=ASOL(JJ)+SOLDIF(JJ) ! downward coll.+diffu. solar flux
+\end{verbatim}
+
+\section{Test results}
+\subsection {Validation}
+ Against 344.  Minimal edit of 342/run/342v3t.inp to 344/run/344v3t.inp
+\qi difference negligable away from cap edges.
+ 
+
+351: edit krc/Eur/351v3t.inp
+
+\subsection {New capabililties}
+\section{Other version 3.5 changes}
+Replace EVMONO38 with EVMONO3D, which has the scaling factors firm-coded in the
+routine, eliminating 2 arguments. Latter routine is 9\% faster
+
+Change line: ``  16 N 'ffff' `` will toggle output of a binary file named ffffxx.bin5 for
+each case; xx will be the case number. This file will contain the surface
+temperature for every time step for the last season for the N'th latitude. A
+non-positive value of N turns this off.
+
+Because all the KRCCOM arrays are full, add storage of N to HATCOM and use FMOON in FILCOM for the file name stem.
+
+2018 Jan 21 18:12:12
+routine that access:
+\\ ALBJ [to daycom]:  tday tfine tun   all already include daycom
+\\ SOLDIF [to daycom]: tday tfine tun
+\\ PLANH  [to daycom]: tlats tday tfine 
+\\ PLANV  [to daycom]: tlats tday tfine 
+\\ NOPE  \ SALB [to krccom]  tday tfine
+
+\bibliography{mars,moon}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev 
+
+\appendix %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\clearpage
+
+\section{Debug options new with v 3.5}
+
+TFINE always outputs \nf{tfinexx.bin5}: ASOL, FINSOL
+and all layer temperatures at every fine time-step. 
+\qi The file header contains N2,J7,J9,J4 
+\qi array is [2+fine layer, fine-time]  \hfill IDL krc35.pro reads as bbb
+
+Optional files:  Each may have more than one case
+
+Table below: columns are:
+\qi 1: Minimum IDB5 value to trigger output
+\qi 2: fort.X file. \  P means it goes to print file. \ M means to Monitor
+\qi 3: Routine that writes this. D=TDAY, F=TFINE. And which stage: 1 or 2
+
+
+%\begin{table} 
+%\caption{Optional output} \label{optout}
+%\begin{center}
+\begin{tabular}{|| l  c  c  l | l ||} \hline 
+ID &     & St- &             & IDL    \\ 
+B5 & out & age & Description & code     \\  \hline
+1 & P & F & IQ,JJ upon entry, print exit & \\
+1 & P & F1 &  Least stable layer and T-dep. layer set & \\
+1 & M & F1 &   QB.. key values & \\
+1 & P & D2 &  LZONE... T-dep layer ranges & \\
+2 & P & F2 &   Layer stability table & \\
+2 & 42 & F1 & J,BLAF,SCONVF,QA for each fine layer  & \\ 
+3 & P & F  &  Starting Tsurf, delbot & \\ 
+4 & 43 & F1 & for N1 layers at start: TDAY: depth,T,splineY,c-thick,f-thick,f-depth & fff[layer,item]\\
+  & `` & F1 & for fine layers: depth, T, FA1, FA3  & uuu[layer,item] \\
+? & 44 & F2 &  JFI,FINSJ, TSUR,ABRAD,SHEATF,POWER,FAC7,KN  & ddd[ctime,item] \\
+ & & & \ \ \ each fine time near edge  & \\
+4 & 47 & F2 &   T for fine layers and for coarse layers at end of eclipse, followed by :  & vvv[item*case, layer] \\
+4 &47 & D2 & T for layers, just before being replace by eclipse results. & ? \\
+5 & P & F &  Index, center depth and initial temperature for each fine layer & \\
+6 & M & F &  I,J, fine-layer factor for each layer & \\
+7 & 44 & F2 & values for each fine time step near eclipse ends & \\
+7 & 46 & D2 &  JJ ,ATMRAD,TSUR,ABRAD,SHEATF,POWER,FAC7,KN  &  aaa[time,item]\\ 
+ & & &  \ \ \ each coarse time. Rare only. & \\ \hline
+\end{tabular} % \end{center}  \end{table}
+
+Notes: 1) Radiation fields do not show eclipse because they are normal for Rare eclipse 
+\qii 2) TSUR ( and SHEATF) will show discontinuity at end of followon.
+
+\section{Some values for Solar system satellites \label{nomp}}
+
+\textbf{Earth and Moon:} 
+\\ Eclipse card for Earth lunar eclipse might be
+\qi 14 3 1. 6371.008 384.4e3 1737. 29.53 0.345 6000 12. 7 / Moon
+\\ Eclipse card for Earth solar eclipse might be
+\qi 14 3 1. 1737.4 384.4e3 6315. 29.53 0.345 6000 12. 7 / Earth solar
+\qi but need to account for sol not the same as lunar synodic month
+\qii a test of the routine is that with bias=0, mid-eclipse would be about 6\% short of total.
+Planetary FLux line:  thermal amplitude and phase are just guesses
+15 .05157 .005  20 0.011 0.011  0  12  / Earth flux onto Moon at lunar midday
+\\ Solid angle of Earth from Moon is  0.000216222 sterad
+.
+\\ https://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
+\\ Earth: Bond Albedo 0.306 ( highly variable) 
+\\  Surface T =288, effectif T =252  blackbody=254
+  
+Wikipedia emissivity~ 0.96, but this is land only?
+\\ MENGLIN JIN,  An Improved Land Surface Emissivity Parameter for Land Surface Models Using
+Global Remote Sensing Observations, Amer. Meteor. Soc 2006, p.2867
+
+https://journals.ametsoc.org/doi/pdf/10.1175/2008BAMS2634.1
+\\ KEVIN E. TRENBERTH , JOHN T. FASULLO, AND JEFFREY KIEHL: EARTH'S GLOBAL ENERGY BUDGET
+\\ Bull.Amer. Meteor. Soc, MArch 2009, p.311, Fig 1. global annual mean Earth's energy budget
+\\ Reflected solar 101.9 W/m2, outgoing Longwave=238.5 W/m2,
+
+https://nssdc.gsfc.nasa.gov/planetary/factsheet/moonfact.html
+\\ Moon: Bond Albedo 0.11 
+
+https://arxiv.org/pdf/1711.00977.pdf
+\\ Global regolith thermophysical properties of the Moon from the Diviner Lunar Radiometer Experiment
+\\ Paul O. Hayne1 et al submitted to JGR, revised Sept 2017
+\\  Thermal conductivity varies from 7.4×10-4 W m-1 K-1 at the surface, to 3.4×10-3
+ W m-1 K-1 at depths of ~1 m, given density values of 1100 kg m-3 at the
+ surface, to 1800 kg m-3 at 1-m depth. On average, the scale height of these
+ profiles is ~7 cm, corresponding to a thermal inertia of 55 ±2 J m-2 K-1 s -1/2
+ at 273 K, relevant to the diurnally active near-surface layer, ~4-7 cm.
+\\These values lead to cond=3716, unreasonable. So, I estimate C at 800, compute k=0.107912
+
+specific heat: polynomial in T [-3.6125,2.7431,2.3616e-3,-1.234e-5,8.9093e-8]
+\qi fit 0ver 120:320 to cubic in (T-220)/100 , get coef= [790.701,578.508,208.61,66.0619]
+\qi residual mean and stdev= -3.34023e-06     0.693955
+
+Lunar heat flow, Langseth et al., 1976, quoted in:
+\qi  Lunar heat flow: Regional prospective of the Apollo landing sites, 
+\qii . A. Siegler, S. E. Smrekar  JGP planets 2014 DOI: 10.1002/2013JE004453
+\\ Apollo 15 measured heat flux of 21±3 mW m−2 and the Apollo 17 values of 15 ± 2
+\qi but generally assumed these are above lunar average.
+
+\textbf{Mars:} eq. radius = 3396.2 km
+\qi Orbit SMA= 1.523679 AU
+\qi Orbital Period 1.8808 yr or 686.971 day
+\\ Satellites =['Phobos','Deimos']
+\\ Satellite orbit radius = 9376.,  23463.2 km
+\\ Satellite radius: 11.2667, 6.2   km 
+\\ Mutual period  0.3189, 1.263   day
+\\ For Phobos solar eclipse, the surface radius of Mars is a significant term.
+
+\textbf{Jupiter:} eq. radius =71492. km
+\qi Orbit SMA= 5.2026 AU
+\qi Orbital Period 11.8618 yr or 4332.59 day
+\\ Satellites =['Io','Europa','Ganymede','Callisto']
+\\ Satellite orbit radius =[.4218,.6711,1.0704, 1.8827]*1.e6
+\\ Satellite radius: =[3640.,3121.6,5268,2,4820.6] / 2.
+\\ Mutual period =[1.77,3.55,7.15,16.69] days
+\\ Angular radius of Jupiter from satellite: $\arctan(r/R)$
+\qi 0.1703  \   0.1067 \   0.0668  \  0.0380
+
+Europa heat flow: 30 to 130 mW/m2: J. Ruiz, 'The heat flow of Europa', Icarus v. 177, p438:446 (2005) 
+
+Calculations in \np{galsatab.pro}, using emission temperature of 125K and 
+geometric albedo of 0.52:
+\vspace{-3.mm} 
+\begin{verbatim}
+Satt.       Io   Europa Ganymede Callisto 
+beta   0.16790  0.10613  0.06669  0.03920  angular radius of Jupiter from sat.
+omega  0.08835  0.03535  0.01397  0.00483  Solid angle of jupiter, steradian
+tflux   0.3893   0.1558   0.0615   0.0213  Mean IR flux  W/m^2
+vflux   2.3213   0.9288   0.3670   0.1268  Maximum Vis flux  W/m^2
+\end{verbatim}
+
+% Jupiter: emission temperature about 134 K, or 18.3 W/m$^2$/steradian. 
+% \qi At Europa, Jupiter is about 0.0356 steradian. 
+% \qi Thus thermal flux onto Europa about 0.62 W/m2
+% \\ Jovian bolometric albedo about 0.73(?),
+% so reflected radiance about  0.73 * scon/(5.2026$^2*\pi$) = 11.7 W/ster
+% \qi or 0.42 W/m2 onto Europa at inferior conjunction. 
+
+Thus, planHeat line for Europa might be:
+\qi 15  0.156 0.  0.  0.464 0.464 0.  12. / Jupiter heat load on Europa, nearside center
+
+These can be compared to the solar irradiance at Jupiter of 50.53 W/m2
+
+\textbf{Saturn:} Eq. radius.  60268  km
+\qi Orbit SMA= 9.5549  AU
+\qi Orbital Period 29.4571 yr or 10759.22  day 
+\\ Satellites =['Enceledus','Titan','Iapetus']
+\\ Satellite orbit radius =[0.237950,1.22193,3.56082]*1.e6
+\\ Satellite radius: =[504.2,5149.,1468.6]/2.  km 
+\\ Mutual period =[1.370, 15.945 ,79.3215] days
+\qi Titan has atm: Psurf=147 Pa N$_2$+ 1.4\% CH$_4$ 
+\qii Lakes and varied surface geology
+\qi Iapetus has inclination 15.5\qd
+
+\textbf{Neptune:} $r_m$=24622. SMA=30.33 AU
+\\ Triton, r=1353.4, sma=354759.  incl.=157 (to nep)
+\qi Psurf=1.4:1.9 Pa N$_2$2 , ``geysers''
+
+\subsection{Test input files  OBSOLETE}
+Chronologic; several run many times. Any run older than 2017 Apr 5 13:15 should be abandoned. Many .inp files deleted.
+\vspace{-3.mm} 
+\begin{verbatim}
+0=no eclipse, D=Daily, R=Rare H=PlanetaryHeating, n=nill 
+cirMars = circular orbit at Mars distance, zero obliquity
+
+ 3874 Dec  9 06:46 thin9.inp Mars  5 lats, 120 days, 9 cases: vary layers
+ 3448 Mar 20 16:50 V35a.inp Europa 5 lats, 20 days, 4 cases: 0,D,R,0H
+ 3536 Mar 30 12:49 eur6.inp Europa 1 lat, 10 days, 3 cases: 0, D and R
+ 3168 Mar 30 14:21 phob.inp Mars, real phobos, 1 lat, 10 days, 3 cases: 0, D and R
+ 3195 Mar 30 14:25 phon.inp Mars, no atm,  1 lat, 10 days, 3 cases: 0, D and R
+ 3942 Mar 30 15:58 351v3t.inp  Mars 5-lats, 6 cases for standard V3 validation
+ 3255 Mar 31 06:04 phoz.inp Mars,   1 lat, 10 days, 4 cases: all 0, vary PTOTAL
+ 3339 Apr  2 16:22 phoc.inp cirMars 600 km Phobos 1 lat 4 cases: 0,D,R,Rn
+ 4127 Apr  4 23:26 eurA.inp 1lat, 20 days 
+ 3916 Apr  5 15:38 eurB.inp Europa 1 lat,
+ 3916 Apr  5 15:39 eurC.inp
+\end{verbatim}
+
+Analysis of each run using IDL kv3 calling krc35
+
+FORTRAN routines are tested individually using testrou.f, executable is testr
+
+\subsection{planning notes}
+Allow for an atmosphere.
+\qi need to separate photometric function
+\qi Daily:  ?? add PlanIR to downir from atm?
+\qii   and add plan vis to downvis?
+
+For rare eclipse, which calls TFINE, only case with atmosphere is Phobos, so
+need only handle atm for only one latitude! But may be simpler code to handle
+for all lats. Problem will be storage arrays; cannot use any in COMMMON.
+
+But, could chose to not modify  the atm temperature in tfine.
+
+TFINE depth/time grid finer by $K$ and $K^2$.
+
+Interpolate boundary conditions: VIS attenuated by FINSOL ? 
+
+ 354 method computes TFINE before TDAY, so normal TATM is not available, except
+ from prior day, which should be adequate.
+ 
+If move TFINE after TDAY, then could compute TATM at each fine time step
+
+but TAF(IH,J4) saved only on LDAY
+
+Define bias at the center of the EB, then compute it for each latitude, calling
+ECLIPSE each time. Good for Earth:Moon lunar eclipse and slightly more accurate
+for Jovian Sat.
+
+Could have TFINE results winnowed and replace TDAY in the output arrays!
+
+For DAILY ecl, TLATS computes the bias and combo (DOWN + PlanFLux) fluxes 
+ current lat bias stored in PARC()
+
+PlanFLux present for Daily as well as RARE ecl.
+
+If Atm and DAILY, Tatm includes eclipse effects.
+
+TFINE ignores any atmosphere, so RARE eclipse calculations ignore any atm. In
+the solar system, this is a significant approximation only for solar eclipses on
+Earth.
+
+If ATM and RARE, Tatm would include eclipse effects on only the ecl day, could always ignore them. Decide based on code complexity.
+
+Plan heat could include apparent declination of OB as a source.
+
+\subsection{Bugs in early versions}
+
+Tfine starts  255 higher than Tsurf 253. How can this be?
+For Rare sclipse, fort.43 contains Tsurf (fine)
+ interpolating .t52 ttt Tsurf to the time of jj7, indicates Tfine start too high;
+as seen in plot krc35@25
+
+      CALL ORLINT8 (N1,XCEN,TTJ,N1F,XCEF,TTF
+
+ Asol computed with N2 resolution, 
+TFINE does linear interpolation to fine-time of all time-based values from TLATS:
+\qi ALBJ   hemispheric albedo.
+\qi ASOL Direct solar flux on sloped surface
+\qi FARAD  far-field radiance
+\qi PLANH+PLANV combine  IR and visual load from OB
+\qi SOLDIF  Solar diffuse (with bounce) insolation
+\\ If the first coarse time step into an eclipse is barely after eclipse starts, then the TFINE Tsurf may show a weaker slope until the end of the first coarse time-step.
+
+\subsection {Notes on the need to separate radiation fields}
+Want to allow planetary loads when have an atmosphere.
+
+Must separate radiation fields:
+\qi Solar incident top-of-atm. all and only these influenced by eclipse
+\qii  abs in atm,  
+\qii  collimated at surface,  
+\qii  diffuse at surface,
+\qii  [lost]
+\qi Atm down-going IR
+\qii  Assume existing treatment included multiple reflections, messy to rederive
+\qi Planetary visible top-of-atm:  PLANV
+\qii  abs in atm, 
+\qii  abs at surface
+\qii  [lost]
+\qi Planetary thermal top-of-atm:  PLANH
+\qii  abs in atm,  
+\qii  abs at surface,
+\qii  [lost]
+\qi Hemispherical albedo: ALBJ
+
+\section{Integer to:from real conversion}
+Let a real value $x$ run from 0 to $V$, e.g., 0 to $2\pi$ or  0. to 24.
+\\ Let the integral indices $I$ representing this interval run from 1 to $N$; the 1-based system
+\qi For notation convenience, define $R \equiv \frac{V}{N}$
+\vspace{-3.mm} 
+\begin{verbatim}
+x:  0=|++^++|++^++|++ ... ++|++^++|=V   Real representation
+I:    |  1  |  2  |   ...   |  N  |     Integral representation, 1-based
+M:    |  0  |  1  |   ...   | N-1 |     Integral representation, 0-based
+\end{verbatim}    
+
+Integer to real: $x=(I-\frac{1}{2})\frac{V}{N}  \mc{or}  x=(I-0.5)R $
+\\ Real to integer:  $I=$ NINT $( x/R +.5 )$ \ 
+\qi BEWARE, the default real:integer conversion in many languages is to truncate magnitude. 
+\qii This results in a relationship discontinuity (no change in I) at $x=0$.
+\qiii If $y$ is always positive: NINT(y-.5) and INT(y) are identical.
+ 
+or \  $I=$ $ x/R + 1$ if $x$ is non-negative and the default real:interger conversion is to truncate magnitude.
+
+FORTRAN intrinsics for real to integer (all tested in testrou.f @28 )
+\qi CEILING - Integer ceiling function
+\qi FLOOR - Integer floor function
+\qi INT - Convert to integer type    \ \ identical results to I=x
+\qii INT2 - Convert to 16-bit integer type
+\qii INT8 - Convert to 64-bit integer type
+\qii LONG - Convert to integer type
+\qi NINT - Nearest whole number
+\qi FLOAT - Convert integer to default real
+\\ Only CEILING, FLOOR,and NINT are consistent across 0. 
+\\ The use of NINT and FLOAT maintains integrity. 
+
+% \section{Debug printout}
+\subsubsection {version testing}
+ 
+\begin{verbatim}
+ against 344.  minimal edit of 342/run/342v3t.inp to 344/run/344v3t.inp
+ 
+351: edit krc/Eur/351v3t.inp
+
+kv3.pro 
+
+File names
+  0 VerA=new DIR    200 = ~/krc/Eur/out/
+  1  " case file   202  = 351v3tb
+  5 VerB=prior DIR 201  = /work2/KRC/344/run/out/
+  6  " case file   202  = 344v3tb
+
+
+@115 123 116 123
+kv3 Enter selection: 99=help 0=stop 123=auto> 550
+Num lat*seas*case with NDJ4 same/diff=        1197           3
+
+@116 makes kons=233      56     561     562     563     564     565      61     622      -1      63
+
+
+@56: t
+@561: 0
+.
+% ARRSUB: some index error, see above comment
+ARRSUB error        2
+SOME ERROR CONDITION at kon=     561.  Any key to Go
+@12  11=0 12=4 17=0 18=-1
+@561
+ help,qy
+QY              DOUBLE    = Array[48, 5, 40, 6]
+
+Tsurf caseRange=all LatRange=0:4  SeasonRange=all  hour   lat  seas  case
+ quilt before any other display
+                   Mean       StdDev      Minimum      Maximum
+         1    -0.00101340    0.0169005    -0.800859    0.0731013  signed
+N=   57600     0.00268893    0.0167159      0.00000     0.800859  absolute
+
+kv3 Enter selection: 99=help 0=stop 123=auto>  562
+351v3tb - 344v3tb:  Tsurf. caseRange=all LatRange=0:4  SeasonRange=all
+         -60.         -30.           0.          30.          60.
+% Compiled module: MEAN_STD2.
+Mean= (each case)
+    0.0453352      0.00000      0.00000      0.00000      0.00000
+    0.0280654      0.00000      0.00000      0.00000      0.00000
+   0.00726742      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+StDev=
+    0.0616917      0.00000      0.00000      0.00000      0.00000
+    0.0299598      0.00000      0.00000      0.00000      0.00000
+    0.0100296      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000
+
+kv3 Enter selection: 99=help 0=stop 123=auto> 563
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=NDJ4
+    NDJ4   -0.00167    0.07072   -2.00000    1.00000    0.00333    2.00000
+    DTM4   -0.00000    0.00059   -0.00399    0.01548    0.00008    0.01548
+    TTA4   -0.00036    0.00710   -0.10882    0.02495    0.00126    0.10882
+
+QUILT3 displayed value range is      -0.10881889     0.024951097
+sample is: latitude(5)  * 8 planes of case
+line is: season(40)  * 1 groups of case.  Lines increase upward
+SOuthern lats show the changes
+  FROST4    0.05272    0.34532   -0.23976    3.60657    0.05312    3.60657
+QUILT3 displayed value range is      -0.23975942       3.6065696
+sample is: latitude(5)  * 8 planes of case
+line is: season(40)  * 1 groups of case.  Lines increase upward
+Any key to go
+   AFRO4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  HEATMM   -0.00174    0.02303   -0.20097    0.11920    0.00585    0.20097
+QUILT3 displayed value range is      -0.20096924      0.11919618
+sample is: latitude(5)  * 8 planes of case
+line is: season(40)  * 1 groups of case.  Lines increase upward
+
+kv3 Enter selection: 99=help 0=stop 123=auto> 564
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=Lat
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+
+kv3 Enter selection: 99=help 0=stop 123=auto> 565
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=DJU5
+    DJU5    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUBS    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+   PZREF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    TAUD    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUMF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+kv3 Enter selection: 99=help 0=stop 123=auto> 61
+Maximum difference in Ls is:       0.0000000
+kv3 Enter selection: 99=help 0=stop 123=auto> 62
+
+RESULT, negligable differences away from frost edge.
+
+\end{verbatim}  
+ 
+\end{document} %==========================================================
+Figure \ref{}  
+\begin{figure}[!ht] \igq{}
+\caption[]{
+\label{}  .png }
+\end{figure} 
+% how made:
+
+
+[hkieffer@hulk3 Eur] grep -n delE PhoH.prt
+170:End eclipse: J4,JJ,KG,delT,delE   1  772  25    0.30630E-02     256.33    
+259:End eclipse: J4,JJ,KG,delT,delE   1  772  20   -0.16669E-03    -6.9353    
+515:End eclipse: J4,JJ,KG,delT,delE   1 1045  28   -0.14259E-01    -252.76    
+518:End eclipse: J4,JJ,KG,delT,delE   2 1045  28    0.15505E-02     27.485    
+520:End eclipse: J4,JJ,KG,delT,delE   3 1045  28   -0.18985E-01    -336.53    
+608:End eclipse: J4,JJ,KG,delT,delE   1  862  28    0.14699E-02     26.057    
+611:End eclipse: J4,JJ,KG,delT,delE   2  859  28   -0.17386E-03    -3.0820    
+613:End eclipse: J4,JJ,KG,delT,delE   3  859  28    0.19383E-02     34.360   
+J4 is latitude index.  JJ is ctime.  KG is Deepest normal layer treated
+delT is delta Temperature at layer KG; TFINE-TDAY
+delE is delta energy in that layer J/m^2
+ PhoH tfine header has j7 as 767, but 

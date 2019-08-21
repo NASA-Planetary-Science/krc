@@ -1,0 +1,336 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<meta name="GENERATOR" content="TtH 4.03">
+ <style type="text/css"> div.p { margin-top: 7pt;}</style>
+ <style type="text/css"><!--
+ td div.comp { margin-top: -0.6ex; margin-bottom: -1ex;}
+ td div.comb { margin-top: -0.6ex; margin-bottom: -.6ex;}
+ td div.hrcomp { line-height: 0.9; margin-top: -0.8ex; margin-bottom: -1ex;}
+ td div.norm {line-height:normal;}
+ span.roman {font-family: serif; font-style: normal; font-weight: normal;} 
+ span.overacc2 {position: relative;  left: .8em; top: -1.2ex;}
+ span.overacc1 {position: relative;  left: .6em; top: -1.2ex;} --></style>
+ <style type="text/css"><!--
+ .tiny {font-size:30%;}
+ .scriptsize {font-size:xx-small;}
+ .footnotesize {font-size:x-small;}
+ .smaller {font-size:smaller;}
+ .small {font-size:small;}
+ .normalsize {font-size:medium;}
+ .large {font-size:large;}
+ .larger {font-size:x-large;}
+ .largerstill {font-size:xx-large;}
+ .huge {font-size:300%;}
+ --></style>
+ 
+          
+<title> The KRC Planetary ORBit (PORB) System Users Guide</title>
+ 
+<h1 align="center">The KRC Planetary ORBit (PORB) System Users Guide </h1>
+
+<h3 align="center">Hugh H. Kieffer  &nbsp;&nbsp;File=-/krc/PUG.tex 2013aug25 </h3>
+ 
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+
+<div class="p"><!----></div>
+                     
+<div class="p"><!----></div>
+<hr />
+ .<hr />
+
+
+<div class="p"><!----></div>
+This file is a guide to using PORB and is intended for the general user who
+wants to apply KRC to someplace other than Mars.  A separate document
+<i>-/krc/porb.tex</i> describes the design of the PORB system; it should not be
+needed by the general user.
+
+<div class="p"><!----></div>
+ <a id="tth_sEc1"></a><h2>
+1&nbsp;&nbsp;Introduction</h2> 
+This document describes Version 2.2.2 and later; it applies to KRC Version 2.2.1
+and later; 2.2.2 includes additional source files <i>small.tab</i> and
+<i>exoplan.tab</i>. The intention is to allow a user to create a <b>geometry matrix</b>,
+7 ridgely formatted lines of numbers,
+for inclusion in a KRC input file that would apply to any planet, satellite,
+asteroid, comet or exoplanet the user may wish.
+
+<div class="p"><!----></div>
+Version 2 of KRC uses dates relative to J200.0 = 2000Jan01 noon UTC. To change
+from version 1 dates, subtract 11545.0
+
+<div class="p"><!----></div>
+ <a id="tth_sEc2"></a><h2>
+2&nbsp;&nbsp;Outline</h2>
+
+<div class="p"><!----></div>
+Check <i>PORBCM.mat</i> to see if it already contains the matrix you want. If so, simply copy that into the KRC input file. Otherwise proceed....
+
+<div class="p"><!----></div>
+The executable of <b>porbmn</b> and the elements data files must be in the same directory. Copy them all into a directory of your choice.
+
+<div class="p"><!----></div>
+Determine if the elements files to be used need any edits for a new object.
+ If so, do the edits.
+
+<div class="p"><!----></div>
+Run PORBMN to create a geometry matrix, see &#167; ; cut-and-paste it into your KRC input
+file. Then run KRC.
+
+<div class="p"><!----></div>
+ <a id="tth_sEc3"></a><h2>
+3&nbsp;&nbsp;Files input to PORB</h2> Files formatted for the PORB system cover four catagories, each file has its own format:
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Planets and satellites:  one file for orbits and another for spin-axes
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Minor (or small) bodies: orbits and pole direction for each object. Two versions.
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comets: Orbit size specified by perihelion distance.  
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ExoPlanets: Orbit specified by semi-major axis, period and eccentricity; each commonly known. Relative orientation of the body spin axis specified by obliquity and Ls at periapsis, neither is commonly known.
+
+<div class="p"><!----></div>
+All files contain adequate information in the header to easily add additional objects.
+
+<div class="p"><!----></div>
+Reading of these files uses Fortran list-directed format, which uses white-space (blank or tab)
+to separate items and will terminate with a slash '/'. Thus, names and numbers
+must not have any internal space or /.  On each line, anything after the number
+of items in the READ list is ignored, so comments may be entered. The first body in each file has a "/" just after the items read on each line to indicate how many items are read. All but the planets files contain a skeleton form for adding objects.
+
+<div class="p"><!----></div>
+     <a id="tth_sEc3.1"></a><h3>
+3.1&nbsp;&nbsp;Planets</h3> 
+
+<div class="p"><!----></div>
+
+<dl>
+ <dt><b><i>standish.tab</i></b></dt>
+	<dd> &nbsp;Standish06=[] Keplerian elements and rates of change for 9 planets in mean ecliptic and equinox of J2000 valid for 1800 to 2050.
+This file is valid for 1800 to 2050; it should not need any edits</dd>
+ <dt><b><i>spinaxis.tab</i></b></dt>
+	<dd> &nbsp;Archinal11=[] Planets: Direction of the pole and rates of change in ICRF, which differs from J2000 equatorial system by less than 0.1 arcsecond. The planets and a few satellites are included; more satellites can be added.</dd>
+</dl>
+
+<div class="p"><!----></div>
+     <a id="tth_sEc3.2"></a><h3>
+3.2&nbsp;&nbsp;Minor planets / asteroids </h3>
+
+<div class="p"><!----></div>
+      <a id="tth_sEc3.2.1"></a><h4>
+3.2.1&nbsp;&nbsp;Web sources</h4> 
+<div class="p"><!----></div>
+There are several sources on the web. Some I found did not have unambiguous definition of the coordinate systems used; these were established through email exchanges
+
+<dl>
+ <dt><b>PDS Small Bodies Node</b></dt>
+	<dd> &nbsp;http://pdssbn.astro.umd.edu/
+<br />Primary source for spin axis.  Values are in ecliptic coordinates of equinox 1950
+ 
+
+<pre>
+&nbsp;PDS&nbsp;Small&nbsp;Bodies&nbsp;Node&nbsp;http://pdssbn.astro.umd.edu/&nbsp;
+DATA&nbsp;ARCHIVES&#62;&nbsp;Archived&nbsp;at&nbsp;SBN&nbsp;&#62;&nbsp;by&nbsp;target&nbsp;&#62;&nbsp;Asteroids(all)&nbsp;
+&nbsp;&nbsp;&#62;&nbsp;Photometry&nbsp;and&nbsp;Lightcurves&nbsp;&#62;&nbsp;EAR-A-5-DDR-DERIVED-LIGHTCURVE-V13.0&nbsp;
+Either&nbsp;download&nbsp;the&nbsp;set&nbsp;or:&nbsp;&nbsp;&#62;&nbsp;Browse&nbsp;&#62;&nbsp;data&nbsp;&#62;&nbsp;&nbsp;&nbsp;lc_spinaxis.tab&nbsp;(230&nbsp;kb)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;explanation&nbsp;of&nbsp;this&nbsp;file&nbsp;is&nbsp;in&nbsp;&nbsp;lc_spinaxis.lbl
+Then&nbsp;scroll&nbsp;through.&nbsp;They&nbsp;are&nbsp;in&nbsp;numerical&nbsp;order&nbsp;with&nbsp;multiple&nbsp;entries&nbsp;per&nbsp;asteroid;&nbsp;
+the&nbsp;first&nbsp;line&nbsp;is&nbsp;'summary'&nbsp;of&nbsp;the&nbsp;period&nbsp;(hours)&nbsp;and&nbsp;amplitude&nbsp;of&nbsp;the&nbsp;light&nbsp;curve.
+&nbsp;4th&nbsp;and&nbsp;5th&nbsp;columns&nbsp;to&nbsp;the&nbsp;right&nbsp;of&nbsp;column&nbsp;containing&nbsp;'summary'&nbsp;contains&nbsp;
+the&nbsp;'best&nbsp;guess'&nbsp;of&nbsp;the&nbsp;longitude&nbsp;and&nbsp;latitude&nbsp;of&nbsp;the&nbsp;spin&nbsp;axis&nbsp;for&nbsp;each&nbsp;observer.
+You&nbsp;get&nbsp;to&nbsp;choose&nbsp;your&nbsp;favorite!&nbsp;
+
+</pre></dd>
+ <dt><b>Minor Planet Center</b></dt>
+	<dd>  &nbsp;http://www.minorplanetcenter.net/iau/info/OrbElsExplanation.html 
+<br />ArgPeri, Node and Inclin are in heliocentric ecliptic J2000.0
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Must specify date for elements that is within requested ephemeris range</dd>
+ <dt><b>JPL Small-Body Database Browser</b></dt>
+	<dd>  &nbsp;http://ssd.jpl.nasa.gov/sbdb.cgi
+<br />Orbit elements are in heliocentric ecliptic J2000.  Rotation period in hours. &nbsp;No spin-axis data.</dd>
+ <dt><b>Ted Bowells database</b></dt>
+	<dd>   &nbsp;ftp://ftp.lowell.edu/pub/elgb/astorb.html
+<br />Enormous; more than 1/2 million objects. Frequent updates. 
+<br />ArgPeri, Node and Inclin are in J2000.0,  must be ecliptic. No spin-axis data.</dd>
+</dl>
+
+<div class="p"><!----></div>
+      <a id="tth_sEc3.2.2"></a><h4>
+3.2.2&nbsp;&nbsp;PORB input files</h4> There are two PORB-system ASCII files that differ slightly in format. Both
+contain one element per line and include spin-axis.
+
+<div class="p"><!----></div>
+
+<dl>
+ <dt><b><i>minor.tab</i></b></dt>
+	<dd> Generally older entries.</dd>
+ <dt><b><i>small.tab</i></b></dt>
+	<dd>  Format designed to allow cut-and-paste from the JPL Small-Body Database 
+Browser. Rotation period in hours. Must get spin axis from other sources.
+<br />All entries were created 2013Aug 22 or later.
+
+<pre>
+Look&nbsp;up&nbsp;object&nbsp;with&nbsp;JPL&nbsp;Small-Body&nbsp;Database&nbsp;Browser&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;http://ssd.jpl.nasa.gov/sbdb.cgi
+Copy&nbsp;the&nbsp;number&nbsp;and&nbsp;name&nbsp;line.&nbsp;There&nbsp;must&nbsp;be&nbsp;no&nbsp;blanks&nbsp;or&nbsp;/&nbsp;within&nbsp;the&nbsp;name
+&nbsp;&nbsp;&nbsp;&nbsp;Append&nbsp;to&nbsp;this&nbsp;line&nbsp;the&nbsp;epoch
+copy&nbsp;elements&nbsp;lines&nbsp;&nbsp;e&nbsp;through&nbsp;M
+Click&nbsp;on:&nbsp;Physical&nbsp;Parameters&nbsp;and&nbsp;copy&nbsp;3&nbsp;columns&nbsp;for&nbsp;the&nbsp;rotation&nbsp;period.&nbsp;E.g.,
+&nbsp;&nbsp;rot_per&nbsp;	7.210&nbsp;	h
+Append&nbsp;3&nbsp;lines&nbsp;for:&nbsp;[data&nbsp;not&nbsp;in&nbsp;the&nbsp;JPL&nbsp;database]
+0.&nbsp;/&nbsp;Right&nbsp;Ascension&nbsp;of&nbsp;Pole,&nbsp;J2000&nbsp;[deg]&nbsp;&nbsp;&nbsp;
+0.&nbsp;/&nbsp;Declination&nbsp;of&nbsp;Pole,&nbsp;J2000&nbsp;[deg]
+0.&nbsp;/&nbsp;Prime&nbsp;meridian&nbsp;at&nbsp;epoch&nbsp;[deg]
+&nbsp;&nbsp;&nbsp;Then&nbsp;replace&nbsp;the&nbsp;zeros&nbsp;if&nbsp;you&nbsp;have&nbsp;real&nbsp;values.
+
+</pre></dd>
+</dl>
+
+<div class="p"><!----></div>
+     <a id="tth_sEc3.3"></a><h3>
+3.3&nbsp;&nbsp;Comets</h3>
+
+<div class="p"><!----></div>
+
+<dl>
+ <dt><b><i>comet.tab</i></b></dt>
+	<dd> &nbsp;Some comets: orbit and spin. 
+<br />WARNING: Consistency of source orientation systems uncertain
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Specify perihelion and eccentricity.
+<br />Includes orbit and pole. Mostly compiled in 1980:1992</dd>
+</dl>
+Current values are available at: 
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.minorplanetcenter.net/iau/Ephemerides/Comets/Soft00Cmt.txt
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Saved 2013 Jun 19 in MPC format as: -/krc/porb/MPcomets.tab
+
+
+<pre>
+&nbsp;&nbsp;&nbsp;Columns&nbsp;&nbsp;&nbsp;F77&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Use
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;-&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;i4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Periodic&nbsp;comet&nbsp;number
+&nbsp;&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orbit&nbsp;type&nbsp;(generally&nbsp;`C',&nbsp;`P'&nbsp;or&nbsp;`D')
+&nbsp;&nbsp;&nbsp;&nbsp;6&nbsp;-&nbsp;&nbsp;12&nbsp;&nbsp;a7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Provisional&nbsp;designation&nbsp;(in&nbsp;packed&nbsp;form)
+&nbsp;&nbsp;&nbsp;15&nbsp;-&nbsp;&nbsp;18&nbsp;&nbsp;i4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year&nbsp;of&nbsp;perihelion&nbsp;passage
+&nbsp;&nbsp;&nbsp;20&nbsp;-&nbsp;&nbsp;21&nbsp;&nbsp;i2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month&nbsp;of&nbsp;perihelion&nbsp;passage
+&nbsp;&nbsp;&nbsp;23&nbsp;-&nbsp;&nbsp;29&nbsp;&nbsp;f7.4&nbsp;&nbsp;&nbsp;Day&nbsp;of&nbsp;perihelion&nbsp;passage&nbsp;(TT)
+&nbsp;&nbsp;&nbsp;31&nbsp;-&nbsp;&nbsp;39&nbsp;&nbsp;f9.6&nbsp;&nbsp;&nbsp;Perihelion&nbsp;distance&nbsp;(AU)
+&nbsp;&nbsp;&nbsp;42&nbsp;-&nbsp;&nbsp;49&nbsp;&nbsp;f8.6&nbsp;&nbsp;&nbsp;Orbital&nbsp;eccentricity
+&nbsp;&nbsp;&nbsp;52&nbsp;-&nbsp;&nbsp;59&nbsp;&nbsp;f8.4&nbsp;&nbsp;&nbsp;Argument&nbsp;of&nbsp;perihelion,&nbsp;J2000.0&nbsp;(degrees)
+&nbsp;&nbsp;&nbsp;62&nbsp;-&nbsp;&nbsp;69&nbsp;&nbsp;f8.4&nbsp;&nbsp;&nbsp;Longitude&nbsp;of&nbsp;the&nbsp;ascending&nbsp;node,&nbsp;J2000.0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(degrees)
+&nbsp;&nbsp;&nbsp;72&nbsp;-&nbsp;&nbsp;79&nbsp;&nbsp;f8.4&nbsp;&nbsp;&nbsp;Inclination&nbsp;in&nbsp;degrees,&nbsp;J2000.0&nbsp;(degrees)
+&nbsp;&nbsp;&nbsp;82&nbsp;-&nbsp;&nbsp;85&nbsp;&nbsp;i4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Year&nbsp;of&nbsp;epoch&nbsp;for&nbsp;perturbed&nbsp;solutions
+&nbsp;&nbsp;&nbsp;86&nbsp;-&nbsp;&nbsp;87&nbsp;&nbsp;i2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Month&nbsp;of&nbsp;epoch&nbsp;for&nbsp;perturbed&nbsp;solutions
+&nbsp;&nbsp;&nbsp;88&nbsp;-&nbsp;&nbsp;89&nbsp;&nbsp;i2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Day&nbsp;of&nbsp;epoch&nbsp;for&nbsp;perturbed&nbsp;solutions
+&nbsp;&nbsp;&nbsp;92&nbsp;-&nbsp;&nbsp;95&nbsp;&nbsp;f4.1&nbsp;&nbsp;&nbsp;Absolute&nbsp;magnitude
+&nbsp;&nbsp;&nbsp;97&nbsp;-&nbsp;100&nbsp;&nbsp;f5.1&nbsp;&nbsp;&nbsp;Slope&nbsp;parameter
+&nbsp;&nbsp;103&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name
+
+</pre>
+J2000.0 was confirmed to be heliocentric ecliptic.
+
+<div class="p"><!----></div>
+     <a id="tth_sEc3.4"></a><h3>
+3.4&nbsp;&nbsp;exoPlanets</h3> 
+<div class="p"><!----></div>
+
+<dl>
+ <dt><b><i>exoplan.tab</i></b></dt>
+	<dd> &nbsp;Major differences from solar system objects are:
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Need both semi-major axis and orbital period.
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Direction of spin axis is specified by planet obliquity and L<sub>S</sub> of periapses
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Both these are rarely known, variations are illustrative.</dd>
+</dl>
+
+<div class="p"><!----></div>
+<b>porbmn</b> run will print an estimated factor for the "solar constant" . This value times the normal SOLCON in KRC input should replace SOLCON.
+
+<div class="p"><!----></div>
+The length of the synodic day (assuming prograde motion) is also printed; it should be used as PERIOD in the KRC input. 
+
+<div class="p"><!----></div>
+
+<pre>&nbsp;
+http://en.wikipedia.org/wiki/List_of_exoplanetary_host_stars&nbsp;
+12&nbsp;extracts&nbsp;at&nbsp;the&nbsp;bottom&nbsp;of&nbsp;the&nbsp;file.
+
+</pre>
+
+ <a id="tth_sEc4"></a><h2>
+4&nbsp;&nbsp;PORBEL: get elements</h2> Will read elements and spin-vector data for one object from a (or two) data file, move several values into common and return others.
+
+<div class="p"><!----></div>
+For planets, reads first the orbital elements and adjusts to the requested epoch. 
+
+<div class="p"><!----></div>
+Standish tables list the following with respect to the J2000 ecliptic system, in order, at J2000.0 and their derivative in time:
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 &nbsp;&nbsp;a: semi-major axis [au, au/century]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 &nbsp;&nbsp;e: eccentricity [radians, radians/century]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 &nbsp;&nbsp;I : inclination [degrees, degrees/century]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4 &nbsp;&nbsp;L : mean longitude [degrees, degrees/century]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;L=&#8486;+&#969;+ M  is a compound angle measured in two planes: 
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From VE to node in plane of reference
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then to periapsis and on to mean anomaly in orbital plane
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5 &nbsp;&nbsp;&#982; : longitude of perihelion [degrees, degrees/century] (&#982; =  &#8486;+ &#969; ) 
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#982; is a compound angle measured in two planes:
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#969;, the argument of periapsis, measured in the plane of orbit 
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6 &nbsp;&nbsp;&#8486;:  longitude of the ascending node [degrees, degrees/century]
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;measured in the reference plane.
+
+<div class="p"><!----></div>
+       <a id="tth_sEcA"></a><h2>
+A&nbsp;&nbsp;Cookbook <a id="cook">
+</a></h2> 
+
+<pre>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;Cookbook&nbsp;to&nbsp;running&nbsp;the&nbsp;&nbsp;KRC&nbsp;Plantary&nbsp;ORBit&nbsp;system:&nbsp;PORB
+
+cd&nbsp;into&nbsp;the&nbsp;directory&nbsp;containing&nbsp;the&nbsp;probmn&nbsp;executable&nbsp;and&nbsp;the&nbsp;*.tab&nbsp;files
+
+&#62;&nbsp;porbmn&nbsp;&nbsp;&nbsp;&nbsp;To&nbsp;start&nbsp;the&nbsp;main&nbsp;program
+
+Will&nbsp;be&nbsp;asked&nbsp;where&nbsp;to&nbsp;send&nbsp;output;&nbsp;normally&nbsp;enter:&nbsp;&nbsp;T&nbsp;&lt;CR&#62;
+
+Will&nbsp;be&nbsp;asked&nbsp;which&nbsp;of&nbsp;5&nbsp;options:
+&nbsp;Enter:&nbsp;1
+
+Will&nbsp;be&nbsp;asked&nbsp;which&nbsp;source&nbsp;data.
+&nbsp;Normally&nbsp;enter&nbsp;:&nbsp;1&nbsp;(planets)&nbsp;or&nbsp;4&nbsp;for&nbsp;asteroids&nbsp;or&nbsp;6&nbsp;for&nbsp;exoplanets
+
+Will&nbsp;be&nbsp;asked&nbsp;which&nbsp;item&nbsp;in&nbsp;the&nbsp;file.&nbsp;Should&nbsp;have&nbsp;looked&nbsp;at&nbsp;the&nbsp;chosen&nbsp;elements
+file&nbsp;to&nbsp;know&nbsp;this
+&nbsp;Enter&nbsp;the&nbsp;proper&nbsp;number.&nbsp;&nbsp;&nbsp;E.g.,&nbsp;4&nbsp;is&nbsp;Mars
+
+Only&nbsp;if&nbsp;doing&nbsp;planets,&nbsp;will&nbsp;be&nbsp;asked&nbsp;for&nbsp;the&nbsp;epoch&nbsp;in&nbsp;centuries&nbsp;after&nbsp;2000.&nbsp;
+E.g.,&nbsp;for&nbsp;2012,&nbsp;&nbsp;enter&nbsp;0.12
+&nbsp;
+At&nbsp;this&nbsp;point,&nbsp;the&nbsp;calculations&nbsp;are&nbsp;done&nbsp;and&nbsp;a&nbsp;brief&nbsp;report&nbsp;will&nbsp;be&nbsp;appear
+If&nbsp;and&nbsp;only&nbsp;if&nbsp;doing&nbsp;Planets,&nbsp;will&nbsp;be&nbsp;asked&nbsp;for&nbsp;which&nbsp;pole&nbsp;position
+&nbsp;&nbsp;&nbsp;a&nbsp;&nbsp;/&nbsp;&nbsp;will&nbsp;use&nbsp;the&nbsp;planet&nbsp;pole,&nbsp;else,&nbsp;enter&nbsp;a&nbsp;satellite&nbsp;name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;If&nbsp;that&nbsp;is&nbsp;not&nbsp;in&nbsp;the&nbsp;spinaxis&nbsp;table,&nbsp;will&nbsp;use&nbsp;the&nbsp;planets&nbsp;pole.
+
+If&nbsp;doing&nbsp;exoPlanets,&nbsp;then&nbsp;note&nbsp;the&nbsp;solar&nbsp;power&nbsp;factor&nbsp;and&nbsp;the&nbsp;synodic&nbsp;day.
+
+Will&nbsp;be&nbsp;asked&nbsp;which&nbsp;of&nbsp;5&nbsp;options:
+&nbsp;&nbsp;4&nbsp;&nbsp;will&nbsp;print&nbsp;the&nbsp;values&nbsp;in&nbsp;vector&nbsp;format&nbsp;and&nbsp;come&nbsp;back&nbsp;to&nbsp;this&nbsp;same&nbsp;prompt
+&nbsp;&nbsp;2&nbsp;&nbsp;Will&nbsp;begin&nbsp;the&nbsp;required&nbsp;output&nbsp;process:&nbsp;Then
+&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;asked&nbsp;to&nbsp;read&nbsp;or&nbsp;save.&nbsp;&nbsp;&nbsp;Enter:&nbsp;2
+&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;asked&nbsp;output&nbsp;format.&nbsp;&nbsp;&nbsp;Enter:&nbsp;2
+&nbsp;&nbsp;&nbsp;Will&nbsp;be&nbsp;asked&nbsp;for&nbsp;an&nbsp;output&nbsp;file&nbsp;name:&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;single&nbsp;"/"&nbsp;with&nbsp;no&nbsp;leading&nbsp;spaces&nbsp;will&nbsp;use&nbsp;the&nbsp;default&nbsp;"PORBCM.mat"&nbsp;and
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;append&nbsp;the&nbsp;latest&nbsp;set&nbsp;to&nbsp;whatever&nbsp;is&nbsp;already&nbsp;in&nbsp;that&nbsp;file.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Else&nbsp;enter&nbsp;a&nbsp;new&nbsp;file&nbsp;name&nbsp;and&nbsp;&lt;CR&#62;
+
+Will&nbsp;be&nbsp;asked&nbsp;which&nbsp;of&nbsp;same&nbsp;5&nbsp;options:
+&nbsp;Enter:&nbsp;0&nbsp;to&nbsp;quit&nbsp;&nbsp;OR&nbsp;to&nbsp;another&nbsp;object.
+
+You&nbsp;then&nbsp;copy&nbsp;the&nbsp;7&nbsp;lines&nbsp;in&nbsp;the&nbsp;output&nbsp;file&nbsp;into&nbsp;a&nbsp;KRC&nbsp;input&nbsp;file.
+
+</pre>
+
+<div class="p"><!----></div>
+
+<br /><br /><hr /><small>File translated from
+T<sub><span class="small">E</span></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><span class="small">T</span></sub>H</a>,
+version 4.03.<br />On  3 Mar 2014, 10:53.</small>
+</html>

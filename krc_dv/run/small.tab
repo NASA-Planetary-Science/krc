@@ -1,0 +1,153 @@
+Orbit elements and spin axis for small bodies. Format adopted from the 
+ JPL Small-Body Database Browser   http://ssd.jpl.nasa.gov/sbdb.cgi
+Each object must have exactly 12 lines.  Three items are read for line 1.
+   Only the second item is used in lines 2:12
+1:     BodyNumber  Name   EpochOfElements(as full Julian Date)
+2-8:   Copy of element lines e through M.
+9:     Copy of columns 2:4 from > Physical Parameters > Rotation period (hours)
+10-11: Spin Axis:  Right Ascension and Declination, degrees. From other source.
+12:    Prime meridian angle at J2000.0 (rarely known) 
+All lines are read as list directed, so there must some blanks between items
+    and there must be no interior blank or /. For the first body, a / follows 
+    the items read, anything beyond that number of items is ignored.
+All angles are in degrees.   
+The reference coordinate systems are:
+   orbital elements: heliocentric ecliptic J2000    
+   spin axis (pole): J2000 equatorial
+2015jan23 INclude NEO's 
+Last valid object is   9
+   [update].    Beyond that should not be read
+C_END    << Required to indicate end of comments
+1 Ceres 2456800.5 /1 -----------------------------------------
+e 	.07579779827230555 / 1.9592e-08  solution date 2013-Jul-16 08:45:50  	 
+a 	2.767025704525198 / 2.1752e-09 	AU
+q 	2.557291248359312 / 5.4081e-08 	AU
+i 	10.59387843173385 / 2.3428e-06 	deg
+node 	80.32831021110563 / 1.192e-05 	deg
+peri 	72.39491611545941 / 1.974e-05 	deg
+M 	53.29569434422478 / 1.6116e-05 	deg
+rot_per 	9.074170  /	h
+PoleRA  291.  / 5
+PoleDec 59.   / 5 
+merid   170.9 /
+2 Pallas  2456800.5  /2 -----------------------------------------
+e 	.23136806339302 	1.9287e-08 solution date 2013-Jul-16 08:46:11 
+a 	2.771722875768389 	2.2356e-09 	AU
+q 	2.130434721739725 	5.357e-08 	AU
+i 	34.84103374517942 	2.1349e-06 	deg
+node 	173.0969085484765 	3.7365e-06 	deg
+peri 	309.9258687541497 	5.5409e-06 	deg
+M 	35.50313393617061 	4.8612e-06 	deg
+rot_per 	7.8132 	h
+PoleRA  33.
+PoleDec -3.
+merid   38.
+3 Juno 2456400.5 /3 -----------------------------------------
+e 	.255305395587282 	2.0266e-08 	 
+a 	2.670734112721557 	2.1949e-09 	AU
+q 	1.988881283564732 	5.4096e-08 	AU
+i 	12.97936931350103 	2.428e-06 	deg
+node 	169.8827852081769 	1.1412e-05 	deg
+peri 	248.3098632497382 	1.2473e-05 	deg
+M 	257.6392567125791 	6.4343e-06 	deg
+rot_per 	7.210 	h
+PoleRA 115.    converted from B1950
+PoleDec 56.
+merid   0.
+4 Vesta	 2456400.5 /4 -----------------------------------------
+e 	.08825715520610074 	1.0296e-08 	 
+a 	2.36244573496989 	1.2964e-09 	AU
+q 	2.153942995072661 	2.3824e-08 	AU
+i 	7.139911814214593 	1.409e-06 	deg
+node 	103.8501363116314 	2.7661e-06 	deg
+peri 	150.940192234186 	7.6324e-06 	deg
+M 	218.1714950076329 	5.6483e-06 	deg
+rot_per 	5.342 	h
+PoleRA  305.8   3.1
+PoleDec 41.4   1.5
+merid   292.
+101955 Bennu 2456400.5   /5   (1999 RQ36) OBSOLETE, use next object
+e 	.2037319346437232 	3.4131e-08 	 
+a 	1.126004277007048 	1.294e-10 	AU
+q 	.8966012472352957 	3.8364e-08 	AU
+i 	6.034917131144178 	4.3573e-06 	deg
+node 	2.042278429192176 	5.6318e-06 	deg
+peri 	66.26860100390597 	6.4232e-06 	deg
+M 	72.82807637355893 	3.7237e-06 	deg
+rot_per 4.29746   ± 0.002 h, Nolan et al 2013.  JPL has  4.288 h 
+PoleRA  -67.9     Nolan: β = −88° (lat), λ = 45° and an uncertainty of 5°.  
+PoleDec -86.2    in ecliptic coordinates, conversion WRONG, SWITCHED 
+merid   0.
+101955 Bennu 2455562.5   /6   from Hergenrother 2014
+e       0.2037451146135014      2.123081E-08    J2000 orbital values 
+a 	1.126391025571644       4.111300E-11	AU    source cited as 
+q 	0.8968943569669300      2.390158E-08 	AU    JPL IOM 343R-13-00
+i 	6.03493867976381        4.721372E-08	deg   Chesley et al 2014
+node 	2.06086819910204        6.531279E-08	deg    
+peri    66.22306886293201       9.685025E-08	deg
+M 	101.70394725713800      2.6E-06 	deg  P=436.648727924 days
+rot_per 4.297461   ± 0.002 h, retrog. Nolan et al 2013.  JPL has  4.288 h 
+PoleRA  86.64   Nolan 2013 : β = −88° (lat), λ = 45° and an uncertainty of 5°.  
+PoleDec -65.11    in ecliptic coordinates,  Convert using eclip2equat.pro 
+merid   0.         Obliq=176 +/- 2
+1000036 1P/Halley 2449400.5 /7 ---------------
+e 	0.967142908462304 	5.035e-09  solution date 2001-Aug-02 13:51:39 	 
+a 	17.8341442925537 	3.8913e-08 	AU
+q 	0.585978111516909 	8.8924e-08 	AU  tp 	2446467.395317050925	
+i 	162.262690579161 	6.7791e-06 	deg   (1986-Feb-05.89531705) 
+node 	58.42008097656843 	9.0539e-06 	deg
+peri 	111.3324851045177 	1.1714e-05 	deg
+M 	38.3842644764388 	1.4226e-07 	deg
+rot_per  24.0 / day
+PoleRA 19.0  / Sekenina pole
+PoleDec-27.0  
+merid   0 
+1003228 SidingSpring 2456505.5 /8 ----------C/2013 A1 (Siding Spring)----------
+e 	1.000604515347663 	6.122e-06  / solution date 2014-Mar-14 12:52:28  
+a 	-2314.311724635852 	23.435 	AU  hyperbolic
+q 	1.399036956818885 	7.3372e-06 	AU tp 	2456955.886833306343
+i 	129.0266593549997 	3.1912e-05 	deg
+node 	300.9743378699729 	8.3708e-05 	deg
+peri 	2.435502966380776 	0.00033199 	deg
+M 	-.003987098605085023 	6.055e-05 	deg
+rot_per 	7.7 / h  NO DATA on rotation or pole
+PoleRA  7.7
+PoleDec 7.7
+merid   7.7
+357439 2004BL86 2457000.5 /9 ------- NEO 2015jan27 solution  
+e 	.4030731404243164 	3.8107e-08  / solution date  2015-Jan-23 05:27:02 
+a 	1.502202125158992 	8.9007e-09 	AU
+q 	.8967047970190752 	5.6293e-08 	AU
+i 	23.74358891084517 	1.9079e-05 	deg
+node 	126.7203487501305 	2.6541e-05 	deg
+peri 	311.2549678894206 	2.1939e-05 	deg
+M 	354.0330755978719 	8.3517e-06 	deg
+rot_per 	7.7 / h  NO DATA on rotation or pole
+PoleRA  7.7
+PoleDec 7.7
+Hmag   19.0
+100000 JupTrojan  22451545. /10 -------Ideal Jupiter Trojan-------
+e     0.0   / 	eccentricity. circular orbit
+a     5.202887    / SMA for Jupiter
+q     5.202887    / 	perihelion distance [AU] same SMA
+i     1.30439695 / Jupiter, could as well be 0.
+node  100.47390909  / longitude of the ascending node [deg] = Jup.
+peri  293.923	/ argument of perihelion Jup. = LongPeri-LongNode
+M       79.668  / mean anomaly [deg] Jup. = meanLong-LongPeri  =19.668    +60.
+rot_per 8.0 / h  Typical
+PoleRA  273.85  / Invariable plane
+PoleDec  66.99  / Invariable plane
+merid   7.7     / no data
+588 Achilles 2457800.5 /11 ------- first Jupiter trojan discovered
+e	.1465234179263199	6.1057e-08	 
+a	5.208069727822055	7.2895e-08	au
+q	4.444965550502968	3.1768e-07	au
+i	10.31674030867057	5.8988e-06	deg
+node	316.5449272991328	3.4002e-05	deg
+peri	133.5971357312067	3.9771e-05	deg
+M	171.8023028071369	2.1249e-05	deg
+rot_per 	7.306 / from JPL Small-Body Database Browser
+PoleRA  7.7
+PoleDec 7.7
+merid   7.7
+^^^^^^^^^^^^^ INSERT ABOVE this 12-line sets for additional bodies^^^^^^^^^^ 

@@ -1,0 +1,912 @@
+\documentclass{article} 
+
+ \usepackage{ifpdf} % detects if processing is by pdflatex
+ \usepackage{underscore} % accepts  _ in text mode
+ \usepackage{/home/hkieffer/xtex/newcom} % new commands for OLI
+
+% USE ONE OF NEXT TWO:
+\textheight=9.6in % \topmargin=-0.9in % 2016feb25 . display in xdvik
+% \textheight=9.5in % \topmargin=-0.7in % ??? print with page numbers on H3
+
+% USE ONE OF NEXT TWO: first = greatly diminished labnotes, second =  mid-size
+%\newcommand{\qln}{\tiny \setlength{\baselineskip}{4.pt} \setlength{\parskip}{0.5pt} } % start tiny notes
+ \newcommand{\qln}{\footnotesize \setlength{\baselineskip}{8.pt} \setlength{\parskip}{2.2pt}} % minor reduction for lab notes
+
+ \newcommand{\qnl}{\normalsize \setlength{\baselineskip}{12.pt} \setlength{\parskip}{4.3pt}} % end lab notes
+
+ \newcommand{\qw}{$ \, \\ \bullet \ $} % start new line with a bullet
+
+% USE ONLY ONE OF THE NEXT TWO at the end of equation.  \qr to refer
+ \newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}} % develop
+%\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+% USE ONLY ONE OF THE NEXT TWO for section labels
+ \newcommand{\qlab}[1]{\label{#1} \hspace{1cm} \textsf{#1}} % list its label
+%\newcommand{\qlab}[1]{\label{#1}} % for final
+
+ \newcommand{\qfo}[1]{$\Longrightarrow$ \textit{#1}} % indicate output file
+
+\title{Investigating KRC 355 versus 344 differences, and the origin of 356} 
+\author{Hugh H. Kieffer  \ \ File=-/krc/robin/18jun06/356notes.tex}
+
+\begin{document} %==========================================================
+\maketitle
+
+\setlength{\baselineskip}{8.pt} 
+\tableofcontents
+\listoffigures
+%\listoftables
+ \setlength{\baselineskip}{12.pt} 
+
+\hrulefill .\hrulefill
+
+ \begin{center} {\large{Abstract}} \end{center}
+
+Robin Fergason reported major difference between KRC version 3.4.3 and 3.5.5 for
+low thermal inertia. These were found to be correlated with the occurrence of
+frost. Although no specific difference between 343 and 355 was found to be the
+cause, some terms related to an atmosphere were found to not be initiated in all
+cases in both versions. Version 356 was generated to fix those oversights, to
+make an easier-to-use asymptotic predictor, and to avoid the omission of energy
+associated with atmospheric condensation when there is no ground frost that was
+inherent in all earlier versions.  If working away from frost, versions 343, 355 and 356 should give equivalent results. If frost conditions occur, version 356 is preferred. A long-standing caveat is emphasized: \qii
+\textbf{Be leery of results near the edge of frost formation.}
+
+This documents is considered lab notes, certainly not polished. However, sections \ref{c356} and \ref{snows} are recommended.
+Files and .png images used here will be available from Hugh for a while.
+
+\section{Comparison of 343 and 355}
+Robin provided inputs and outputs from massive global runs at the USGS of both
+version 343 and 355. Hugh replicated these to the nanoKelvin at Celestial
+Reasonings (CR). Also confirmed was the exact correspondence of values in Type
+52 output and FORTRAN direct-access files at both institutions.
+
+An input file specifying a subset of these; 3 thermal inertia and 3 latitudes
+for one set of atmospheric conditions and slopes, was used for detailed
+study. Special versions of KRC were coded that could output to FORTRAN files
+some variables at every time-step when frost was present for every convergence
+day; these were too large to be practical so the time resolution was reduced to
+48 times/sol, with some additional variables output at every midnight. Code
+appropriate for this investigation was added to the IDL program \np{kv3}, and a
+routine \np{frost4.pro} written to examine both the x.t5a and fort.x files.
+
+An existing CR tool for converting FORTRAN source code into a file containing
+only the executable code, all in one case, and with all white spacing made
+consistent, was used with the Linux ``diff'' function to extract only executable
+differences between routines. These are still large files because of the
+capabilities added to KRC between 343 and 355; these were scanned but no root
+cause of the reported differences was identified.
+\section{Equivalent 343 and 355 runs}
+Small differences in the input file are required to run the same physical
+models.  The version 355/356 input files similar to Robin's are in Appendix
+\ref{apI}. The 3-latitude files with variable frost temperature, used for most
+testing, is in Appendix \ref{apJ}.
+
+Several sets of equivalent runs were done for v343 and v355/6; 3 inertias at 37
+or 3 latitudes, an I=60, one latitude test case with abundant special printout,
+and 17 uniformly spaced (in log) inertias from 10 to 1000.
+
+The repeated seasonal variation in frost temperature comes from all these runs using the Viking Lander pressure curve. 
+
+%Code kv3.pro @118 with names for this task
+\subsection{Compare .t52 to tm2} %-------------------------------
+Subtract .tm2 from .t52, 2nd case, both are I=60.  All  Delta Tsurf and TPlan are identically zero.
+\\ USGS runs generate files:
+\qi \nf{/krc/robin/18jun06/zip/343i3.t52} and \nf{-/343i6.tm2} % @118 case 63, 123 
+\qi \nf{/krc/robin/18jun06/zip/355i3.t52} and \nf{-/355i6.tm2} %  then case 65
+\\ CR runs generate files:
+\qi \nf{-/krc/robin/18may28/out/343i3.t52} and \nf{-/343i6.tm2} % @118 case 53, 123 
+\qi \nf{-/krc/robin/18may28/out/355i3.t52} and \nf{-/355i6.tm2} %  then case 55
+
+\subsection{Look for causes of 343 : 355 deltas} %----------------------
+
+The absolute difference between v343 and v355, averaged over 48 hours and 80
+seasons was made for surface temperature, ``Tsurf'' as shown in
+Fig.\ref{343m355} For -35 to +45, for I=100 and I=60, the mean absolute delta in
+Tsurf is less than a milliKelvin; for 30 to +45 it is less than a
+nanoKelvin. These correspond to conditions with no frost, see
+Fig. \ref{meanF}. When there is no frost, the two versions give the same
+result. For I=20, frost forms sometime at every latitude. and large delta Tsurf
+occurs.
+
+\ref{343m355}
+\begin{figure}[!ht] \igq{343m355}
+\caption[Delta Tsurf]{Absolute delta Tsurf, v343-v355, averaged over hour and season for 
+the last year, for the 3 inertias run by Robin. 
+\label{343m355}  343m355.png }
+\end{figure} 
+% how made: 
+% @115 123,   @56 ,t,0. then
+% dtlsc=total(abs(qy),1)/48  & dtlc=total(dtlsc,2)/80
+% CLOT,dtlc>1.e-3,scase,/ylog,tsiz=2,locc=[.4,.93,-.03,.03],ksym=4,xx=alat
+
+\ref{meanF}
+\begin{figure}[!ht] \igq{meanF}
+\caption[Delta Frost]{Absolute delta amount of frost in Kg/m$^2$, v343-v355, averaged over hour and season for the last year, for the 3 inertias run by Robin.
+\label{meanF} meanF.png }
+\end{figure} 
+% how made: 
+
+Use the type 52 files, as these have all 3 inertias.
+%kv3.pro, @118 case 50 123, 115 123, 116,123
+ The detailed signature of delta T is shown in Figures \ref{hslp},  \ref{TsS24}, and \ref{Ts1S24}.
+
+% how made: 
+% hls=reform(dtt[*,0,*,*,2])
+% hlsp=hls[*,*,8*indgen(10)] 
+% hslp=transpose(hlsp,[0,2,1])
+% CLOT,reform(hslp,48*10,19),slat,titl=['hour * season/8','Tsurf: 343-355','kv3 by hand']
+  
+\begin{figure}[!ht] \igq{hslp}
+\caption[I=10 Delta Tsurf]{Delta Tsurf, v343-v355, all hours, every 8'th season, temperate latitudes.
+\label{hslp}  hslp.png }
+\end{figure} 
+% how made: 
+% t4=ttt[*,*,*,24,2]
+% t5=tth[*,*,*,24,2]
+% help,t4
+%  T4              DOUBLE    = Array[48, 5, 19]
+% clot,reform(t4[*,0,*]),slat
+% clot,reform(t5[*,0,*]),oplot=10,ksym=-4
+  
+\begin{figure}[!ht] \igq{TsS24}
+\caption[I=20: Ts at season 24]{I=20 Ts at season 24, all day, 19 lats. Solid lines
+  are 343, dashed are 355; latter albedo is much higher and more frost
+  at night.
+\label{TsS24}  TsS24.png }
+\end{figure} 
+% how made: 
+% t41=ttt[*,*,*,24,1]    ; v 343
+% t51=tth[*,*,*,24,1]    ; v 355
+% clot,reform(t41[*,0,*]),slat    
+% clot,reform(t41[*,0,*]),slat            
+% clot,reform(t51[*,0,*]),oplot=200       
+
+\begin{figure}[!ht] \igq{Ts1S24}
+\caption[I=60: Ts at season 24]{I=60, otherwise identical conditions to fig
+  \ref{TsS24} Only -45 and -40 have any difference.
+\label{Ts1S24}  Ts1S24.png }
+\end{figure} 
+% how made: IDL> s43=reform(ttt[*,0,0,*,1])      IDL> s55=reform(tth[*,0,0,*,1]) plot,s43
+% oplot,s55,color=254,line=2
+
+From Fig \ref{i60m45} it is clear that the onset of night frost triggers the difference. This is seen in more detail in fig \ref{detm45}.
+
+\begin{figure}[!ht] \igq{i60m45}
+\caption[Ts at 45S]{Tsurf at -45, all hours and seasons. white is 343, red dash is 355. 
+\label{i60m45}  i60m45.png }
+\end{figure} 
+% how made:  
+% how made: IDL> plot,ttt[*,0,0,*,1])  oplot,tth[*,0,0,*,1]),color=254,line=2
+
+\begin{figure}[!ht] \igq{detm45}
+\caption[Ts at 45S, seasons 10:17]{Ts at -45, seasons 10:17(0-based). Frost
+  forms in v355 first as season 11, in v 343 at season 16; the difference may be
+  carry over from the prior year.
+\label{detm45}  detm45.png }
+\end{figure} 
+% how made: Made as above, but seasons 10:17
+
+V343 atmosphere shows no change when surface frost appears, see \ref{i60a45}.
+\begin{figure}[!ht] \igq{i60a45}
+\caption[Tatm at 45S]{Atmosphere temperature at -45, all hours and seasons. white is 343, red dash is 355. 
+\label{i60a45}  i60a45.png }
+\end{figure} 
+% how made: 
+
+The frost amounts are dramatically different between the two versions: see Fig.
+\ref{FROST4}. FROST4 is amount at midnight (kg/m$^2$), and is predicted to the
+next season. Thick frost albedo is always 0.65 (input parameter AFROST), frost
+layer scattering opacity is EFROST/FROEXT, where the frost on the ground EFROST
+is computed each time-step, and FROEXTis an input parameter, typically 50
+kg/m$^2$
+
+\begin{figure}[!ht] \igq{FROST4}
+\caption[Frost near south cap]{Frost amounts (FROST4) versus season index off
+  the edge of the south cap, latitudes -45 to -35., dashed line is version 343;
+  solid is v355, clearly strange.
+\label{FROST4}  FROST4.png }
+\end{figure} 
+% how made: 
+
+Results suggest the albedo is different.
+\qi Check that it is set for entire day by frost in 355 
+\qii v343 and 355: LFROST checked each time-step,  uses ALB and AFNOW
+
+Albedo of thick frost, AFNOW, is recomputed in TLATS each season.
+ Albedo of ground covered by a finite layer of frost is computed each time step.
+
+\vspace{-3.mm} 
+\begin{verbatim}
+  IF (LFROST) THEN      !+-+-+-+ surface temperature is frost-buffered
+            ATMRAD= FAC9*TATMJ**4 ! hemispheric downwelling  IR flux
+            QA = AFNOW + (ALB-AFNOW)*DEXP(-EFROST/FROEX) ! albedo for frost layer
+            SHEATF= FAC7*(TTJ(2)-TSUR) ! upward heatflow into the surface
+C   unbalanced flux into surface
+C FEMIT=FAC6F*SIGSB*TFNOW**4 is [[skyfac]]*Femis*sig*Tf^4
+            POWER= (1.D0-QA)*ASOL(JJ) +(1.D0-QA)*SOLDIF(JJ)
+     &               + FAC6F*ATMRAD + SHEATF - FEMIT
+\end{verbatim}  
+ 
+\clearpage
+\section{2018 Jun 26 11:07:36} %_________________________________________
+
+FROST4:f4slc  . lat1 case1 has small blip at season 9
+
+CHART,fam[m22,*] shows small excess  at start of winter, esp. year 4 and 5
+
+ frost4:cl  amounts less for year 5
+
+:fscl  I60,-60 has less frost only for year 5
+:tscl  I60,-60 Tmidnight rises above frost only for year 4
+
+Following the CROCUS date (finale of the winter cap), modeling with a predictor
+can get a little wild, as temperatures rise quickly; see Figures \ref{tchscl},
+\ref{fscl} \ref{fchart} and \ref{tscl}. I the spring edge of the polar cap is
+important, KRC can be run in the one-sol-per-season mode to avoid use of a
+predictor.
+
+\begin{figure}[!ht] \igq{tchscl}
+\caption[Tatm in v356]{Atmospheric temperature in the final year of
+  356ji2.t52. Where the night temperatures are constant, typically clouds have
+  formed, For I=60, 60S, only the first season after the CROCUS date has
+  no-frost temperatures.
+\label{tchscl}  tchscl.png }
+\end{figure} 
+% how made: frost4.pro
+
+\begin{figure}[!ht] \igq{fscl}
+\caption[Frost in test printout]{Frost amounts for all years of 356ji2 on log
+  scale, recovered from the fort.72 file. Just after the CROCUS date at 60S the
+  results are irregular at the 0.3 kg/m$^2$ level. I=60, 60S has less seasonal
+  frost, following a frost-free summer.
+\label{fscl}  fscl.png }
+\end{figure} 
+% how made: frost4.pro
+
+\begin{figure}[!ht] \igq{fchart}
+\caption[Frost for v356]{Frost amounts in the final year of 356ji2.t52, on log
+  scale. There are small over-predictions at early seasons in 2 of cases.
+\label{fchart}  fchart.png }
+\end{figure} 
+% how made: frost4.pro
+
+\begin{figure}[!ht] \igq{tscl}
+\caption[Tatm at midnight]{Atmospheric temperature at midnight. I=60, 40S has
+  long frost-fee periods when temperatures are well above the condensation
+  temperature. I=60,60S has a relatively warm summer atmosphere only during year
+  4. The other 4 case/lats are near condensation at all seasons.
+\label{tscl}  tscl.png }
+\end{figure} 
+% how made: frost4.pro
+
+Snowfall is the total daily amount computed at midnight based on the amount of
+condensation needed to release enough heat to raise the temperature of the
+atmospheric column up to the current saturation temperature one scale-height
+above the local surface. See Figs. \ref{f+s} and \ref{562}.
+
+\begin{figure}[!ht] \igq{f+s}
+\caption[Seasonal frost at 45S for I=20]{Seasonal frost amount for I=20, 45S as
+  predicted for the end of each season (white line) and the amount of snowfall
+  2.8 to 3.8 years into the run; showing that the ``hump' in frost amount is due
+  to snowfall. The range in snowfall at each season covers thelast 3 convergence days and the prediction.
+\label{f+s}  f+s.png }
+\end{figure} 
+% how made: 
+
+
+\begin{figure}[!ht] \igq{562}
+\caption[Tsurf change when first snow retained]{Average change in surface temperature when
+  retain snow onto bare ground; run 356ki3-run 355fi3 abscissa is index of
+  latitude, from south pole to north pole. ordinate is change in surface
+  temperature averaged over hour and season.  Solid line is mean, dashed line
+  in StdDev.
+\label{562}  562.png }
+\end{figure} 
+% how made: kv3 562
+
+\clearpage
+\subsection{diff on code}
+Using fonly.pro, made executable-only versions of source code for v343 and v 355; all upper-case, 1-blank white space.
+tlats: Diff is mostly: photometric function, heat-flow, eclipses.
+tday: Diff is mostly: EVMONO3D, ECLIPSE 
+
+No specific cause for the difference for ``simple'' models, i.e without geothermal heat-flow, photometric functions, far-field, planetary heat load or eclipses, was found. 
+
+\subsection{Changes to make v356 \label{c356}} %-------------
+A few issues with version 355 were noted and changes made:
+Prediction on Tatm had minimum of TFNOW , which is too high, and could cause
+false addition of energy; changed to 20K below the atm. saturation 
+temperature to allow sub-cirrus
+temperatures, which can be converted to SNOW at beginning of the next season.
+\\TLATS:
+\qi Ensure  TATMIN is set even when no atm.
+\qi Force initiation of TTA, TTJ and FRO in all cases. this could have an effect.
+ \qi Make EPRED8 more capable and robust, simplify how it is called; possible effect is less than 3 convergence days.
+\qii Use new routine MVD21 to convert 2-D to 1-D vector for EPRED.
+\\ TDAY
+\qi  Remove TFTEST and use TFNOW as frost test.
+\qi  Snow when no frost now initiates frosty surface rather than being lost.
+\qi Ensure SNOW is set to zero when the atmosphere warms, even though it is not used in such conditions.
+
+Any practical simple-atmosphere model will have limitations, and perhaps
+oscillations, near the edge of frosted terrain. This statement probably holds
+for to some extent for GCMs as well. Given the large number of input variables
+in KRC, leaves the unhappy situation that is does not seem worth the effort to
+go back to figure out exactly what v343 was doing for frosty nights near the
+edge of the polar cap.
+
+
+ 
+\subsection{Frost effects}
+ 
+ The dramatic effect of frost is shown in Figures  \ref{QTTA4} to \ref{576s}.
+
+%\ref{QTTA4}
+\begin{figure}[!ht] \igq{QTTA4}
+\caption[Image of delta Tatm]{Images of delta Tatm at midnight for the last
+  year. Seasons increase upward. Latitudes increase to the right for each of 3
+  cases, separated by a dark blue strip whose central section is the color of
+  zero.  $\Delta$T range is -43.5 to +114
+\label{QTTA4}  QTTA4.png }
+\end{figure} 
+% how made: kv3 @563
+
+\begin{figure}[!ht] \igq{574b}
+\caption[Image of delta average Tsurf]{Images of delta average Tsurf for the
+    last year. Seasons increase upward. Latitudes increase to the right for each
+    of 3 cases, separated by a dark blue strip whose central section is the
+    color of zero. Cases, left to right, and I=200, I=60 and I=20. Total
+    $\Delta$T range is -43.5 to +114. Changes occur along the edge of frosted
+    places, with the largest at the CROCUS date. Nighttime frosts can affect
+    temperatures all day
+\label{574b}  574b.png }
+\end{figure} 
+% how made: kv3 @574, second plot
+
+ For I=20 at 45N, v356 has frost, v343 does not.
+ 
+%\ref{tsnm}
+\begin{figure}[!ht] \igq{tsnm}
+\caption[Temperature differences at noon and midnight]{Delta Tsurf, 343i3 -
+  356ki3, at noon (left half of each case) and midnight (right half) for the
+  last year, on a log scale. Abscissa is season * two times of day * case. For
+  I=100 ( left-most case), and I=60, large deltas are near the edge of the polar
+  cap, and otherwise are generally below 0.03K. For I=20,
+\label{tsnm}  tsnm.png }
+\end{figure} 
+% how made: kv3 @576
+
+%\ref{576h}
+\begin{figure}[!ht] \igq{576h}
+\caption[Diurnal temperatures at 45S]{Diurnal surface temperatures at 45S at the
+  solstices. White is v343, color is v356; line is Ls=90, dash is Ls=272. Night
+  frost occurs except v343 summer solstice.
+\label{576h}  576h.png }
+\end{figure} 
+% how made:  kv3 @576
+
+%\ref{576s}
+\begin{figure}[!ht] \igq{576s}
+\caption[Seasonal temperatures at 45S]{Seasonal surface temperatures at 45S at
+  two times of day. White is v343, color is v356; line is noon, dash is
+  midnight. No frost occurs for v343; v356 has midnight frost all year.
+\label{576s}  576s.png }
+\end{figure} 
+% how made:  kv3 @576
+
+A series of eight thermal inertias per decade, from 10 to 1000, were run with
+v356 for Lat -45\qd, with a 6-year spin-up. The minimum and maximum diurnal
+surface temperatures for all seasons are shown in Figures \ref{tmin} and
+\ref{tmax}; the results seem progress smoothly with inertia.
+
+\begin{figure}[!ht] \igq{tmin}
+\caption[Minimum Tsurf for 2 decades of I]{Minimum diurnal surface temperature
+  at 45S as a function of season for 2 decades of thermal inertia, v356. Night frosts
+  form at this latitude for all inertias below 100. For I=24 and less, night
+  frost occurs all year.
+\label{tmin}  tmin.png }
+\end{figure} 
+
+\begin{figure}[!ht] \igq{tmax}
+\caption[Maximum Tsurf for 2 decades of I]{Maximum diurnal surface temperature
+  at 45S as a function of season for 2 decades of thermal inertia, v356. Night frosts
+  ( see Fig. \ref{tmin}) drop maximum temperatures by 25 to 75 K.
+\label{tmax}  tmax.png }
+\end{figure} 
+
+\clearpage
+\subsection{Test code, time step 1 and noon for every season} %-
+Test versions of TLATS and TDAY for v343 and v356.  Run with I=60, lat=45S, 80
+seasons for 7 years. Other differences in the input from those in the Appendix
+are only the use of default values: ALB=0.25, TAUD=0.3, elevation=0.
+
+Frost on the last year shown in Fig. \ref{fro5F4}. The small irregularities in
+season and year are probably related to the prediction to the end of each
+season of 8.6 days based on 3 sols of finite-difference calculation.
+
+\begin{figure}[!ht] \igq{fro5F4}
+\caption[Run1 results for Frost]{Frost predicted at midnight for each season for
+  7 years; test run with I=60, lat=-45, comparing KRC versions 343 (line) and
+  356 (dashed). Ordinate in kg/m$^2$ At this latitude, frosts sublime away each
+  day.
+\label{fro5F4}  fro5F4.png }
+\end{figure} 
+% how made: 
+
+TLATS, for season IDB4, write to fort.52 (v343) and 53 (v356)on the last day
+TATM, surface albedo and ATMHEAD at every time-step.
+
+With IDB4=522, season 42 of year 7, TATM always 200 for both versions. Surface
+albedo AVEA constant .25 in v343, for v356, AVET .63167 until sunrise at
+time-step 415, then 0.639200 until midnight.  HUV (==ADGR) is relatively steeper
+near dawn and dusk for v343, with maximum of 12.183 versus max of 16.443 for
+v356.
+
+ABRAD, total radiation, solar+thermal absorbed by the surface
+
+TDAY, for every season, write to fort.52 and 53 on the last day at time-step 1
+(just after midnight) and noon, ADGR(JJ),FAC9 ,EMIS,TSUR4,TATM4,HEATA,prior two
+take 4th root to get Tsurf and Tatm) SNOW,EFROST,ABRAD
+
+All results are shown in Figure \ref{fro5C}, with details in the following
+figures.
+\begin{figure}[!ht] \igq{fro5C}
+\caption[Summary of run1 results]{Chart of all items saved in TLATS test file;
+  left half is at time-step 1, right half at noon, seasons increasing through 7
+  years on both sides. Line is v343, dashed is v356.
+\label{fro5C}  fro5C.png }
+\end{figure} 
+% how made: FROST5
+
+Solar Atm heating is higher when frost is present; seasons 37:46, Ls
+145.7:187.4, see Fig. \ref{fro5ADGR}
+
+\begin{figure}[!ht] \igq{fro5ADGR}
+\caption[Run1 results for Solar heating of Atm. ]{Solar heating of the
+  atmosphere, ADGR, at noon for every season of every year. Line is v343, dashed
+  is v356. Both versions have the same values at season outside 37 to 46, where
+  frost is present only in v356, apart from small differences in which season
+  frost begins or ends.
+\label{fro5ADGR}  fro5ADGR.png }
+\end{figure} 
+% how made: FROST5
+
+Atmosphere temperatures in v343 are not effected by surface frost, see
+Fig. \ref{fro5TATM}, although surface temperatures are significantly different,
+Fig. \ref{fro5TSUR}.
+
+\ref{fro5TATM}
+\begin{figure}[!ht] \igq{fro5TATM}
+\caption[Run1 results for Atm. temperature]{Atmosphere temperature just after
+  midnight and at noon for every season for 7 years, indicated by colors in
+  legend. Line is v343, dashed is v356.
+\label{fro5TATM}  fro5TATM.png }
+\end{figure} 
+% how made: FROST5
+
+\ref{fro5TSUR}
+\begin{figure}[!ht] \igq{fro5TSUR}
+\caption[Run1 results for surface temperature ]{Surface temperature just after midnight and at noon for every season
+  for 7 years, indicated by colors in legend. Line is v343, dashed is v356.
+\label{fro5TSUR}  fro5TSUR.png }
+\end{figure} 
+% how made: FROST5
+
+The net radiative flux heating of the atmosphere (HEATA) is diminished when there is surface frost in v356, but in v343 is virtually unchanged with frost at night, and slightly increased at noon during frosty seasons, see Fig. \ref{fro5HEATA}
+\begin{figure}[!ht] \igq{fro5HEATA}
+\caption[Run1 results for net heating of the atmosphere]{Net radiative heating
+  of the atmosphere, W/m$^2$/s,
+\label{fro5HEATA}  fro5HEATA.png }
+\end{figure} 
+% how made:  FROST5
+
+Snowfall amounts are shown in Fig. \ref{fro5SNOW}; atmospheric condensation did not occur in the v343 run, 
+\begin{figure}[!ht] \igq{fro5SNOW}
+\caption[Run1 results for atmospheric condensation]{Amount of atmospheric condensation; there is none in v343. In v356, the amount increases each year.
+\label{fro5SNOW}  fro5SNOW.png }
+\end{figure} 
+% how made: 
+
+\subsection{Atmosphere condensation and snowfall. \label{snows} } %-----------.
+(This material is now in the helplist document)
+
+ Each midnight, the atmospheric temperature $T_a$ is compared to the saturation
+ temperature $T_{sat}$ TATMIN computed at the beginning of each season and
+ latitude based on the two input Clausius-Calperyon parameters and the partial
+ pressure of condensible gas at one scale height above the local surface. The
+ local surface pressure $P_s$ (Pascal) is derived from the current 0-elevation
+ surface pressure PZREF, the fraction of condensible gas, the local elevation
+ and the current local scale-height SCALEH. The transfer of snow from atmosphere
+ to ground (surface frost) is considered instantaneous. Prior to version 356,
+ the negative energy of snow which occurs when there is no surface frost was lost
+ from the system, but recorded as FLOST; this was rare.
+
+ The energy required to warm the atmosphere is $E= (T_{sat}-T_a) \cdot c_a
+ P_s/g$ where $c_a$ is specific heat at constant pressure of the atmosphere
+ (J/kg/K)and $g$ the surface gravity; the terms after the dot are combined into
+ CPOG. The snowfall amount is $E/L_f$ (Kg/m$^2$) where $L_f$ is the latent heat of
+ sublimation of frost, input parameter CFROST.
+
+ In a test with latitudes every 5\qd and thermal inertias of 100, 60 and 20,
+ loss occurred on 3.5\% of the snowy days with a average loss of 0.63 kg/m$^2$,
+ equivalent to 3.7E5 J/m$^2$. The top physical layer in these models was 3.0,
+ 1.8, and 0.6 kg/m$^2$, respectively, so they would be cooled by 190, 320, and
+ 960 K, far greater than needed to reach frost temperature.
+
+Thus, beginning in version 3.5.6, early snow is assumed to become surface frost
+and the surface set to frost temperature.
+
+\appendix %==================================================================
+
+\section{Input files} %____________
+\subsection{37 lats, 3 inertias \label{apI}} %---------------------------
+355i3.inp is below
+\vspace{-3.mm} 
+\begin{verbatim}
+0 0 1 / KOLD: season to start with;  KEEP: continue saving data in same disk file
+0 0 3 4 0 0  / dbug values
+Version 355 default values.  37 latitudes with mean Mars zonal elevations       
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .25      1.00     200.0      2.77     928.0    1.0275      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5   27.9546     546.0      .055      200.     180.0     1711.
+  TAUD/PHT     DUSTA    TAURAT     TWILI  ARC2/Pho ARC3/Safe     SLOPE    SLOAZI
+       0.3       .94     0.204       0.0      0.65     0.801       0.0       90.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET       DDT       GGT     DTMAX
+    1.1500     0.115       3.0       0.0       0.0     .0000       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+  -1222.69   8.58713      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24       IIB       IC2
+        38      1536        15        37       560        48         0         7
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN/Flx15     KPREF
+         3        24         0       481         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -2         0       200         0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT          
+      F      T      F      F      F      F      F      F      F      F          
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE          
+      T      F      F      F      T      F      F      F      F      F          
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7          
+ -90.00 -85.00 -80.00 -75.00 -70.00 -65.00 -60.00 -55.00 -50.00 -45.00
+ -40.00 -35.00 -30.00 -25.00 -20.00 -15.00 -10.00  -5.00   0.00   5.00
+  10.00  15.00  20.00  25.00  30.00  35.00  40.00  45.00  50.00  55.00
+  60.00  65.00  70.00  75.00  80.00  85.00  90.00                               
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7          
+    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
+    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
+    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
+    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
+ 2013 Jul 24 11:28:09=RUNTIME.  IPLAN AND TC= 104.0 0.10000 Mars:Mars           
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586         
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373         
+   5.544402       0.000000       0.000000       686.9929       3397.977         
+   24.62296       0.000000      -1.240317       0.000000       0.000000         
+   0.000000      0.3244965      0.8559126      0.4026359     -0.9458869         
+  0.2936298      0.1381285       0.000000     -0.4256703      0.9048783
+1 1 0.08 'Albedo'
+1 17 0.02 'Tau dust'
+1 2 1.0 'Emissivity'
+1 24 0.0 'Slope Azimuth'
+1 23 0.0 'Slope'
+8 5 0 './out/355i3.t52'   / added by Hugh
+1 3 100.0 'Inertia'
+8 21 0 './out/355i10.tm2' / modified by Hugh
+0/
+1 3 60.0 'Inertia' /
+8 21 0 './out/355i6.tm2' / modified by Hugh
+0/
+1 3 20.0 'Inertia' /
+8 21 0 './out/355i2.tm2' / modified by Hugh
+0/
+0/  end of run
+\end{verbatim}  
+
+\subsection{356 test file \label{apJ}} %........................
+\vspace{-3.mm} 
+\begin{verbatim}
+0 0 1 / KOLD: season to start with;  KEEP: continue saving data in same disk file
+0 0 0 4 0 0  / dbug values   afnow output to fort74
+Version 355 default values.  9 lat at +1km subset of Robins inp
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .25      1.00     200.0      2.77     928.0    1.0275      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5   27.9546     546.0      .055      200.     180.0     1711.
+  TAUD/PHT     DUSTA    TAURAT     TWILI  ARC2/Pho ARC3/Safe     SLOPE    SLOAZI
+       0.3       .94     0.204       0.0      0.65     0.801       0.0       90.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET       DDT       GGT     DTMAX
+    1.1500     0.115       3.0       0.0       0.0     .0000       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+  -1222.69   8.58713      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24       IIB       IC2
+        38      1536        15         9       560        48         0         7
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN/Flx15     KPREF
+         3        24         0       481         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -2         0       200         0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT          
+      F      T      F      F      F      F      F      F      F      F          
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE          
+      T      F      F      F      T      F      F      F      F      F          
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7          
+ -60.00 -45.00 -40.00 -35.00 -30.00   0.00  30.0  45.00   60.00  65.00
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7          
+    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0    1.0
+ 2013 Jul 24 11:28:09=RUNTIME.  IPLAN AND TC= 104.0 0.10000 Mars:Mars           
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586         
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373         
+   5.544402       0.000000       0.000000       686.9929       3397.977         
+   24.62296       0.000000      -1.240317       0.000000       0.000000         
+   0.000000      0.3244965      0.8559126      0.4026359     -0.9458869         
+  0.2936298      0.1381285       0.000000     -0.4256703      0.9048783
+1 1 0.08 'Albedo'
+1 17 0.02 'Tau dust'
+1 2 1.0 'Emissivity'
+8 5 0 './out/355gi3.t52'   / added by Hugh
+1 3 100.0 'Inertia'
+3 8 1 'LVFA' /
+3 9 1 'LVFT' /
+0/
+1 3 60.0 'Inertia' /
+0/
+1 3 20.0 'Inertia' /
+0/
+0/  end of run
+\end{verbatim} 
+
+\section{Unedited statistics printout} %____________
+\vspace{-3.mm} 
+\begin{verbatim}
+@118 select 4, which sets file names and latitude range
+@115 123 
+@116 123
+  @56,  array=t  item=0 (tsurf)
+
+                   Mean       StdDev      Minimum      Maximum
+         1        9.94399      21.9716 -8.05943e-06      101.629  signed
+N=  218880        9.94399      21.9716      0.00000      101.629  absolute
+Doing -------------->     562
+343i3 - 355i3:  Tsurf. caseRange=all LatRange=all  SeasonRange=all
+         -45.         -40.         -35.         -30.         -25.         -20.         -15.         -10.          -5.
+           0.           5.          10.          15.          20.          25.          30.          35.          40.
+          45.
+Mean= (each case)
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000
+      10.8019      9.63921  1.60961e-08      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000
+      24.7472      26.0656      27.2790      28.2440      28.8216      29.4317      29.9503      30.3545      30.5453
+      30.5586      30.7442      30.3871      30.0152      29.6833      29.2250      28.8356      28.0664      27.1881
+      26.2238
+StDev=
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000
+      11.9701      11.9708  3.93240e-08      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000      0.00000
+      0.00000
+      11.9638      10.6983      9.46604      8.45502      7.29712      6.45316      5.37771      4.38954      3.47932
+      2.42415      1.42525     0.723693     0.958304      2.03974      3.00438      4.08728      5.32976      6.64121
+      8.05314
+Doing -------------->     563
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=NDJ4
+    NDJ4   -0.02763    0.69633  -12.00000    6.00000    0.05877   12.00000
+QUILT3 displayed value range is       -12.000000       6.0000000
+>>QUILT3( shows all diff in first 2 lats:  -45.         -40.    
+
+DTM4    0.00263    0.00808   -0.12218    0.05728    0.00344    0.12218
+QUILT3 displayed value range is      -0.12218357     0.057276355
+>> first case, no diff
+  2nd case , diff in first 2 lats 
+ last case has small diff at all lats    
+
+TTA4   11.83995   16.96866   -0.00000   43.67376   11.83995   43.67376
+QUILT3 displayed value range is   -1.1229758e-07       43.673765
+>> first case, no diff
+  2nd case , diff in first 2 lats 
+ last case has big diff at all lats, strong seasonal trends
+
+  FROST4   -0.12784    0.18254   -1.12520    0.00000    0.12784    1.12520
+QUILT3 displayed value range is       -1.1252039       0.0000000
+sim to DTM4, but zoning
+
+   AFRO4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  HEATMM   -0.44473    1.02760   -8.60816    5.08848    0.55570    8.60816
+QUILT3 displayed value range is       -8.6081618       5.0884817
+sim to TTA4
+
+Doing -------------->     564
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=Lat
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+Doing -------------->     565
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=DJU5
+    DJU5    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUBS    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+   PZREF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    TAUD    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUMF   -2.39523    1.78276   -7.51737   -0.25447    2.39523    7.51737
+Displayed value range is       -7.5173715     -0.25446614
+>> narow strip up. all columns show diff.
+
+Doing -------------->      61
+Maximum difference in Ls is:       0.0000000
+Doing -------------->     622
+      -65.328273 =ZeroDelta. and  Y mag factor=       2.3809459
+>>> hour=13 lat=0 case 3 Tsurf  60K lower than 1&2
+
+Doing -------------->      63
+IFH             STRING    = '/home/hkieffer/krc/robin/18jun06/355i3.t52'
+IFILE           STRING    = '/home/hkieffer/krc/robin/18jun06/343i3.t52'
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs
+   Tsurf    9.94399   21.97160   -0.00001  101.62864    9.94399  101.62864
+   Tplan   10.78679   21.26068   -0.00001   97.67725   10.78679   97.67725
+    Tatm   12.11204   17.24302   -0.00000   50.03321   12.11204   50.03321
+ DownVIS   -0.08419    0.29550   -1.95314    0.00000    0.08419    1.95314
+  DownIR    3.03400    4.66255   -0.00000   21.14387    3.03400   21.14387
+    Tmin    5.95324    8.39097   -0.00001   23.01969    5.95324   23.01969
+    Tmax    7.62840   12.00463   -0.00000   67.76148    7.62840   67.76148
+    NDJ4   -0.02763    0.69633  -12.00000    6.00000    0.05877   12.00000
+    DTM4    0.00263    0.00808   -0.12218    0.05728    0.00344    0.12218
+    TTA4   11.83995   16.96866   -0.00000   43.67376   11.83995   43.67376
+  FROST4   -0.12784    0.18254   -1.12520    0.00000    0.12784    1.12520
+   AFRO4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  HEATMM   -0.44473    1.02760   -8.60816    5.08848    0.55570    8.60816
+    DJU5    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUBS    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+   PZREF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    TAUD    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUMF   -2.39523    1.78276   -7.51737   -0.25447    2.39523    7.51737
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+Excluding seasons when convergence days differed
+   Tsurf    9.86168   21.94543   -0.00001  101.62864    9.86168  101.62864
+   Tplan   10.70446   21.23407   -0.00001   97.67725   10.70446   97.67725
+    Tatm   12.04316   17.21872   -0.00000   50.03321   12.04316   50.03321
+ DownVIS   -0.08283    0.29396   -1.95314    0.00000    0.08283    1.95314
+  DownIR    3.01880    4.65970   -0.00000   21.14387    3.01880   21.14387
+Excluding seasons when either surface diurnal minimum was below     160
+   Tsurf    0.12094    2.22251   -0.00000   69.83865    0.12094   69.83865
+   Tplan    0.12190    2.22250   -0.00000   68.11774    0.12190   68.11774
+    Tatm    0.11159    2.03163   -0.00000   47.86032    0.11159   47.86032
+ DownVIS   -0.00129    0.03841   -1.57741    0.00000    0.00129    1.57741
+  DownIR    0.03381    0.58796   -0.00000   16.09066    0.03381   16.09066
+\end{verbatim}
+
+/robin/18may28
+\\  diff 355i3.inp 355si3.inp   s is shallower, and no debug
+\\ both output 1 t52 and 3 tm2 files into /home/hkieffer/krc/robin/18may28/out/355si3.t52 etc
+
+Compare my 355i3 with robins, all roundoff. 
+\vspace{-3.mm} 
+\begin{verbatim}
+Doing -------------->     233
+KRCINDIFF: test for changes. Input limits:       64     120     220
+out  i    Label     Arg1       Arg2       Arg1-Arg2
+ 81 80     SUMF      16.346      16.346  8.0847e-10
+ 89 88   EFROST      637.54      637.54  7.4499e-09
+
+355i3 - 355i3:  Tsurf. caseRange=all LatRange=all  SeasonRange=all
+         -45.         -40.         -35.         -30.         -25.         -20.         -15.         -10.          -5.
+           0.           5.          10.          15.          20.          25.          30.          35.          40.
+          45.
+Mean= (each case)
+  1.37902e-09  1.35100e-09  1.32142e-09  1.25290e-09  1.23559e-09  1.27181e-09  1.26272e-09  1.12715e-09  9.18835e-10
+  8.55407e-10  8.89660e-10  8.55688e-10  7.74162e-10  6.33108e-10  5.93938e-10  5.56275e-10  5.80728e-10  5.21897e-10
+  5.16097e-10
+  7.42172e-10  8.82077e-10  1.11517e-09  1.06947e-09  1.04912e-09  1.01590e-09  9.78645e-10  9.42602e-10  1.10875e-09
+  7.88863e-10  8.50863e-10  8.37704e-10  7.30195e-10  6.45441e-10  5.68650e-10  5.24562e-10  4.85948e-10  4.48548e-10
+  4.23921e-10
+  2.04336e-11  1.99483e-11  1.88151e-11  1.78976e-11  1.53561e-11  1.46630e-11  1.39576e-11  1.31596e-11  1.38688e-11
+  1.12080e-11  9.37282e-12  1.01781e-11  7.99465e-12  6.82990e-12  5.79492e-12  5.13943e-12  5.84786e-12  5.42636e-12
+  4.99002e-12
+StDev=
+  9.48479e-10  9.30673e-10  9.15374e-10  8.68460e-10  8.54196e-10  8.78281e-10  8.71365e-10  7.76410e-10  6.30273e-10
+  5.87110e-10  6.13238e-10  5.86740e-10  5.26192e-10  4.25600e-10  3.97954e-10  3.70869e-10  3.83201e-10  3.43213e-10
+  3.38977e-10
+  8.56297e-10  8.82094e-10  7.03685e-10  6.69164e-10  6.52272e-10  6.27125e-10  5.99660e-10  5.73382e-10  6.74643e-10
+  4.74205e-10  5.14428e-10  5.02988e-10  4.32658e-10  3.75053e-10  3.26357e-10  2.98255e-10  2.74310e-10  2.51263e-10
+  2.33343e-10
+  8.63343e-12  8.05560e-12  7.91041e-12  7.61266e-12  6.63446e-12  6.29387e-12  6.06761e-12  5.76958e-12  6.04750e-12
+  4.82739e-12  4.41900e-12  4.81353e-12  3.92019e-12  3.38776e-12  2.83339e-12  2.54008e-12  3.07611e-12  2.94205e-12
+  2.74757e-12
+Doing -------------->     563
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=NDJ4
+    NDJ4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    DTM4    0.00000    0.00000   -0.00000    0.00000    0.00000    0.00000
+    TTA4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  FROST4   -0.00000    0.00000   -0.00000    0.00000    0.00000    0.00000
+   AFRO4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  HEATMM    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+Doing -------------->     564
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=Lat
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+Doing -------------->     565
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=DJU5
+    DJU5    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUBS    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+   PZREF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    TAUD    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUMF   -0.00000    0.00000   -0.00000    0.00000    0.00000    0.00000
+Doing -------------->      61
+Maximum difference in Ls is:       0.0000000
+Doing -------------->     622
+  -1.0080527e-09 =ZeroDelta. and  Y mag factor=   1.5276718e+11
+
+
+Compare our 343i3
+KRCINDIFF: test for changes. Input limits:       64     120     220
+out  i    Label     Arg1       Arg2       Arg1-Arg2
+ 81 80     SUMF      15.698      15.698  9.5680e-10
+ 89 88   EFROST      634.48      634.48  7.4622e-09
+ similar to 355, diff all less then 1.e-8 K
+\end{verbatim}  
+
+\subsection{v356 compared to 343}
+\vspace{-3.mm} 
+\begin{verbatim}
+IFH             STRING    = '/home/hkieffer/krc/robin/18may28/out/356ki3.t52'
+IFILE           STRING    = '/home/hkieffer/krc/robin/18may28/out/343i3.t52'
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs
+   Tsurf    8.19983   20.08950  -58.91684  156.00858    8.32976  156.00858
+   Tplan    8.77026   19.57000  -58.26755  152.40810    8.89749  152.40810
+    Tatm    9.38297   15.79974  -23.75047   83.85393    9.46940   83.85393
+ DownVIS   -0.06320    0.24672   -1.95314    1.23395    0.06395    1.95314
+  DownIR    2.24156    4.16189   -3.22110   23.81043    2.26760   23.81043
+    Tmin    4.54523    8.01604  -24.52418  104.63240    5.38476  104.63240
+    Tmax    5.91248   11.24490  -54.75239  145.11378    6.74638  145.11378
+    NDJ4    0.35090    2.07568  -12.00000   12.00000    0.50788   12.00000
+    DTM4    0.00640    0.02309   -0.34621    0.75211    0.00860    0.75211
+    TTA4   10.90485   14.87103  -15.60712   79.22792   10.99518   79.22792
+  FROST4   -7.58834   19.39521 -230.58963   52.39005    7.84061  230.58963
+   AFRO4    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+  HEATMM   -0.61936    2.19452  -59.01680   13.57618    0.99837   59.01680
+    DJU5    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUBS    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+   PZREF    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    TAUD    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    SUMF   -3.34681    1.90997   -9.02923   -0.29708    3.34681    9.02923
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+Excluding seasons when convergence days differed
+   Tsurf    8.08595   19.87585  -19.89565  141.35873    8.15562  141.35873
+   Tplan    8.67699   19.34435  -19.62650  138.24481    8.74434  138.24481
+    Tatm    9.45638   15.77783   -1.37006   56.49530    9.50575   56.49530
+ DownVIS   -0.06176    0.24686   -1.95314    1.23395    0.06230    1.95314
+  DownIR    2.27823    4.17694   -0.53015   21.14500    2.29426   21.14500
+Excluding seasons when either surface diurnal minimum was below     160
+   Tsurf    0.07510    2.64740   -2.65976   64.59631    0.29846   64.59631
+   Tplan    0.07195    2.60721   -2.34303   63.22653    0.28786   63.22653
+    Tatm    0.05504    2.17266   -1.68797   48.56968    0.22166   48.56968
+ DownVIS   -0.00092    0.02791   -1.14824    0.63821    0.00172    1.14824
+  DownIR    0.01825    0.67269   -0.60435   16.45463    0.07630   16.45463
+\end{verbatim} 
+
+
+
+\end{document} %#############################################################
+% ===================== stuff beyond here ignored =============================
+
+
+\ref{}
+\begin{figure}[!ht] \igq{}
+\caption[]{
+\label{}  .png }
+\end{figure} 
+% how made: 
+
