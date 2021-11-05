@@ -5,15 +5,14 @@ KRC was developed by Hugh Kieffer with NASA funding. The krc website is maintain
 
 Part of this work was performed at the Jet Propulsion Laboratory, California Institute of Technology
 under a contract with NASA.
-Government support acknowledged.
-Copyright 2018. All Rights reserved.
-This work was supported for part by: PDART grant #15-PDART15_2-0023
-                                     JPL Lew Allen Award grant #01STCR, Task R.18.022.087
-                                     the 2001 Mars Odyssey Thermal Emission Imaging System (THEMIS) project
 
-Citation: Improving Thermal Model Capability for the Planetary Science Community,
-          S. Piqueux, C. S. Edwards, R. L. Fergason, J. Laura, A. Weintraub, P. R. Christensen, H. H. Kieffer
-          49th Lunar and Planetary Science Conference (2018), Abstract #1027
+This work was supported for part by: 
+<br>&emsp;&emsp;&emsp;&emsp;PDART grant #15-PDART15_2-0023
+<br>&emsp;&emsp;&emsp;&emsp;JPL Lew Allen Award grant #01STCR, Task R.18.022.087
+<br>&emsp;&emsp;&emsp;&emsp;the 2001 Mars Odyssey Thermal Emission Imaging System (THEMIS) project
+
+Citation: 
+<br>Improving Thermal Model Capability for the Planetary Science Community, S. Piqueux, C. S. Edwards, R. L. Fergason, J. Laura, A. Weintraub, P. R. Christensen, H. H. Kieffer, 49th Lunar and Planetary Science Conference (2018), Abstract #1027
 
 
 Website links:
