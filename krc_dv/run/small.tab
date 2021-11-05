@@ -1,24 +1,30 @@
 Orbit elements and spin axis for small bodies. Format adopted from the 
  JPL Small-Body Database Browser   http://ssd.jpl.nasa.gov/sbdb.cgi
+The reference coordinate systems are:
+   orbital elements: heliocentric ecliptic J2000    
+   spin axis (pole): J2000 equatorial
+All angles are in degrees.   
+2015jan23 INclude NEO's 
 Each object must have exactly 12 lines.  Three items are read for line 1.
    Only the second item is used in lines 2:12
 1:     BodyNumber  Name   EpochOfElements(as full Julian Date)
-2-8:   Copy of element lines e through M.
+2-8:   Copy of element lines e through M.   symbol, value, uncertainty, unit
+  2 e    eccentricity   [none]
+  3 a  	 semi-major axis   [au]
+  4 q    perihelion distance  [au]
+  5 i    inclination  [deg]
+  6 node longitude of the ascending node  [deg]
+  7 pen  argument of perihelion  [deg]
+  8 M    mean anomaly  [deg]
 9:     Copy of columns 2:4 from > Physical Parameters > Rotation period (hours)
 10-11: Spin Axis:  Right Ascension and Declination, degrees. From other source.
 12:    Prime meridian angle at J2000.0 (rarely known) 
 All lines are read as list directed, so there must some blanks between items
     and there must be no interior blank or /. For the first body, a / follows 
     the items read, anything beyond that number of items is ignored.
-All angles are in degrees.   
-The reference coordinate systems are:
-   orbital elements: heliocentric ecliptic J2000    
-   spin axis (pole): J2000 equatorial
-2015jan23 INclude NEO's 
-Last valid object is   9
-   [update].    Beyond that should not be read
+Last valid object is   13    Beyond that should not be read
 C_END    << Required to indicate end of comments
-1 Ceres 2456800.5 /1 -----------------------------------------
+1 Ceres 2456800.5 / 1 --------Updated as item 13 below --------------------------
 e 	.07579779827230555 / 1.9592e-08  solution date 2013-Jul-16 08:45:50  	 
 a 	2.767025704525198 / 2.1752e-09 	AU
 q 	2.557291248359312 / 5.4081e-08 	AU
@@ -30,7 +36,7 @@ rot_per 	9.074170  /	h
 PoleRA  291.  / 5
 PoleDec 59.   / 5 
 merid   170.9 /
-2 Pallas  2456800.5  /2 -----------------------------------------
+2 Pallas  2456800.5  / 2 -----------------------------------------
 e 	.23136806339302 	1.9287e-08 solution date 2013-Jul-16 08:46:11 
 a 	2.771722875768389 	2.2356e-09 	AU
 q 	2.130434721739725 	5.357e-08 	AU
@@ -150,4 +156,42 @@ rot_per 	7.306 / from JPL Small-Body Database Browser
 PoleRA  7.7
 PoleDec 7.7
 merid   7.7
+00000 Circular 2457000.5 / 12 ------- Circular orbit in plane
+e 	.0000000000000000 	3.8107e-08    / generated 2018dec22
+a 	1.000000000000000 	8.9007e-09 	AU
+q 	1.000000000000000 	5.6293e-08 	AU
+i 	00.00000000000000 	1.9079e-05 	deg
+node 	0.00            	2.6541e-05 	deg
+peri 	0.00            	2.1939e-05 	deg
+M 	360.0           	8.3517e-06 	deg
+rot_per   24.         / hour
+PoleRA  270.0
+PoleDec 66.560710
+Hmag   19.0
+1 Ceres 2458600.5 (2019-Apr-27.0) TDB / 13 ------------
+e	.07600902910070946	4.819e-12	 
+a	2.76916515450648	1.0328e-11	au
+q	2.558683599692926	1.9569e-11	au
+i	10.59406704424526	4.6089e-09	deg
+node	80.30553156826473	6.1688e-08	deg
+peri	73.597694115971  	6.6248e-08	deg
+M	77.37209588584763	7.8207e-09	deg
+rot_per 9.074170                0.000001      hour	
+PoleRA  291.421                 0.007
+PoleDec 66.758           	0.002
+merid   170.9 
 ^^^^^^^^^^^^^ INSERT ABOVE this 12-line sets for additional bodies^^^^^^^^^^ 
+
+
+e	 	Eccentricity of the orbit.
+a	(AU)	Semimajor axis of the orbit (asteroids only).
+q	(AU)	Perihelion distance (comets only).
+i	(deg.)	Inclination of the orbit with respect to the J2000 ecliptic plane.
+Node	(deg.)	Longitude of the ascending node (J2000-Ecliptic).
+peri=w  (deg.)	Argument of perihelion (J2000-Ecliptic).
+M	(deg.)	Mean anomaly at epoch (asteroids only).
+
+Tp	 	Time of perihelion passage (comets only), formatted as a calendar date (YYYYMMDD.DDD) where "YYYY" is the year, "MM" is the numeric month, and "DD.DDD" is the day and day fraction.
+H	(mag.)	Absolute magnitude (asteroids only).
+G	 	Magnitude slope parameter (asteroids only).
+Ref	 	Orbit solution reference.

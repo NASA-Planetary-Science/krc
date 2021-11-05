@@ -38,7 +38,7 @@ PRO graph, kodin,hard, psfile=psfile,port=port
 ; 2012jun15 HK Complete the color implementation. Drop use of psfile
 ;_End
 
-common GRAPH_SAVE, outfile,orient,bwf,devh,winc	; local memory
+common graph_save, outfile,orient,bwf,devh,winc	; local memory
 ;      as of 2012jun16, not used by any other idl/subs/*.pro
 ; outfile = output file name
 ; NOPE orient = orientation of hardcopy plot, 1 or 21 -> landscape, else portrait
@@ -46,7 +46,7 @@ common GRAPH_SAVE, outfile,orient,bwf,devh,winc	; local memory
 ; devh = defined hardcopy output device, 0=undefined
 ; winc lonarr(256) store !binc while doing color eps
 
-common SETCOLOR_COM2, kcc,linecol,kkc,kkl,kkp,fixkkc,fixkkl,fixkkp,kink,hink
+common setcolor_com2, kcc,linecol,kkc,kkl,kkp,fixkkc,fixkkl,fixkkp,kink,hink
 
 wasx =!d.name eq 'X'  ; device when entering this was the monitor
 
@@ -94,15 +94,15 @@ if kode eq 8 or kode eq 80 or kode eq 81 then begin ; direct to print file
 endif else begin ; redirect to monitor
 
     if not wasx then begin
-        DEVICE,/close_file      ; may not close X device
+        device,/close_file      ; may not close X device
         if kode eq 9 then begin ; Option to print it
-            SPAWN,'lpr -P'+devh+' '+outfile ; print the file
+            spawn,'lpr -P'+devh+' '+outfile ; print the file
             print,'Now: mv '+outfile
         endif
         !binc=winc              ; restore 256 colors
     endif
-    SET_PLOT,'X'
-    DEVICE,retain=1
+    set_plot,'X'
+    device,retain=1
 ;'    SETCOLOR,init=858           ; reset to prior color scheme
     bwf=0                       ; unset B&W flag
 endelse

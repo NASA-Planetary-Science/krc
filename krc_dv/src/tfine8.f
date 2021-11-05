@@ -3,13 +3,13 @@ C_Titl  TFINE  KRC higher resolution layer computations
 C_Vars  
 CD      IMPLICIT  NONE
       INCLUDE 'krcc8m.f'        ! has  IMPLICIT  NONE.  Need,  J4,J5...  many
-      INCLUDE 'dayc8m.f'        ! need  FINSOL, TTJ, the initial temperature profile
+      INCLUDE 'dayc8m.f'    ! need  FINSOL, TTJ, the initial temperature profile
       INCLUDE 'hatc8m.f'        ! need  PARC,CCC
       INCLUDE 'unic8m.f'        ! need  IOD1
       INCLUDE 'filc8m.f'        ! need  VERSIN,FRUN
 C      INCLUDE 'porbc8m.f'       ! need  SJA
 C_Args
-      INTEGER*4 IQ        ! in. 1=initialize    2=day computations    3=write bin5
+      INTEGER*4 IQ      ! in. 1=initialize    2=day computations    3=write bin5
       REAL*8 KTT(MAXN1P)        ! in.  Thermal conductivity of each layer
       REAL*8 DENN(MAXN1P)       ! in.  Density of each layer 
       REAL*8 CTT(MAXN1P)        ! in.  Specific heat of each layer
@@ -25,15 +25,16 @@ C Interpolates initial depth profile to the new layers
 C Calls  ECLIPSE to get upper boundary conditions to the new times 
 C Runs forward for the specified time span once and returns the depth profile
 C for the input set of layers.
+C Accounts for far-field heating, see variable ZFAR below
 C Coded for only bare surface; no atmosphere or frosts
-C_ToDo
-C check self vrs fff heating
+C This routine independent of zone / no zone.
 C Because max  N2 can exceed  I*2 range, make all integers transferred  I*4
 C_Calls   EVMONO3D  E  RNDEX   TUN8
 C version 3.5 Does not allow daily eclipse and atmosphere at once
 C_Lien
 C No "SAVE" statement here; assumes that all the values from IQ=1 are held IQ=2 
 C_Hist 2017mar13 Hugh_Kieffer   Derive from tday8.f
+C 2020apr12 Correct KJ from R*8 to I*4
 C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
 
 C for fine layers
@@ -57,7 +58,7 @@ C for fine layers
 C
       REAL*8 FA1(MAXFL), FA2(MAXFL), FA3(MAXFL),DTJ(MAXFL) ! each max # layers
       REAL*8 DIFFI(MAXFLP)
-      REAL*8 KJ(MAXN2)        ! bottom layer for calculations at each time step
+      INTEGER*4 KJ(MAXN2)   ! bottom layer for calculations at each time step
 
       INTEGER*4 MM3,JJJ(10),J79(MAXJ79)       ! sizes to go to  BINF5
       INTEGER*4 I,II,IH,J,J1,J9,JLOW
@@ -136,7 +137,7 @@ C for fine layers, xTT becomes xTF
       N1FP=N1F+1                ! including the base
       JLOW= (N1F-1)/KFL +1      ! Lowest  TDAY layer matched 
       IRET=JLOW
-      IF (IDB5.GE.1) PRINT *,'QB..',QB,RLAY,RLAF,BF1,N1F,JLOW
+      IF (IDB5.GE.1) WRITE(IOPM,*)'QB..',QB,RLAY,RLAF,BF1,N1F,JLOW
       PERSEC = PERIOD * 86400.  ! get solar period in seconds
       N2F=N2*KFT                ! number of fine timesteps per sol
       DTIM=PERSEC/DBLE(N2F)     ! size of one fine time step, sec
@@ -432,12 +433,12 @@ C
 C Could here add logic to only compute layers that are used in this time step
             IF (IK2.GT.0) THEN      ! Upper material values
 C     EVMONO3D loads arg2 output values into locations starting at last arg.
-              CALL EVMONO3D(CCKU,IK2,TTF(IK1), KTF(IK1)) ! upper | k
-              CALL EVMONO3D(CCPU,IK2,TTF(IK1), CTF(IK1)) !  zone | Cp
+              CALL EVMONO3D(CCKU,IK2,TTF(IK1), KTF(IK1)) ! upper Tdep | k
+              CALL EVMONO3D(CCPU,IK2,TTF(IK1), CTF(IK1)) ! material   | Cp
             ENDIF
             IF (IK4.GT.0) THEN      ! There are lower material layers
-              CALL EVMONO3D(CCKL,IK4,TTF(IK3), KTF(IK3)) ! lower | k
-              CALL EVMONO3D(CCPL,IK4,TTF(IK3), CTF(IK3)) !  zone | Cp
+              CALL EVMONO3D(CCKL,IK4,TTF(IK3), KTF(IK3)) ! lower Tdep | k
+              CALL EVMONO3D(CCPL,IK4,TTF(IK3), CTF(IK3)) ! material   | Cp
             ENDIF
 
             FBK=RLAF            ! F_B_i * F_k_i for virtual layer
@@ -478,8 +479,8 @@ C  upper boundary conditions.
           IF (IDB5.GE.6 .AND. (JJ.LT.(J7P+3)  .OR. ABS(JJ-J8).LT.3))
      &       WRITE(44,244) JFI,FINSJ,TSUR,ABRAD,SHEATF,POWER,FAC7,KN 
  244      FORMAT(I6,f7.4,F8.3,3f11.5,g12.5,i4)
-D          WRITE(44,244) JFI,FINSOL(JFI), (TTF(I),I=1,N1F)
-D 244      FORMAT(I6,F8.4,F8.3, 99F7.2)
+D         WRITE(44,245) JFI,FINSOL(JFI), (TTF(I),I=1,N1F)
+D 245     FORMAT(I6,F8.4,F8.3, 99F7.2)
 C BIN5 file: vvvvvvvvvvv store  vvvvvvvvvvvvvvvvvvvvvvv
 C  CCC is [2+depth, fine-time,latitude]
           IF (LATOK) THEN       ! store this eclipse latitude

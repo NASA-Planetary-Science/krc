@@ -1,16 +1,19 @@
-function makekrcval, krccom,kist, vals
+function makekrcval, krccom,kist, vals, vern=vern
 ;_Titl  MAKEKRCVAL  Make string of selected KRC inputs: Key=val
 ; krccom in.  KRC KRCCOM structure
 ; kist	 in.  Intarr of 1-based indices to treat: 
 ;			+100 for .fd   +200 =.id   +300=.ld
 ; vals   out_ Fltarr of the values for items in kist
+; vern    in_  Integer  two-digit KRC version number 
 ; func.	 out. String. of label=value. Null if kist is invalid
 ;_Calls DEFINEKRC  DELAST0  STRWORD1
 ;_Hist 2002aug05 Hugh Kieffer
 ; 2015dec07 HK Add argument vals, minor comments typos
 ; 2016feb17 HK Recode to call STRWORD1 in only one place
+; 2018sep27 HK Add keyword vrs
+; 2018oct28 HK rename vrs to vern
 ;_End                   .comp makekrcval
-qq=DEFINEKRC('KRC',params,labkf,labki,labkl,idmin,idmax)
+qq=DEFINEKRC('KRC',params,labkf,labki,labkl,idmin,idmax,vern=vern)
 nin=n_elements(kist)
 
 out=''                          ; null string to become results

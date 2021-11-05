@@ -10,7 +10,7 @@ function readkrccom, arg1,khold
 ;             [1] is number of 4-byte words in a case
 ;             [2] is number of cases in the file
 ;             [3] is n4krc == number of 4-byte words in  KRCCOM
-;             [4] is two-digit KRC version number
+;             [4] is three-digit KRC version number
 ;           If arg1 is string, will open new unit
 ;           Else expects valid open lun. Caller should do the final  free_lun,
 ; func.	out. If arg1 is string, intarr modified "front" words of KRC file +ncase
@@ -40,6 +40,8 @@ function readkrccom, arg1,khold
 ; 2014mar16:28 HK Accomodate R*8 version of KRC
 ; 2016jun22 HK Khold[4] now 2-dig version number, was DP flag. line adjustments
 ; 2017mar30 HK Account for possible longer header
+; 2018sep15 HK Change text of message
+; 2018oct28 HK Use 3-digit version number
 ;_End       .comp readkrccom
 
 k=size(arg1,/type)            ; word type of first argument 
@@ -80,8 +82,8 @@ if k eq 7 then begin          ; open file ;=========================
   dodp=ityp eq 5                ; file is double precision
                                 ; KRC files never have  >512 byte header.
   i1=strpos(hh,'>>')            ; locate before version
-  vern=GETVERS(strmid(hh,i1+2),ii) ; look for version number
-  vrs=(10*ii[0]+ii[1])>20  ; create two-digit version number
+  sver=GETVERS(strmid(hh,i1+2),ii) ; look for version number
+  vern=(100*ii[0]+10*ii[1]+ii[2])>200  ; create two-digit version number
 ; get the first 4 words of array; needed by user but not needed here.
   if dodp then front=dblarr(4) else front=fltarr(4)
   readu,lun,front               ; first 4 words of the array
@@ -94,7 +96,7 @@ if k eq 7 then begin          ; open file ;=========================
     print,'hh=',hh
     print,'front=',front
     message,'Unexpected IDX in file '+arg1,/con
-    print,'.com to continue' & stop
+    print,'.con to return error code' & stop
     return,-2
   endif
   if dodp then front[0]=2*front[0] ; convert # real words to # 4-byte words
@@ -103,7 +105,7 @@ if k eq 7 then begin          ; open file ;=========================
   mmm=idd[1]                                           ; size of first dimension
   if ndim gt 1 then for i=2,ndim-1 do mmm=mmm*idd[i]   ; size of last dimension
   if dodp then mmm=2*mmm                               ; number of 4-byte words
-  khold=[long(lun),mmm,ncase,front[0],vrs] ; ensure long array; mmm could be big some time
+  khold=[long(lun),mmm,ncase,front[0],vern] ; ensure long array; mmm could be big some time
 
 endif else if k lt 4 then begin ; arg is integer case number ===============
 
@@ -129,7 +131,7 @@ endif else if k lt 4 then begin ; arg is integer case number ===============
   j=512L+(arg1-1)*4*khold[1]+ifro ; bytes before krccom of requested case 
   point_lun,lun,j              ; set pointer to just before krccom for this case
   if dodp then i=8 else i=4
-  out=DEFINEKRC('KRC',vrs=khold[4])   ; define the structure
+  out=DEFINEKRC('KRC',vern=khold[4])   ; define the structure
   readu,lun,out                 ; read the structure from file
 
 endif else begin                ; unexpected type =====================

@@ -12,7 +12,7 @@
 %\textheight=10.0in \topmargin=-1.in % a little tight 
 %\textheight=9.6in % \topmargin=-0.9in % 2016feb25
 
-\textwidth=7.70in  \oddsidemargin=-0.7in \evensidemargin=-0.7in
+\textwidth=7.70in  \oddsidemargin=-0.7in \evensidemargin=-0.7in % safe default
 \parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
 %       modes, spacing, size
 \newcommand{\qb}{\begin{displaymath}}    % begin & end un-numbered equations
@@ -94,7 +94,9 @@
 \newcommand{\kgm}[1]{kg/m$^{#1}$}  % kilogram / m2
 \newcommand{\qcite}[1]{#1=\cite{#1}}  % show my .bib name
 
-\newcommand{\qlabel}[1]{\label{#1}  \hspace{1cm} #1}    % show label in title
+%  USE AT MOST ONE OF THE NEXT TWO for section labels
+%\newcommand{\qlabel}[1]{\label{#1}} % for final
+%\newcommand{\qlabel}[1]{\label{#1}  \hspace{1cm} #1}    % show label in title
 
 %\newcommand{\bs} {\Large {\sigma} } %  symbol for Standard deviation
 \newcommand{\bs} {\mathcal{S} } %  symbol for Standard deviation
@@ -129,9 +131,18 @@
 \newcommand{\qsb}{\subsection}
 \newcommand{\qsc}{\subsubsection}
 %\newcommand{\qsd}[1]{\vspace{1.mm} \large  \textbf{--\S  \ #1 } \\ \normalsize}
-\newcommand{\qsd}[1]{\vspace{1.mm} \textbf{--\S  \ #1 } }
+\newcommand{\qsd}[1]{\vspace{1.mm} \textbf{--\S  \ #1 } } %sub^3 section
 
 \newcommand{\qref}{?} % unidentified Section
+
+% added 2019mar08
+\newcommand{\qfo}[1]{$\Longrightarrow$ \textit{#1}} % indicate output file
+\newcommand{\qeq}{\hspace{25.mm}} % space original equation number to the right
+\newcommand{\bq}{ $ < \! > \!   \! >$ } %  begin quote
+\newcommand{\eq}{ $< \! \! < \! > $ } %  end quote
+\newcommand{\cofo}{ \ \triangleleft \! \! \doteq \! \! \triangleright  \ } %  code/formula equivalence within $'s
+\newcommand{\qh}[1]{\\ \hspace*{#1.em} #1 \hspace*{0.4em} } %  LOOP indent
+\newcommand{\qH}[1]{\\ \hspace*{#1.em}  \hspace*{1.3em} } %  LOOP additional
 
 % \input{[.tex]} incorporates file with no break.     \include starts a new page
 % \ninput  Skip input, with subsubsection small box notice. 
@@ -149,7 +160,7 @@
 
 \newcommand{\cinput} [1] {\begin {center} \fbox{ \itshape { Input: #1 } } \end{center} \input{#1} \hrulefill\ \textit {End of input: #1 } \hrulefill\ }
 
-\newcommand{\xinput} [1] { \subsubsection{-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W input / #1}  \input{#1}  \subsubsection{-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M end / #1} } % with notice in Index
+\newcommand{\xinput} [1] { \subsubsection{-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W-W input \ #1}  \input{#1}  \subsubsection{-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M-M end \ #1} } % with notice in Index
 
 \newcommand{\xinclude} [1] { \subsubsection{--------------include  #1}  \include{#1} \subsubsection{---------------end  #1} } % with notice in Index
 

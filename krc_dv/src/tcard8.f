@@ -55,12 +55,18 @@ C 2016may18 HK Incorporate far-field file
 C 2016aug11:22 HK Clarify comments. Separate errors 439 from 430
 C 2016sep09 HK Use KFARAC to set reporting of TFAR8 reads
 C 2017mar12 HK Incorporate eclipses.  Minor format changes
-C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
+C 2018aug11 HK Quit if SEASLAB or SEASTAU or CLIMTAU report error
+C 2018oct20 HK Add change 8 4 , reading second far-field-file for atm.
+C              Special code: ID24 sets DA output file word type.
+C              Reverse order of last two items on 'Changed>>' print
+C 2018nov05 HK Prepend D to lines activated by IDBx
+C_End 789012345678901234567890123456789012345678901234567890123456789012_4567890
 
       INTEGER*4 LNBLNK          ! function
       REAL*4 SEASALB,SEASTAU,CLIMTAU ! functions
+C      INTEGER*4 MEMI(9)         ! tfar arg4
       REAL*4 Q4,QF              ! temporary 
-      REAL*8 Q8,XREAD           ! temporary 
+      REAL*8 Q8,XREAD           ! ,D8 temporary 
       CHARACTER TEXT*74
       CHARACTER RBUF*80         ! internal file buffer
       CHARACTER*8 WHAT          ! distinguish what was expected to read 
@@ -69,7 +75,7 @@ C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
       PARAMETER(NIDR = 20)      ! # of  INTEGER input variables
       PARAMETER(NLDR = 20)      ! # of  LOGICAL input variables
       CHARACTER*8 TITF(NFDR) 
-      CHARACTER*6 TITI(NIDR) 
+      CHARACTER*6 TITI(NIDR+4)  ! extend to cover ID24 
       CHARACTER*6 TITL(NLDR) 
       CHARACTER*30 SEPER /' ============================='/
       INTEGER*4 KOUNT           ! number of changes cards read for this call
@@ -77,30 +83,30 @@ C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
       INTEGER*4 I,IG,IIIN,ILEN,IREAD,JERR,KEEP,NEW,KDB
       
       DATA TITF /'ALBEDO','EMISS','INERTIA','COND2','DENS2','PERIOD'     !6
-     & ,'SPECHEAT','DENSITY','CABR','AMW','ABRPHA','PTOTAL','FANON'     !7
+     & ,'SPECHEAT','DENSITY','CABR','AMW','ABRPHA','PTOTAL','FANON'      !7
      & ,'TATM','TDEEP','SpHeat2','TAUD','DUSTA','TAURAT','TWILI'         !7
      & ,'ARC2/PHT','ARC3','SLOPE','SLOAZI','TFROST','CFROST','AFROST'    !7
-     & ,'FEMIS','AF1','AF2','FROEXT','SatPrB','RLAY','FLAY','CONVF'       !8
-     & ,'DEPTH','DRSET','PhotF','GGT','DTMAX','DJUL','DELJUL','SolarDec'   !8
+     & ,'FEMIS','AF1','AF2','FROEXT','SatPrB','RLAY','FLAY','CONVF'      !8
+     & ,'DEPTH','DRSET','PhotF','GGT','DTMAX','DJUL','DELJUL','SolarDec' !8
      & ,'DAU','L_S','SOLCON','GRAV','Atm_Cp','ConUp0','ConUp1','ConUp2'  !8
      & ,'ConUp3','ConLo0','ConLo1','ConLo2','ConLo3','SpHUp0','SpHUp1'   !7
      & ,'SpHUp2','SpHUp3','SpHLo0','SpHLo1','SpHLo2','SpHLo3'/ !6  total 64
 
       DATA TITI /'N1','N2','N3','N4','N5','N24','IIB','IC2'
      & ,'NRSET','NMHA','NRUN','JDISK','IDOWN','I14','I15','KPREF'
-     & ,'K4OUT','JBARE','NMOD','IDISK2'/
+     & ,'K4OUT','JBARE','NMOD','IDISK2','id21','id22','id23','ID24=='/
 
       DATA TITL /'LP1','LP2','LP3','LP4','LP5','LP6'
      & ,'LPGLOB','LVFA','LVFT','LKofT','LPORB','LKEY','LSC','LZONE'
      & ,'LOCAL','LD16','LPTAVE','Prt.78','Prt.79','L_ONE'/
 
-      IF (IDB2.GE.5) WRITE(IOSP,*) 'TCARD-A',IQ
+D     IF (IDB2.GE.5) WRITE(IOSP,*) 'TCARD-A',IQ
 C
       IRET=1                    ! normal return is a new case
       IF (J5.GT.1 .AND. J5.EQ.IDOWN) IRET=3 ! continue after changes
       KOUNT=0                   ! Number of change cards read
       JERR=0                    ! in case of IO error
-D       WRITE(*,*)'TCARD entry  IQ,J5=',IQ,J5 !< dbug
+D       WRITE(IOPM,*)'TCARD entry  IQ,J5=',IQ,J5 !< dbug
 D       WRITE(IOSP,*)'TCARD entry  IQ,J5=',IQ,J5 !< dbug
       GO TO (100,160), IQ
 C
@@ -118,8 +124,13 @@ C initiate commons from input file or from disk saved record  (IQ = 1)
       READ (IOIN,*) KOLD,KEEP,KDB ! get: 0=input card set,  >0 = disk record
       IF (KDB.NE.0) THEN        ! Read and print debug flags
         READ (IOIN,*) IDB1,IDB2,IDB3,IDB4,IDB5,IDB6
-        WRITE(*,*)   'IDB1:6=',IDB1,IDB2,IDB3,IDB4,IDB5,IDB6
+        WRITE(IOPM,*)   'IDB1:6=',IDB1,IDB2,IDB3,IDB4,IDB5,IDB6
         WRITE(IOSP,*)'IDB1:6=',IDB1,IDB2,IDB3,IDB4,IDB5,IDB6
+        IF (IDB1.EQ.99) THEN
+          WRITE (IOPM,*) 'Switching IOPM and IOERR output to IOSP'
+          IOPM=IOSP
+          IOERR=IOSP
+        ENDIF
       ENDIF
       IF (KOLD.NE.0) THEN
         IRET=2
@@ -142,28 +153,28 @@ C initiate commons from input file or from disk saved record  (IQ = 1)
       ENDIF
         
 C  GET orbital parameters if needed
-      IF (IDB1.GE.1) WRITE(IOPM,*)'Before PORB0'
+D     IF (IDB1.GE.1) WRITE(IOPM,*)'Before PORB0'
       IF (LPORB) CALL PORB08
-      IF (IDB1.GE.1) WRITE(IOPM,*)'AFTER PORB0'
+D     IF (IDB1.GE.1) WRITE(IOPM,*)'AFTER PORB0'
       LD18=.TRUE. ! Flag that at least one value has changed
 
 C  READ a set of parameter change cards  (IQ = 2)
 
- 160  READ (IOIN,'(A80)',ERR=436,END=430) RBUF ! read into character buffer
-      ILEN = LNBLNK(RBUF)
-      WRITE(*,*)' RBUF= ',RBUF(1:ILEN)
+ 160  IF (.NOT. LONE .AND. KOUNT.EQ.0) WRITE(IOSP,166)SEPER,NCASE,SEPER
+ 166  FORMAT (/,/,A,' New case',I3,A 
+     & ,/,' --------- TYPE LOC  VALUE ----- ITEM  Comments')
       KOUNT=KOUNT+1
+      READ (IOIN,'(A80)',ERR=436,END=430) RBUF ! read into character buffer
+      ILEN = LNBLNK(RBUF)
+      WRITE(IOPM,*)' RBUF= ',RBUF(1:ILEN)
       READ (RBUF,*,ERR=437,END=439) IG
       IF (IG.LT.1) GOTO 370     ! no more changes
       IF (IG.NE.11) LD18=.TRUE.  ! something other than onePoint will change
-      IF (.NOT. LONE .AND. KOUNT.EQ.1) WRITE(IOSP,166)SEPER,SEPER
- 166  FORMAT (/,/,A,' New case',A 
-     & ,/,' --------- TYPE LOC  VALUE ------- Parameter Changes')
       IF (IG.LT.11) THEN        ! read a single parameter
         READ (RBUF,*,ERR=438,END=439) IG,IREAD,XREAD,TEXT
         ILEN = LNBLNK(TEXT)
-        IF (IG.GT.3) WRITE (IOSP,167) IG,IREAD,XREAD,TEXT(1:ILEN)
- 167    FORMAT (' Changed>>',2I4,G12.4,1X,A10,2x,A10)
+        IF (IG.GT.3) WRITE (IOSP,167) IG,IREAD,XREAD,' ',TEXT(1:ILEN)
+ 167    FORMAT (' Changed>>',2I4,G12.4,1X,A9,1x,A)
       ENDIF
 C             1   2   3   4   5   6   7   8   9   10  11  12  13
       GO TO (210,220,230,240,250,260,270,280,290,300,310,320,330 
@@ -180,7 +191,8 @@ C    5   New Elevation Card(s) Follow                        any
 C    6   New Orbital Parm Cards Follow (LPORB Must be True)  any
 C    7   Text becomes new Title                              any
 C    8   Text becomes new disk or season file name         listed
-C           3, far-field temperatures direct-access file to read
+C           3, far-field direct-access file to read, surface +
+C           4, far-field DA file to read, atmosphere
 c           5, new bin5 file to fill, type 52
 C          21, direct-access file to write, type specified by K4OUT
 C          22, read variable ALBEDO
@@ -201,18 +213,18 @@ C follow after the type on the same line, with no interveening index or text
 
  210  IF (IREAD.LT.1 .OR. IREAD.GT.NFDR) GOTO 295
       FD(IREAD)=XREAD           !  IG=1: change  REAL parm
-      WRITE (IOSP,167)IG,IREAD,XREAD,TEXT(1:ILEN),TITF(IREAD)
+      WRITE (IOSP,167)IG,IREAD,XREAD,TITF(IREAD),TEXT(1:ILEN)
       GO TO 160
 
- 220  IF (IREAD.LT.1 .OR. IREAD.GT.NIDR) GOTO 295
-      ID(IREAD)=IDNINT(XREAD)     !  IG=2: change  INTEGER parm
-C     IF (IREAD.EQ.12) NCASE=0 ! JDISK: 2009mar reason lost
-      WRITE (IOSP,167)IG,IREAD,XREAD,TEXT(1:ILEN),TITI(IREAD)
+ 220  IF (IREAD.LT.1 .OR. (IREAD.NE. 24 .AND. IREAD.GT.NIDR )) GOTO 295 
+C Above: special code to allow resetting ID24: DirectAccess word type
+      ID(IREAD)=IDNINT(XREAD)    !  IG=2: change  INTEGER parm
+      WRITE (IOSP,167)IG,IREAD,XREAD,TITI(IREAD),TEXT(1:ILEN)
       GO TO 160
 
  230  IF (IREAD.LT.1 .OR. IREAD.GT.NLDR) GOTO 295
       LD(IREAD)=XREAD.GT.0.D0     !  IG=3: change  LOGICAL parm
-      WRITE (IOSP,167)IG,IREAD,XREAD,TEXT(1:ILEN),TITL(IREAD)
+      WRITE (IOSP,167)IG,IREAD,XREAD,TITL(IREAD),TEXT(1:ILEN)
       GO TO 160
 
  240  READ (IIIN,'(10F7.2)',END=430) (ALAT(I),I=1,N4) !  IG=4: read latitudes
@@ -228,42 +240,65 @@ C     IF (IREAD.EQ.12) NCASE=0 ! JDISK: 2009mar reason lost
       GO TO 160
 
 C  IG=8  Read file name 
- 280  IF (IREAD.EQ.3) THEN       ! far field temperatures 
-        IF (LOPN3) CALL TFAR8(4,0,Q8)    ! close prior file
+ 280  WRITE(IOPM,*)'TCARD@280',IREAD
+      IF (IREAD.EQ.3) THEN      ! read far field surface [+ atm] temperatures
+        CLOSE (IOD3)
+        LOPN3=.FALSE.
         FFAR=TEXT
-        KFARAC=INT(XREAD)       ! flag to notify each read
-      ELSEIF (IREAD.EQ.5) THEN  ! new bin5 disk file name,
-        IF (LOPN4) CALL TDISK8 (7,0) ! close current bin5
-        FDISK = TEXT            !   move new file name into common
-        NRUN=NRUN+1             !   increment run count
-        WRITE (IOSP,*)NRUN,'=Run. New T52 file name= ',TEXT(1:ILEN)
-      ELSEIF (IREAD.EQ.21) THEN ! direct-access to write
-        IF (LOPN2) CALL TDISK8 (4,0) !   close prior direct-access file name
-        FDIRA=TEXT              !   move file name into common=
+        KFARAC=INT(XREAD)       ! flag to notify each read 
+        write(iopm,*)'Tcard280.3: FFAR=', FFAR
+      ELSEIF (IREAD.EQ.4) THEN  ! read far field atmosphere temperatures 
+        CLOSE (IODA)
+        LFATM=.FALSE.
+        FFATM=TEXT              !   move new file name into common
+        write(iopm,*)'Tcard280.4:FFATM=',FFATM 
+      ELSEIF (IREAD.EQ.5) THEN  ! new bin5 output file name,
+        IF (LOPN4) CALL TDISK8 (7,0)    ! close current bin5
+        FDISK = TEXT            !         move new file name into common
+        WRITE (IOSP,*)'New T52 file name= ',TEXT(1:ILEN)
+      ELSEIF (IREAD.EQ.21) THEN ! direct-access file to write
+        IF (LOPN2) CALL TDISK8 (4,0)    ! close prior direct-access file
+        FDIRA=TEXT              !         move file name into common=
       ELSEIF (IREAD.EQ.22) THEN ! Seasonal Albedo file name
-        FVALB=TEXT              !   move file name into common
-        I=SEASALB(-999.)        !   read data file
-        KVALB=0                 !   set flag off
-        IF (I.GT.1) KVALB=1     !   set variable albedo flag
+        FVALB=TEXT              !        move file name into common
+        QF=SEASALB(-999.)       !        read data file
+        IF (QF .GT. 1.) THEN    !        success
+          KVALB=1               !          Success: set variable albedo flag
+        ELSE                    !        Failure, should quit
+          KVALB=0               !          set flag off
+          WRITE(IOPM,*)'SEASALB had failure'
+          GOTO 432              !        quit
+        ENDIF
       ELSEIF (IREAD.EQ.23) THEN ! seasonal opacity
-        FVTAU=TEXT              !   move file name into common
-        I=SEASTAU(-999.)        !   read data file
-        KVTAU=0                 !   set flag off
-        IF (I.GT.1) KVTAU=1     !   set variable tau flag
-      ELSEIF (IREAD.EQ.24) THEN !  seasonal climate
-        FVTAU=TEXT              !   move file name into common
-        QF=CLIMTAU(-999.,0.,Q4) !   read data file
-        KVTAU=0                 !   set flag off
-        IF (QF.EQ.0) KVTAU=2    !   set variable Climate flag
+        FVTAU=TEXT              !         move file name into common
+        QF=SEASTAU(-999.)       !         read data file
+        IF (QF .GT. 1.) THEN    !         success
+          KVTAU=1               !            set variable opacity flag
+        ELSE                    !         Failure, should quit
+          KVTAU=0               !            set flag off
+          WRITE(IOPM,*)'SEASTAU had failure' !    print warning
+          GOTO 433              !            quit
+        ENDIF
+      ELSEIF (IREAD.EQ.24) THEN ! seasonal climate
+        FVTAU=TEXT              !         move file name into common
+        QF=CLIMTAU(-999.,0.,Q4) !         read data file  QF is BINF5 return
+        IF (QF .EQ. 0) then     !         Success:
+          KVTAU=2               !           set variable Climate flag
+        ELSE                    !         Failure, should quit
+          KVTAU=0               !           set flag off
+          WRITE(IOPM,*)'CLIMTAU had failure' !   print warning
+          GOTO 434              !           quit
+        ENDIF
       ELSEIF (IREAD.EQ.25) THEN ! zone table name
         FZONE=TEXT              !   move file name into common
         LZONE=.TRUE.            !   assume have a new zone table
-        IF (ILEN.LT.4) LZONE=.FALSE. !   unless the name is too short
+        IF (ILEN .LT. 4) LZONE=.FALSE. !   unless the name is too short
         WRITE(IOPM,*) 'LZONE,I=',LZONE, ILEN 
       ELSE 
         WRITE (IOERR,*)'Tcard 8: invalid file type= ',IREAD,' ',TEXT
       ENDIF
-      WRITE(*,'(a,4i3,1x,a)')'TCARD280',IREAD,I,KVALB,KVTAU,TEXT(1:ILEN)
+      WRITE(IOPM,'(a,4i3,1x,a)')'TCARD280'
+     &      ,IREAD,I,KVALB,KVTAU,TEXT(1:ILEN)
       GOTO 160
 
  295  WRITE(IOERR,*)'Invalid change index: ',RBUF ! 2nd value out of range for the type
@@ -345,7 +380,7 @@ C
         WRITE (IOERR,388) 'JDISK',JDISK,NEW
         JDISK = NEW
       ENDIF
-c 2017sep25, should not need the following, as j5 is never 0 when relevent routines called
+c 2017sep25, should not need the following, as j5 is never 0 when relevent routine is called
 C      IF (JBARE.LE.0 ) THEN       ! never remove frost
 C        NEW=9999      
 C        WRITE (IOERR,388) 'JBARE',JBARE,NEW
@@ -401,9 +436,9 @@ C
  437  JERR=JERR+1 ! format error reading IG in RBUF
  436  JERR=JERR+1 ! format error reading a change line
  435  JERR=JERR+1 ! format error reading ELEV
- 434  JERR=JERR+1 ! format error reading ALAT 
- 433  JERR=JERR+1 ! format error reading LD
- 432  JERR=JERR+1 ! format error reading ID
+ 434  JERR=JERR+1 ! format error reading ALAT or CLIMATE
+ 433  JERR=JERR+1 ! format error reading LD   or SEASTAU
+ 432  JERR=JERR+1 ! format error reading ID   or SEASALB
  431  JERR=JERR+1 ! format error reading FD
       WRITE (IOSP,*),'TCARD: IO error: at ',430+JERR
       IF (JERR.GE.6) WRITE (IOSP,*)'   RBUF=',RBUF
@@ -418,6 +453,6 @@ C
       WRITE (IOSP,'(//5X,A)') 'END OF DATA ON INPUT UNIT'
       
  9    CONTINUE                  ! only exit from this routine
-      IF (IDB1.NE.0) WRITE(IOSP,*)'TCARD Exit: IRET=',IRET,NFD,ID(1) !< dbug
+D     IF (IDB1.NE.0) WRITE(IOSP,*)'TCARD Exit: IRET=',IRET,NFD,ID(1) !< dbug
       RETURN          
       END

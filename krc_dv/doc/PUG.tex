@@ -9,7 +9,7 @@
 \parindent=0.em \parskip=1.ex %  no indent & paragraph spacing
 
 \title{The KRC Planetary ORBit (PORB) System Users Guide}
-\author{Hugh H. Kieffer  \ \ File=-/krc/PUG.tex 2014jun10}
+\author{Hugh H. Kieffer  \ \ File=-/krc/PUG.tex 2019dec10}
 % local definitions
 %\newcommand{\short}{full}    % begin & end un-numbered equations
 \newcommand{\qdp}{$. \! ^\circ \! $} % degree over decimal point NOT in math mode 
@@ -43,9 +43,9 @@ needed by the general user.
 This document describes Version 2.2.2 and later; it applies to KRC Version 2.2.1
 and later; 2.2.2 includes additional source files \nf{small.tab} and
 \nf{exoplan.tab}. The intention is to allow a user to create a \textbf{geometry
-  matrix}, 7 ridgely formatted lines of numbers, for inclusion in a KRC input
+  matrix}, 7 rigidly formatted lines of numbers, for inclusion in a KRC input
 file that would apply to any planet, satellite, asteroid, comet or exoplanet the
-user may wish.
+user may wish; see \S \ref{geomm}.
 
 Version 2 of KRC uses dates relative to J2000.0 = 2000Jan01 noon UTC. To change
 from version 1 dates, subtract 11545.0
@@ -63,13 +63,12 @@ Run PORBMN to create a geometry matrix, see \S \ref{cook}; cut-and-paste it into
 file. Then run KRC.
 
 \section{Files input to PORB} %------------------------------------------------
-Files formatted for the PORB system cover four catagories, each file has its own format:
+Orbital element files formatted for the PORB system cover four catagories, each file has its own format:
 \qi Planets and satellites:  one file for orbits and another for spin-axes
 \qi Minor (or small) bodies: orbits and pole direction for each object. Two versions.
-\qi Comets: Orbit size specified by perihelion distance.  
+\qi Comets: Orbit size specified by perihelion distance. 
 \qi ExoPlanets: Orbit specified by semi-major axis, period and eccentricity; each commonly known. Relative orientation of the body spin axis specified by obliquity and Ls at periapsis, neither is commonly known.
-
-All files contain adequate information in the header to easily add additional objects.
+\\ All files contain adequate information in the header to easily add additional objects.
 
 Reading of these files uses Fortran list-directed format, which uses white-space (blank or tab)
 to separate items and will terminate with a slash '/'. Thus, names and numbers
@@ -151,7 +150,7 @@ You get to choose your favorite!
 \end{description}
 
 \subsection{Comets}
-
+Elements from Ted Bowell and Lowell observatory
 \begin{description} 
  \item [\textit{comet.tab}] \  Some comets: orbit and spin. 
 \\ WARNING: Consistency of source orientation systems uncertain
@@ -185,7 +184,7 @@ Current values are available at:
 J2000.0 was confirmed to be heliocentric ecliptic.
 
 \subsection{exoPlanets} %--------------------------------- 
-
+ A few objects grabbed from the literature
 \begin{description} 
 \item [\textit{exoplan.tab}] \ Major differences from solar system objects are:
 \qi Need both semi-major axis and orbital period.
@@ -201,6 +200,7 @@ The length of the synodic day (assuming prograde motion) is also printed; it sho
 
 One list of stars with planets is: 
 \url{http://en.wikipedia.org/wiki/List_of_exoplanetary_host_stars}
+
 \subsection{Obsolete} %.....................
 
 \textit{sturms.tab} \ \qcite{Sturms71} earliest source
@@ -234,6 +234,7 @@ Standish tables list the following with respect to the J2000 ecliptic system, in
 
 \bibliography{mars}   %>>>> bibliography data
 \bibliographystyle{plain}   % alpha  abbrev 
+\newpage
 \appendix
 
 \section{Cookbook \label{cook}} %______________________________
@@ -284,7 +285,104 @@ Will be asked which of same 5 options:
 
 You then copy the 7 lines in the output file into a KRC input file.
 \end{verbatim}
+\newpage
+\section{The geometry matrix \label{geomm}} %______________________________
+30 items are loaded into the common PORBCM. These are listed in \nf{porbc8m.f}, extracted below (2019dec04)
+\vspace{-3.mm}
+\begin{verbatim}
+      REAL*8 PLANUM ! 1 Body number. 100*fileNumber+itemNumber
+     &,TC        ! 2 Time in centuries from reference date (2000.0)
+     &,RODE      ! 3 Longitude of the rising node, radian
+     &,CLIN      ! 4 Inclination, radian
+     &,ARGP      ! 5 Argument of periapsis, radian
+     &,XECC      ! 6 Eccentricity
+     &,SJA       ! 7 Semi-major axis (Astronomical Units)
+     &,EOBL      ! 8 Obliquity of the Earth's axis, radians
+     &,SFLAG     ! 9 Input system flag 0:default, +1: pole=ec +10:orb=eq
+     &,ZBAA      ! 10 Body pole: declination, radian in J2000 eq.
+     &,ZBAB      ! 11  "     "       Right Ascension, radian in J2000 eq.
+     &,WDOT      ! 12 Siderial rotation rate; degrees/day (used only in reconc.f) 
+     &,W0        ! 13 Position of prime meridian at 2000.0, degree
+C Above are from orbital element tables  Below are derived    
+      REAL*8 OPERIOD ! 14 Period of the orbit (days)
+     &,TJP       ! 15 J2000 Date of perihelion
+     &,SIDAY     ! 16 Siderial rotation period of body (hours)
+     &,spar17    ! 17 unused
+     &,TAV       ! 18 True anomaly at spring equinox, radians
+     &,BLIP      ! 19 Body obliquity, radians
+     &,PBUG      ! 20 Debug Flag   
+     &,spar21    ! 21 Unused    
+     &,BFRM(9)   ! 22 Rotation matrix from orbital to seasonal
+C --- end of the 30 real variables generated by PORB system
+\end{verbatim}
+\newpage
+\section{Routine list and call tree} %______________________________
+Call tree produced by IDL forcalltree
+\vspace{-3.mm}
+\begin{verbatim}
+  i    name         NumTimesCalled 
+   PORBMN
+  0  CATIME             1
+  1  PORBIG             1
+  2    PORBEL           1
+  3      UPCASE         1
+  4      COCOMC         1
+  5      ROTV           1
+  6      ROTVEC         1
+  7      COCOCM         1
+  8      YMD2J2         1
+  9    ROTORB           1
+ 10    ROTSHO           3
+ 11    ROTAX            1
+ 12    ROTCOL           1
+ 13    COCOSC           1
+ 14    VDOT             1
+ 15    TRANS3           1
+ 16    ROTVEC           1
+ 17    VCROSS           2
+ 18    VNORM            1
+ 19    VSHOW            4
+ 20    ROTEST           1
+ 21  PORBIO             1
+ 22  EPHEMR             1
+ 23    PORBIT           1
+ 24      ORBIT8         1
+ 25        ECCANOM8     1
+ 26      VNEG           1
+ 27      ROTVEC         1
+ 28      COCOCS         1
+ 29    CALDATE          1
+ 30      CALDAT         1
+ 31      JULDAY         1
+ 32    SPCREV           1
+ 33  PRTPCOM            1
+ 34  ROTSHO             1
+ 35  ROTEST             1
+Unfound= cococm cococs cocomc cocosc rotax rotcol rotest rotorb rotsho rotv rotvec trans3 
+vcross vdot vneg vnorm vshow
 
+
+porbmn.f  PROBMN   Main program of planetary orbit (PORB) software system. R*8
+eccanom8.f ECCANOM Iterative solution of  Kepler's equations for eccentric orbit.
+ephemr.f  EPHEMR   prints orbital position and date table.  PORB system  R8
+orbit8.f  ORBIT    Compute radius and coordinates for elliptical orbit. DefPrec.
+porbel.f  PORBEL   read planetary orbital element file, compute basic constants
+porbig.f  PROBIG   Read orbital elements via PORBEL. Initiate porbcm
+porbio.f  PORBIO   read/write porb common to disk file with name = porbcm.dat
+porbit.f  PORBIT   Converts between date and Ls. Also returns DAU and Sdec  R*8
+prtpcom.f PRTPCOM  Print (write) the PORB system version 3 common to IOP
+spcrev.f  SPCREV:  returns spacecraft revolution number for Viking
+              Math families
+cocodp8.f COCODP8 General coordinate conversion package, 8 routines. DP
+rotmdp8.f ROTMDP  General 3-dimension rotation matrix geometry package. DP, 18 routines
+vadddp8.f VADD    General vector arithmetic package, 13 routines 
+              Utility
+caldat.f  CALDAT  Convert Julian date to year,month,day. From NumRec
+caldate.f CALDATE convert MJD or julian date to year, month, day, day-of-week/year
+catime.f  CATIME  Returns current date & time as " yyyy mon dd hh:mm:ss "
+julday.f  JULDAY  Compute integer Julian day from month, day,year, From NumRec
+upcase.f  UPCASE  Converts all characters to uppercase.
+\end{verbatim}
 
 \end{document} %===============================================================
 % ===================== stuff beyond here ignored =============================

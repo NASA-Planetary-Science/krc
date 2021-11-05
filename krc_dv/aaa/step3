@@ -16,6 +16,8 @@
 # 2017oct05 HK Version 3.5.4
 # 2018feb22 HK Version 3.5.5
 # 2018jul03 HK Version 3.5.6 
+# 2018nov05 HK Version 3.6.1
+# 2020apr13 HK v 3.6.5
 #====================================
 
 FAM='/home/hkieffer/krc'    # family to be distributed
@@ -45,7 +47,6 @@ ln -s /home/hkieffer/krc/uniq/H3install .
 rm -f *~                # eliminate any old versions
 
 rm -f $RTOP/doc/*	# step2 to check dates on all .pdf versus .tex
-rm -f $RTOP/doc/prt	# any output print files
 cd    $RTOP/doc		# latex x      la4 x     ps2pdf q.ps x.pdf
 ln -s /work2/Reprints/TherMod/Kieffer13krc.pdf . # JGR article as published
 ln -s /home/hkieffer/xtex/AGU/krc.pdf .      # journal article, with corrections
@@ -71,6 +72,8 @@ ln -s /home/hkieffer/krc/Doc/old/mkrc.pdf .	## Movie version of KRC
 #ln -s /home/hkieffer/krc/port.pdf .		# supporting material
 ln -s /home/hkieffer/krc/VER/Vtest.tex .
 ln -s /home/hkieffer/krc/VER/Vtest.pdf .  # Description of KRC version tests
+ln -s /home/hkieffer/krc/Doc/VerTest.tex .
+ln -s /home/hkieffer/krc/Doc/VerTest.pdf .  # Description of KRC version tests
 ln -s /home/hkieffer/krc/Doc/ppt/krc.ppt .
 ln -s /home/hkieffer/krc/Doc/ppt/WorkShop73.ppt .  
 ln -s /home/hkieffer/krc/Doc/ppt/Noutline .
@@ -98,6 +101,7 @@ ln -s /home/hkieffer/krc/Doc/DV3/V34UG.tex .   # Guide to v3.4 in LaTeX
 ln -s /home/hkieffer/krc/Doc/DV3/v34p.tex .    # into V34UG: photometric function
 ln -s /home/hkieffer/krc/Doc/DV3/fard.tex .    #  " Far-field Detailed design
 ln -s /home/hkieffer/krc/Doc/DV3/farg.tex .    #  " Far-field for sloped surfaces
+ln -s /home/hkieffer/krc/Doc/ppt/F.pdf FarField.pdf
 ln -s /home/hkieffer/krc/Doc/DV3/V34UG.pdf .   # Guide to v3.4
 ln -s /home/hkieffer/krc/Doc/DV3/slopes.tex . # monolog on slopes
 ln -s /home/hkieffer/krc/Doc/DV3/slopes.pdf .
@@ -108,10 +112,12 @@ ln -s /home/hkieffer/krc/Doc/ppt/KRC344.odp . # 2017mar07 talk at ASU
 ln -s /home/hkieffer/krc/Doc/ppt/KRC344.pdf .
 
 cd    $RTOP/doc/prt		#
+rm -f $RTOP/doc/prt/*	# any output print files
 ln -s /home/hkieffer/krc/tes/Mone.prt .	   
 ln -s /home/hkieffer/krc/tes/master.prt .  
 ln -s /home/hkieffer/krc/tes/mastes.prt . 
 ln -s /home/hkieffer/krc/tes/355Test.prt .
+ln -s /home/hkieffer/krc/tes/363Test.prt .
 ln -s /home/hkieffer/krc/Eur/EurH.prt .
 ln -s /home/hkieffer/krc/Eur/PhoH.prt .
 ln -s /home/hkieffer/krc/Eur/MoonA.prt .
@@ -124,9 +130,10 @@ ln -s /home/hkieffer/krc/tes/master.inp .    # 19 latitudes, default parameters
 ln -s /home/hkieffer/krc/tes/mastes.inp .    # 37 latitudes and mean elevations 
 ln -s /home/hkieffer/krc/tes/Mone.inp .	     # krc input for one-point
 ln -s /home/hkieffer/krc/tes/oneA.one .      # one-point input table 
-ln -s /home/hkieffer/krc/tes/Bennu.inp .     # OSIRIS-REx target body
 ln -s /home/hkieffer/krc/tes/355Test.inp .   # acceptance test
-
+ln -s /home/hkieffer/krc/tes/365Test.inp .   # acceptance test
+ln -s /home/hkieffer/krc/beam/Bennu.inp .     # OSIRIS-REx target body
+ln -s /home/hkieffer/krc/beam/B3.inp .  # Grid of slopes
 
 #ln -s /home/hkieffer/krc/tes/web.inp .  # draft for web
 #ln -s /home/hkieffer/krc/tes/master5x.inp .  # output all type 5x binary files
@@ -146,7 +153,6 @@ ln -s /work1/mars/opacity/THEMIS1yearDustIce.bin5 . # climate opacities
 ln -s /home/hkieffer/krc/tes/zoneX.tab .  # zone table, result close to default
 ln -s /home/hkieffer/krc/tes/zoneZ.tab .  # zone table, exercise options
 ln -s /home/hkieffer/krc/tes/valb1.tab .  # season-variable albedo
-ln -s /home/hkieffer/krc/tes/beamK.inp .  # Grid of slopes
 ln -s /home/hkieffer/krc/Eur/351v3t.inp .  # 8  acceptance test cases
 ln -s /home/hkieffer/krc/Eur/EurH.inp .    #  exercise eclipse options
 ln -s /home/hkieffer/krc/Eur/PhoH.inp .    #  exercise eclipse options
@@ -168,7 +174,7 @@ ln -s /home/hkieffer/krc/porb/porbc8m.f
 ln -s /home/hkieffer/krc/porb/porbx8m.f
 #- ln -s /home/hkieffer/krc/src/krccom.inc .
 #- ln -s /home/hkieffer/krc/tes/latcom.inc .
-# next section alpabetic routine name
+                         # next section alpabetic routine name
 ln -s /home/hkieffer/krc/src/albvar8.f .
 ln -s /home/hkieffer/krc/src/alsubs.f .
 ln -s /home/hkieffer/krc/src/bigend.f .
@@ -244,6 +250,8 @@ ln -s /home/hkieffer/krc/src/tun8.f .
 ln -s /home/hkieffer/krc/src/tyearp.f .
 ln -s /home/hkieffer/krc/src/vlpres.f .
 ln -s /home/hkieffer/krc/src/white0.f .
+ln -s /home/hkieffer/krc/src/wraper.f .
+ln -s /home/hkieffer/krc/src/wraper8.f .
 ln -s /home/hkieffer/krc/porb/ymd2j2.f .
 #----  not used in normal KRC build ---- 
 # ln -s /home/hkieffer/krc/src/sigma.f . # real*4 version used only in test
@@ -410,15 +418,17 @@ rm -f $RTOP/idl/krc/*
 cd    $RTOP/idl/krc  # IDL code directly related to KRC
 ln -s /home/hkieffer/idl/krc/definekrc.pro .  # none
 ln -s /home/hkieffer/idl/krc/getvers.pro .    # none
-ln -s /home/hkieffer/idl/krc/makekrcval.pro . # definekrc delast0
 ln -s /home/hkieffer/idl/krc/krchange.pro .   # readkrccom  makekrcval
 ln -s /home/hkieffer/idl/krc/krccomlab.pro .  # none
 ln -s /home/hkieffer/idl/krc/krclayer.pro .   # none
-# ln -s /home/hkieffer/idl/krc/krcsizes.pro .
+ln -s /home/hkieffer/idl/krc/kv3.pro .        # many, huge test program
+#ln -s /home/hkieffer/idl/krc/krc35.pro .     
+ln -s /home/hkieffer/idl/krc/makekrcval.pro . # definekrc delast0
+ln -s /home/hkieffer/idl/krc/printsimple.pro . # readkrc52
 ln -s /home/hkieffer/idl/krc/readkrc52.pro .  # bin5  readkrccom
-ln -s /home/hkieffer/idl/krc/readkrc53.pro .  # bin5 definekrc  krchange
-ln -s /home/hkieffer/idl/krc/readkrc54.pro .  # bin5
-ln -s /home/hkieffer/idl/krc/readkrc56.pro .  # bin5
+#ln -s /home/hkieffer/idl/krc/readkrc53.pro .  # bin5 definekrc  krchange
+#ln -s /home/hkieffer/idl/krc/readkrc54.pro .  # bin5
+#ln -s /home/hkieffer/idl/krc/readkrc56.pro .  # bin5
 ln -s /home/hkieffer/idl/krc/readkrc1.pro .   # none
 ln -s /home/hkieffer/idl/krc/readkrccom.pro . # definekrc
 ln -s /home/hkieffer/idl/krc/examt52.pro .  # Example program: refers to routines outside idl1
@@ -442,7 +452,8 @@ ln -s /home/hkieffer/idl/subs/histfast.pro .
 ln -s /home/hkieffer/idl/subs/hoplot.pro .
 ln -s /home/hkieffer/idl/subs/hstats.pro . 
 ln -s /home/hkieffer/idl/subs/init.pro .  
-ln -s /home/hkieffer/idl/subs/isotime.pro .
+#ln -s /home/hkieffer/idl/subs/isotime.pro .
+ln -s /home/hkieffer/idl/subs/timeconv.pro .
 ln -s /home/hkieffer/idl/subs/kon91.pro . 
 ln -s /home/hkieffer/idl/TES/subs/lsam.pro .      # none
 ln -s /home/hkieffer/idl/subs/lastperiod.pro .

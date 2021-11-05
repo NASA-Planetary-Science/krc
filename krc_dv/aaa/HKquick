@@ -1,5 +1,47 @@
 Keystroke guide to build of new version KRC on H3
 
+---------------  Install a Distro ------------------
+
+cd /work2/KRC
+mkdir NNN  <- version number. Need do only once for each version
+cd NNN
+      if Dir not empty: rm -Rf *
+tar -xzf /work2/KRC/krc230.tar.gz  << edit the version number
+
+NOPE: in /work2/KRC/NNN/ , do: source ~/krc/uniq/step6
+
+go to the “src/cfiles” directory.
+make all
+
+go to the “src” directory.
+make krc
+make porbmn
+
+go into the “idl/extern” directory
+make ftnwrap64.so
+
+cd into "run"  directory
+mkdir out
+ln -s ../src/krc . 
+ln -s ../src/porbmn .
+
+krc
+input] VerTest.inp     or 342Test    <- edit version.  ".inp" not used V342+
+print] VerTest.prt     or /
+
+krc
+input] Mone.inp
+print] V232Mone.prt
+
+Testing against prior version: 
+cd ../idl   ; go to the idl Directory
+source idlPath
+idl
+kirin
+.comp krcvtest
+krcvtest,newv='V232' 
+@11   just check is paths are correct
+
 ---------------  Make and test a PORB only Distro ------------------
 
 Check that PORB documentation is up to date: see top part of stepP34
@@ -48,48 +90,6 @@ in ~/cop                        steps to transfer distor to ASU
 ln -s /work2/KRC/krc342.tar.gz .     << edit the version number
 cd
 gp p cop/krcNNN.tar.gz asu 
-
----------------  Install a Distro ------------------
-
-cd /work2/KRC
-mkdir NNN  <- version number. Need do only once for each version
-cd NNN
-      if Dir not empty: rm -Rf *
-tar -xzf /work2/KRC/krc230.tar.gz  << edit the version number
-
-NOPE: in /work2/KRC/NNN/ , do: source ~/krc/uniq/step6
-
-go to the “src/cfiles” directory.
-make all
-
-go to the “src” directory.
-make krc
-make porbmn
-
-go into the “idl/extern” directory
-make ftnwrap64.so
-
-cd into "run"  directory
-mkdir out
-ln -s ../src/krc . 
-ln -s ../src/porbmn .
-
-krc
-input] VerTest.inp     or 342Test    <- edit version.  ".inp" not used V342+
-print] VerTest.prt     or /
-
-krc
-input] Mone.inp
-print] V232Mone.prt
-
-Testing against prior version: 
-cd ../idl   ; go to the idl Directory
-source idlPath
-idl
-kirin
-.comp krcvtest
-krcvtest,newv='V232' 
-@11   just check is paths are correct
 
 
 ----- FIXES YET NEEDED

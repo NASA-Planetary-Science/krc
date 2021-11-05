@@ -2,14 +2,52 @@ evolve.txt Notes on evolution of KRC code, after the first 17 years.  Newest on
 top.  Does not include all minor changes.
 ............................................................................
 
-2018Jul03 V3.5.6 Fixes related to occurance of condensation as frost or snow in
-TLATS and TDAY. Revised EPRED8. Described in 356notes.tex
+2020Apr13 v3.6.5 Fix failure if zone table was the first case. Fix bug in
+maximum number of days to predict forward. Small edits in TFAR and WRAPPER to
+remove error message when date was in the seasonal wrap. Make D lines
+compileable, add debug printout to WRAPER. Fix all minor compiler warnings.
+
+2019dec10 v3.6.4 Fix bug in PORB ephemr.f, used to generate ephemer print
+tables; does not affect KRC calculations.  Convert dates used in spcrev.f for
+Viking revs to J2000. Updates orbital elements for Ceres in small.tab. Update
+PORB USers Guide (PUG)
+
+2019mar23 v3.6.3 Changes to TFAR and WRAPER to allow getting the proper season
+when reading type -n files from versions before 3.6.1, which did not yet have the
+orbital period stored in the KRCCOM; assumes recorded seasons are one more than
+make a year. Minor updates to helplist.
+
+2018nov14 v 3.6.2  Fix bug in 3.6.1 where first type 52 file overwrote common. 
+ 
+2018nov04 v 3.6.1 Allow far-field-file (fff) system to handle simultaneous
+separate input files for surface and atmosphere, with tests for fff matching
+current case and making fff date look-up more robust and applicable to any
+"year". New routines TFAREAD (in tfar8.f) and WRAPER. Insert version number as
+an integer and length of year in days into KRCCOM. Move atmosphere flag into
+KRCCOM. Allow atmosphere from a specific prior case (e.g., level surface) to
+hold for a set of sloped far-field files. Option for Direct access output files
+to be R*4; fff system will auto-detect to read either R*4 or R*8 but always
+returns R*8 values.  New utility routines MV4D and MV8R for converting between
+single and double precision arrays added into fillmv.f .  Update fundamental
+physical constants in krc8.f (tiny changes). Debug option to output all text,
+warnings and errors to the print file in chronological order. Many other debug
+statements converted to "D-lines" so thay are omitted in standard compilation. 
+Small changes in printout formats related to cases and change lines.
+
+2018oct10 Presentation at ASU THEMIS team meeting on version 3.5.6 [and .7]
+
+2018aug11 v 3.5.7 [Not released] Fixed ancient BINF5 bug that could cause KRC to
+run even if file was not found. TCARD and CLIMTAU routines now quit if file
+error in reading a seasonal file in SEASLAB or SEASTAU or CLIMTAU.
+
+2018Jul03 V 3.5.6 Fixes related to occurance of condensation as frost or snow in
+TLATS and TDAY. Better condensation physics. Revised EPRED8. Described in
+356notes.tex
 
 2018Feb01 V 3.5.5 Change meaning of real parameter 38 from DDT, now firm-coded
 at 0.002, to the Photometric function code. which had been overloaded with
 parameter 21. This allows Photometric functions at the same time as
-atmosphere. Fix code for solar eclipses; two new optional eclipse input
-lines.
+atmosphere. Fix code and description for solar eclipse input lines.
 
 2017Oct05 V 3.5.4 Error log file name to the millisec, with delay to ensure
 unique in case of massive cluster runs. Correct blunder in evmono3d.f that had

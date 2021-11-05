@@ -30,14 +30,18 @@ C 2016dec08 Having doubling problems, Comments and rename one temporary variable
 C 2017mar29 HK Accomodate eclipses and planetary heating
 C 2018jun22 HK Remove  TFTEST and use  TFNOW as frost test.
 C   Snow when no frost now initiates frosty surface rather than being lost.
+C 2020apr11 HK Rename reused JJH in setup to IC3. Ensure it is defined for zones
+C         Fix limit on N3 and print advisory if changed. Change KJ from R*8 to I*4
+C         Ensure IK1:IK4 are always defined, and properly 
 C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
 C
       REAL*8 FA1(MAXN1), FA2(MAXN1), FA3(MAXN1),DTJ(MAXN1) ! each max # layers
       REAL*8 TAVE(MAXN1),DIFFI(MAXN1P)
-      REAL*8 KJ(MAXN2)        ! bottom layer for calculations at each time step
+      INTEGER*4 KJ(MAXN2)       ! bottom layer for calculations at each time step
 
       INTEGER*4 I,II,IH,IP,J,JJ,JJH,JJJ,JJP,JRSET,J3P1,K,KG,KN
      & ,KM,N1P1,NZ
+      INTEGER*4 IC3 ! First layer of properties different than surface
       INTEGER*4 JSW ! index trigger for switch to/from TFINE
 C
       REAL*8 ABRAD,AH,AP,ATMRAD,CPOG,DDZ,DELT,DFROST,DIFY,DSCAL
@@ -50,7 +54,6 @@ C
       LOGICAL LDAY              ! this will [normally] be the last iteration day
       LOGICAL LFROST            ! frost is present on the ground. 
       LOGICAL LRESET            ! it is permissable to do jump perturbation
-      LOGICAL LATM              ! there is an atmosphere
       LOGICAL LGHF              ! continuous geothermal heat flow
       LOGICAL LWP               ! Print flag when IQ=3
       LOGICAL LPH               ! consider planetary heat load
@@ -60,7 +63,6 @@ C version 3.5 Does not allow daily eclipse and atmosphere at once
 C     it uses  DOWNIR for Planet thermal load and  
       INTEGER*4 JBE(4),PARI(2)  ! ECLIPSE range indices and params.
       REAL*8 TTF(MAXN1P)        ! out.  Temperature profile on original layers
-
 C variables for k(T)
       REAL*8 FBI(MAXN1),FCI(MAXN1),FKI(MAXN1) ! layer factors
       REAL*8 KTT(MAXN1P)        ! thermal conductivity of each layer
@@ -71,6 +73,8 @@ C      REAL*8 TOFF/220.D0/       ! TEMPERATURE SCALING
 C      REAL*8 TMUL/0.01D0/       ! TEMPERATURE SCALING
       REAL*8 DDT/0.002D0/       ! convergence test 
       INTEGER*4 IK1,IK2,IK3,IK4,IKK(4)   ! layer indices for kofT
+C IK1 and IK3= first layer of top and bottom T-dep materials
+C IK2 and IK4 are the number of T-dep layers of each material, 0 if none
       LOGICAL LALCON            ! all layers T-constant 
 C Zone depth table and its processing
       REAL*8 ZCOND(MAXN1P),ZDEN(MAXN1P),ZDZ(MAXN1P),ZSPH(MAXN1P) ! zone values
@@ -80,13 +84,13 @@ C Zone depth table and its processing
 C function: Number of layers to reach arg1 if first is 1. and ratio is arg2  
       FLAYER(FLAD,FLAR)=DLOG(1.D0+FLAD*(FLAR-1.D0))/DLOG(FLAR) ! N LAYERS
 C Variables for far flat: indicated by  LOPN3 true
-      LOGICAL LSELF ! Not using far-field temperatures
+C      LOGICAL LSELF ! Not using far-field temperatures
 C
 C      SAVE CTT,DENN,KTT,TOFF,TMUL,TGHF,LGHF
-C      SAVE IK1,IK2,IK3,IK4,LALCON,LPH,LRARE,N1P1  ! ?? more
+C      SAVE IC3,IK1,IK2,IK3,IK4,LALCON,LPH,LRARE,N1P1  ! ?? more
 C      SAVE FA1,FA2,FA3,FBI,FCI ! ?? more
 C
-      IF (IDB2.GE.5) WRITE(IOSP,*) 'TDAY IQ,J4=',IQ,J4,JJO
+D     IF (IDB2.GE.5) WRITE(IOSP,*) 'TDAY IQ,J4=',IQ,J4,JJO
       IRET=1
       IF (IQ.EQ.2.) GOTO 200 ! do day and time loops
 C
@@ -104,7 +108,12 @@ C the conductivity variation.
       LWP=IQ.EQ.3                ! do the stage 1 prints
       LPH = PARW(1).GT. 0. ! doing planetary heat loads
 C insure day loop does not go past next season
-      IF (N5.GT.1) N3=MIN(MAX(N3,IDINT(DELJUL/PERIOD)),MAXN3-1)
+      J=MIN(N3,IDINT(DELJUL/PERIOD),MAXN3-1) ! largest allowed
+      IF (N5.GT.1 .AND. N3 .GT.J) THEN
+        WRITE(IOERR,*)'TDAY_1: N3 reduced',N3,J
+        N3=J
+      ENDIF
+      J3=1                      ! insurance. Last day computed?
       N1P1=N1+1                 ! lowest layer reset
       N1M1=N1-1                 ! lowest layer in spaced print
       NLW=1+(N1-3)/10           ! spacing of printed layers
@@ -136,6 +145,8 @@ C Compute Tg values here as may need 1 or 2 times. Last arg is scalar here
 
       IK2=0                     ! no layers of upper Tdep material yet
       IK4=0                     ! " " lower "
+      IK1=1                     ! insurance
+      IK3=1                     ! " 
 
       IF (LZONE) THEN           ! expect zone table
         NZ=MAXN1
@@ -154,11 +165,11 @@ C        WRITE(IOPM,*) ZDZ
 
 C     May have two zones of T-dep. materials
 C  QA, QB     ! Thickness of current layer in D units and in meter
+        QA=FLAY/RLAY          ! thickness in D units of the prior (virtual) layer
         DBOT=0.                 ! bottom of prior layer in D units
         ZBOT=0.                 ! bottom of prior layer in m
-        QA=FLAY/RLAY          ! thickness in D units of the prior (virtual) layer
         LALCON=.TRUE.           ! will stay true only if no zone is Tdep
-        J=1                     ! index of prior=virtual layer
+        J=1                     ! index of prior layer
         IF (IDB2.GE.3) WRITE(IOSP,*)'Zlay  K  J   DSCAL     DDZ'
      & ,'    FAC8   FAC82   FAC9       QQ II      QB'
 C                      1  1  2    0.020   0.0015  0.0015
@@ -201,7 +212,6 @@ C         '  0.386E-01 1400.0  647.00 0.4266E-07   187.08
             ENDIF
           ENDIF
 
-C          GOAL=FRLAY*RLAY ! layer thickness in D units increases by RLAY
           DIFY=YCOND/(YDEN*YSPH) ! local diffusivity
           DSCAL=DSQRT(DIFY*PERSEC/PIVAL) ! local diurnal scale
 C Calculate the number of layers to use for this zone: II.  This is based on 
@@ -269,23 +279,29 @@ C       labels for print
      &      ,YCOND,YDEN,YSPH,DIFFI(J),SQRT(YCOND*YDEN*YSPH)
             QB=QB*RLAY          ! thickness in m of the next layer
           ENDDO                 ! layers within a zone
-        ENDDO                   ! zones -^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^ 
+          IF (K .EQ. 1) IC3=J+1 ! I: first layer of 2nd zone
+        ENDDO                   ! K: zones -^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^ 
  111    FORMAT(3I3,F9.3,F9.4,F8.4,G11.4,F7.1,F8.2,G11.4,F9.2)
- 118    JJH=999                 ! surrogate for IC2, turn it off
-C     Fill in the virtual layer 
-        KTT(1)=KTT(2)
+C   Fill in the virtual layer 
+ 118    KTT(1)=KTT(2)
         CTT(1)=CTT(2)
         DENN(1)=DENN(2)
         BLAY(1)=BLAY(2)/RLAY 
-
+        DIFFI(1)=DIFFI(2)
+C   Fill in the substrate layer, same properties as lowest layer
+        IF (J .NE. N1) WRITE(IOERR,*)'TDAY last zone layer is not N1'
+        I=J+1                  ! play it safe, I should be N1P1
+        KTT(I)=KTT(J)
+        CTT(I)=CTT(J)
+        DENN(I)=DENN(J)
+        BLAY(I)=BLAY(J)*RLAY 
+        DIFFI(I)=DIFFI(J)
       ELSE                      ! ---------------  No zone table
 
-        JJH=IC2
-C     IC2==JJH is index first of lower material
-        IK1=1                   ! first of upper layers
+        IC3=MIN(IC2,N1) ! index first of lower material, may be last
         LALCON=.NOT. LKOFT
         IF (LKOFT) THEN 
-          IK2=MIN0(N1+1,IC2-1)  ! number of upper layers
+          IK2=MIN(N1+1,IC2-1)   ! number of upper layers
           IK3=IK2+1             ! first of lower layers
           IK4=N1+1-IK2          ! number of lower layers
         ENDIF
@@ -319,8 +335,8 @@ D     write(*,*)'J,diffi,blay=',J,diffi(J),blay(J)
 
       ENDIF                     ! ^^^^^^^^^^^^^^ zone / no zone
 C----------------------------------
-      IF (LWP) WRITE(IOSP,119) LZONE,LALCON,JJH,IK1,IK2,IK3,IK4
- 119  FORMAT('LZONE,LALCON,JJH, IK1:4=',2L3,5I6)
+      IF (LWP) WRITE(IOSP,119) LZONE,LALCON,IC3,IK1,IK2,IK3,IK4
+ 119  FORMAT('TDAY: LZONE,LALCON,IC3, IK1:4=',2L3,5I6)
 C     
 C     Print table of T-dependant inertias. 
 C  Temporary use of >>>>>>>>  FBI,FCI,FKI,FA1,FA2,FAC7,FAC9 <<<<<<<
@@ -369,7 +385,7 @@ C there, and do not allow higher layers to exceed this value.
 C  If layer  IC2 is unstable, need to increase its thickness (and possibly lower
 C layers) to insure stability.
 C
-C 2016 Feb 16
+C 2016 Feb 16 vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 C If using zone table, there could be many discontinuities, so no point in
 C checking for them. Compute the safety factor for each layer prior to any
 C time doubling. Starting from the bottom layer, form the minimum safety 
@@ -379,17 +395,17 @@ C 2016 dec08 ZDZ, ZDEN, ZCOND and ZSPH arrays are available for reuse here
       KM= MIN(MAXBOT,IFIX(ALOG(FLOAT(N2))/ALOG(2.)+.001) ) -1
       XCEN(1)=-BLAY(1)/2.D0       ! x is depth to layer center, [m]
       IF (ARC3.LT.0.8) WRITE(IOERR,*)'TDAY: WARNING, safety fac=',ARC3 
-      IF (JJH .LE. N1-2) THEN   ! check safety at first lower layer
-        QQ=BLAY(JJH)**2/(2.D0*DTIM* DIFFI(JJH)) ! safety factor
+      IF (.NOT. LZONE .AND. (IC3 .LE. N1-2)) THEN ! check first lower layer
+        QQ=BLAY(IC3)**2/(2.D0*DTIM* DIFFI(IC3)) ! safety factor
         IF (QQ .LT. ARC3) THEN    ! must increase layer thickness
-          DO J=JJH,N1           ! set layer JJH just stable for local diffusivity
-            BLAY(J)= RLAY**(J-JJH) * DSQRT(CONVF*2.D0*DTIM *DIFFI(J))
+          DO J=IC3,N1           ! set layer IC3 just stable for local diffusivity
+            BLAY(J)= RLAY**(J-IC3) * DSQRT(CONVF*2.D0*DTIM *DIFFI(J))
           ENDDO
           WRITE(IOSP,*)'Increased lower layers from safety of',QQ
         ENDIF
       ENDIF
-      IF (IDB4.GE.2) WRITE(*,'(a,2I4,2f8.5,f10.3,e12.5)') 
-     & 'KM,JJH,ARC3,CONVF,QQ,DTIM=',KM,JJH,ARC3,CONVF,QQ,DTIM
+D     IF (IDB4.GE.2) WRITE(*,'(a,2I4,2f8.5,f10.3,e12.5)') 
+D    & 'KM,IC3,ARC3,CONVF,QQ,DTIM=',KM,IC3,ARC3,CONVF,QQ,DTIM
 C
       SCONVG(1)=0.
       DO J=2,N1                 ! LAYER LOOP 1: compute safety factor
@@ -406,7 +422,7 @@ C
           K=J
         ENDIF
         ZDZ(J) = QQ !  minimum safety factor at this layer or lower
-        IF (IDB4.GE.2) WRITE(IOSP,'(i3,2f12.3)') J,SCONVG(J),ZDZ(J)
+D       IF (IDB4.GE.2) WRITE(IOSP,'(i3,2f12.3)') J,SCONVG(J),ZDZ(J)
       ENDDO
       IF (QQ.LT. ARC3) THEN     ! Some layer unstable
         IRET=3                  ! error return if unstable
@@ -429,7 +445,7 @@ C                   all the Qn are available for use
           QA=QA*2.              ! update doubling factor
         ENDIF
         IF (IRET.NE.1) WRITE(IOSP,'(A,I4,2G12.5,F8.1)')  ! something wrong
-     &  'J,BLAY,SCONVG,QA',J,BLAY(J),SCONVG(J),QA        ! print all layers
+     &       'TDAY1: J,BLAY,SCONVG,QA',J,BLAY(J),SCONVG(J),QA ! print all layers
         SCONVG(J)=SCONVG(J)/QA  ! safety after time doubling
         IH=IH+KKK               ! add timesteps at this depth
 C for constant conductivity
@@ -456,6 +472,8 @@ C set last layer for each time.  KJ(JJ)=K for  JJ time increment
         ENDDO
         II=II+II                ! double the spacing
       ENDDO
+C^^^^^^^^^^^^ End of layer safety check ^^^^^^^^^^^^
+
       IF (IIB.GT.0) THEN ! Heat-flow flag and coefficient to be saved
         LGHF=.TRUE.
         TGHF=0.001D0*DFLOAT(IIB)*(BLAY(N1)+BLAY(N1P1))/(2.D0*KTT(N1))
@@ -535,7 +553,6 @@ C========================= day computations  (IQ = 2) ======================
 C===========================================================================
 C
  200  DTMJ(1)=-1.D0             ! RMS layer midnight T change from prior day
-      LATM=PTOTAL.GT.1.D0       ! atmosphere present flag
       LDAY=N3.LE.1              ! normally false
       LRESET=.FALSE.            ! flag for reset of lower layers
       FAC3S = 1.D0-SALB         ! spherical absorption
@@ -562,7 +579,7 @@ C used only with atmosphere. Ensure divisor CPOG is not zero
         IF (FINSOL(1) .LT. 0.) THEN ! ERROR
           WRITE(IOERR,*)'TDAY(2: ECLIPSE returned error'
           WRITE(IOERR,*)'JBE=',JBE,'  FINSOL(1)=',FINSOL(1)
-          IRET=7
+          IRET=5
           GOTO 9
         ENDIF 
         IF (JBE(3).GT.JBE(4)) LECL=.FALSE. ! no eclipse for this latitude
@@ -576,7 +593,7 @@ C SKYFAC is computed in TLATS and arrives thru KRCCOM
         FAC5  = EMIS*SIGSB      !F --X far (eXterior) factors are 0 for flat
         FAC45= 4.D0*FAC5        !F
       ENDIF                     !F
-      LSELF=.NOT. LOPN3         !F self heating
+C      LSELF=.NOT. LOPN3         !F self heating
       TSUR=TTJ(1)
       DO J=1,N1                 ! save  T each layer at start of first day
         TT1(J,1)=TTJ(J)
@@ -599,7 +616,7 @@ C  TATMJ and  EFROST enter via  KRCCOM
       ENDIF
       FLOST=0.                  ! sum of lost frost
       LALCON = (IK2+IK4 .EQ. 0) ! all Tcon, not Tdep
-      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
+D     IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
       AH = DFLOAT(N2)/DFLOAT(N24) ! time steps between saving results
       AP = DFLOAT(N2)/DFLOAT(NMHA) ! time steps between printing results
 D      NZ=NINT(AH)               ! time steps between fort.73 output 2018jun22
@@ -613,7 +630,7 @@ C
         HEATFM=0.
         IF (LDAY) THEN 
           LRESET=.FALSE.        ! must not use  TOUT for average on last day
-          DO  J=1,N1
+          DO  J=1,N1            ! reset layer T range impossible 
             TMIN(J)=TBLOW
             TMAX(J)=0.
           ENDDO
@@ -665,8 +682,8 @@ C     Last arg is number of good layers in TTF, must not change in time loop
      &             ,J4,JJ,KG,QA,QB
  33           FORMAT(A,I4,I5,I4,2G15.5)
               
- 22           FORMAT(99F8.3)
-              IF (IDB5.GE.4)WRITE(47,22)(TTJ(I),I=1,N1) ! coarse  T
+D 22          FORMAT(99F8.3)
+D             IF (IDB5.GE.4)WRITE(47,22)(TTJ(I),I=1,N1) ! coarse  T
               CALL MVD(TTF,TTJ,KG) ! transfer the layers
               TSUR=TTF(1) ! transfer  Tsurface
               JSW=1   ! no more  Rare eclipse action  But continue fort 46 output
@@ -683,12 +700,12 @@ C
 C Could here add logic to only compute layers that are used in this time step
             IF (IK2.GT.0) THEN      ! Upper material values
 C     EVMONO3D loads arg2 output values into locations starting at last arg.
-              CALL EVMONO3D(CCKU,IK2,TTJ(IK1), KTT(IK1)) ! upper | k
-              CALL EVMONO3D(CCPU,IK2,TTJ(IK1), CTT(IK1)) !  zone | Cp
+              CALL EVMONO3D(CCKU,IK2,TTJ(IK1), KTT(IK1)) ! upper Tdep | k
+              CALL EVMONO3D(CCPU,IK2,TTJ(IK1), CTT(IK1)) ! material   | Cp
             ENDIF
             IF (IK4.GT.0) THEN      ! There are lower material layers
-              CALL EVMONO3D(CCKL,IK4,TTJ(IK3), KTT(IK3)) ! lower | k
-              CALL EVMONO3D(CCPL,IK4,TTJ(IK3), CTT(IK3)) !  zone | Cp
+              CALL EVMONO3D(CCKL,IK4,TTJ(IK3), KTT(IK3)) ! lower Tdep | k
+              CALL EVMONO3D(CCPL,IK4,TTJ(IK3), CTT(IK3)) ! material   | Cp
             ENDIF
 
             FBK=RLAY            ! F_B_i * F_k_i for virtual layer
@@ -715,9 +732,9 @@ C 3 possible upper boundary conditions. 1) Atm with frost 2) Just Atm 3) No atm.
             ATMRAD= FAC9*TATMJ**4 ! hemispheric downwelling  IR flux
             Q4 = AFNOW + (ALB-AFNOW)*DEXP(-EFROST/FROEX) ! albedo for frost layer
             
-D            IF (IDB4.EQ.4 .AND. MOD(JJ,NZ).EQ.0 )  ! N48 per day
-D     &       WRITE(73,741)J5,J4,JJJ,JJ,EFROST,Q4,TFNOW  ! 2018jun22
-D 741        FORMAT(i4,i3,i3,i6,G13.5,F8.5,F11.6) ! 2018jun22
+D           IF (IDB4.EQ.4 .AND. MOD(JJ,NZ).EQ.0 )  ! N48 per day
+D    &        WRITE(73,741)J5,J4,JJJ,JJ,EFROST,Q4,TFNOW  ! 2018jun22
+D 741       FORMAT(i4,i3,i3,i6,G13.5,F8.5,F11.6) ! 2018jun22
             SHEATF= FAC7*(TTJ(2)-TSUR) ! upward heatflow into the surface
 C   unbalanced flux into surface
 C FEMIT=FAC6F*SIGSB*TFNOW**4 is [[skyfac]]*Femis*sig*Tf^4
@@ -770,7 +787,7 @@ C
           ENDIF
           TSUR4=TSUR**4
 C
-          IF (LATM .AND. LSELF) THEN  !v-v-v-v-v  Adjust atmosphere temperature
+          IF (LATM .AND. .NOT. LOPN3) THEN  !v-v-v-  Adjust atmosphere temperature
             TATM4=TATMJ**4
 C 2002jul12  ADGR was downwelling  IR flux; becomes solar heating of atm
             HEATA=ADGR(JJ)+FAC9*(EMIS*TSUR4-2.*TATM4) ! net atm. heating flux
@@ -793,14 +810,16 @@ C..     th(j,ih)=t(j)   ! save depth-time solution [th(maxn1,MAXNH]
               IF (TTJ(J).LT.TMIN(J)) TMIN(J)=TTJ(J)
               IF (TTJ(J).GT.TMAX(J)) TMAX(J)=TTJ(J)
             ENDDO
+cx            if (IDB2 .eq. 1) write(71,171)n1,j3,j4,j5,(tmax(j),j=1,n1P1)
+cx 171        format(4i3,50f6.0)
             IF (I15.EQ.101 .AND. J5.GE.JDISK) CALL TUN8(I15,2,IH,Q6) ! user output
             IH = IH+1
             JJH = NINT(IH*AH)
           ENDIF
 C NEXT 3 LINE DEBUG ONLY.  Only on last day of last season for Rare eclipse
-          IF (JSW.GT.0 .AND. IDB5.GE.7) WRITE(46,244) 
-     &             JJ,ATMRAD,TSUR,ABRAD,SHEATF,POWER,FAC7,KN
- 244        FORMAT(I6,  F9.4,F8.3,2F10.4      ,F10.5,G12.5,I4)
+D         IF (JSW.GT.0 .AND. IDB5.GE.7) WRITE(46,244) 
+D    &             JJ,ATMRAD,TSUR,ABRAD,SHEATF,POWER,FAC7,KN
+D 244        FORMAT(I6,  F9.4,F8.3,2F10.4      ,F10.5,G12.5,I4)
 C
           IF (JJ.EQ.JJP) THEN   ! print "hourly" temperatures
             IF (LP3) WRITE(IOSP,260)IP,EFROST,TTJ(1)
@@ -885,7 +904,7 @@ C may reset the lower layers on each successive day
           IF (J5.LE.1 .AND. JJJ.GE.JRSET) LRESET=.TRUE.
         ENDIF
  320  CONTINUE                  ! *^*^*^*^*^*^*^*^*^* end of day loop *^*^*^*^*
-      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
+D     IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
 C
       JJJ=N3                    ! if loop finished, index value not guarenteed
  330  J3=JJJ                    ! reset the counter kept in common
@@ -902,10 +921,10 @@ C
       J3=JJJ
       CALL TPRINT8 (7)           ! print message and  TTJ
       WRITE(IOSP,*) 'DELT,TATMJ,TBLOW=',DELT,TATMJ,TBLOW
-      IF (J5.GE.JDISK) CALL TDISK8(2,I) ! write current season if valid
       CALL TPRINT8 (4)           ! print daily convergence
 C
- 9    IF (IDB2.GE.6) WRITE(IOSP,*) 'TDAYx'
+ 9    CONTINUE
+D     IF (IDB2.GE.6) WRITE(IOSP,*) 'TDAYx',J5,J4,J3
       RETURN
 C     
       END

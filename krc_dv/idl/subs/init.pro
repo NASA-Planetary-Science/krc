@@ -41,13 +41,14 @@ win=[1280,1000]                 ; Common display size
 mybw='HP_Laserjet_3330'         ; B&W printer
 myclr='q'                       ; Color printer
 case cpu of
-  'hulk3': begin               ; CR primary computer
+  'hulk4': begin               ; CR primary computer
       spice='/work/work1/SPICE/icy/lib/icy.dlm'
       solib=idltop+'externals/ftnwrap64.so' ; shared object library
-      prjdat='/work/work1/krc/test/'      ; Project large files
+;      prjdat='/work/work1/krc/test/'      ; Project large files: KRC
+      prjdat='/work2/slim/'           ; " " SLIM
       prjsrc=myhome+'cr/BOLI/'  ; Project other files
       specdir='/work/work1/mars/miebin/' ; Primary ice spectral models
-      win=[2550,1220]; Dell 30"
+      win=[3840,2160]; Dell 30"
       end
   'hkieffer': begin      ; MAC laptop
       solib=idltop+'externals/ftnwrap64.so' ; shared object library
@@ -67,7 +68,15 @@ case cpu of
   else: Message,'Computer not recognized, so globals not defined'
 endcase
 
+spawn,'date +%z > qtzn'  ; write time zone as integer to a file
+openr,jlun,'qtzn',/get_lun
+q='' & readf,format='(A)',jlun,q ; read that string, e.g. '-0700'
+free_lun,jlun & i=strlen(q) ; expect 5, but might be 4 if positive
+mm=fix(strmid(q,i-2)) &  hh=fix(strmid(q,0,i-2)) ; minutes and hours
+qq=strtrim((hh*60+mm)*60L,2)
+ 
 wset,0                          ; set to window 0
+setenv,'DELUTCSEC='+qq          ; computer time-zone, delta seconds from UTC
 setenv,'MYHOME='+myhome         ; my home path
 setenv,'IDLTOP='+idltop         ; top of my IDL source tree
 setenv,'SOLIB='+solib           ; shared object library

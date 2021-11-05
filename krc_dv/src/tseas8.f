@@ -6,6 +6,7 @@ C_Vars
       INCLUDE 'hatc8m.f'
       INCLUDE 'porbc8m.f'   ! need for only OPERIOD
       INCLUDE 'unic8m.f'
+      INCLUDE 'filc8m.f'    ! need FFAR
 C_Args
       INTEGER*4 IQ     ! in. 1 = start from scratch
 C                            2 = restart from disk
@@ -39,27 +40,24 @@ C 2014may16:aug22 HK Incorporate option of far-field file for slopes
 C 2016oct10 HK Make print after TFAR optional
 C 2017mar05 HK Improve notice when there is an error
 C 2017apr29 HK Define SJA if not using PORB
-C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
-
+C 2018nov05 HK Prepend D to lines activated by IDBx
+C_End 789012345678901234567890123456789012345678901234567890123456789012_4567890
 C 
-      INTEGER*4 I,I1,I2,IRL,J,KREC
-      INTEGER*4 NHF,NLF,NSF     ! number of hour/lats/seasons in far file
+      INTEGER*4 I1,I2,IRL,KREC
+      INTEGER*4 MEMI(8), MEMA(8) ! integer information from fff surf/atm
       REAL*8 DJONE              ! first date
       REAL*8 BUF(MAXN4)         ! fractional surface area in each latitude zone
-      REAL*8 DELP(10+MAXN4)           ! type -3 file information
-      REAL*8 DJ1F,DELJUF,FREC,FRAC,OMF,SEAPYR,DELSEAS
-      REAL*8 FTS(MAXNH,MAXN4) !  fff Tsurf (hour,latitude]
-      REAL*8 FTP(MAXNH,MAXN4) !  fff Tplan (hour,latitude] 
-      REAL*8 FTA(MAXNH,MAXN4) !  fff Tatm  (hour,latitude]
+      REAL*8 FFTOL /0.01d0/     ! Tolerance on fff season interpolation
+      REAL*8 FFOLE              ! transfer tolerance to TFAR, return error code
+      REAL*8 DUM8               ! dummy scalar
+      REAL*8 DU8H4(NUMH4)    ! MAXNH*MAXN4 dummy, OK for arrays up to this size
       REAL SEASALB,SEASTAU      ! functions called
-      REAL*4 ALB4,SUBS4,TAUD4  ! for *4*8 conversion 
+      REAL*4 ALB4,SUBS4,TAUD4   ! for *4*8 conversion 
       REAL*4 TIME1,TIME2,TIME3 
-      LOGICAL LATM
 
-      DELSEAS=.01                 ! tolerance on fractional seasonal offset
       LATM=PTOTAL.GT.1.         ! atmosphere present flag
       IRET=1                    ! normal
-      IF (IDB1.NE.0) WRITE(IOSP,*) 'TSEASa',IQ,J5,LSC,N5,LONE
+D     IF (IDB1.NE.0) WRITE(IOSP,*) 'TSEASa',IQ,J5,LSC,N5,LONE
 
       IF (IQ .EQ. 1) THEN       ! if start of a model
         J5=0                    ! initialize season counter
@@ -77,37 +75,22 @@ C CPU_TIME is real with resolution microseconds
       ELSE
         DJONE=DJUL              ! starting date as input
       ENDIF
+      YRIDAY=OPERIOD            ! transfer length of year into  KRCCOM
 
-      IF (LOPN3) THEN           ! prepare for fff each season           !
-        IF (LATM .AND. MINT .NE. 3) THEN ! If atmosphere, MINT is in /UNITS/
-          IRET=41                ! then require fff atm, needed in TDAY
-          WRITE(IOERR,*)'Case',NCASE,' Atm. needed in Far-field file'
-          GOTO 9
-        ENDIF
-        CALL TFAR8(2,1,DELP, FTS,FTP,FTA) 
-        IF (IDB1.EQ.3) WRITE(*,132)'DELP1:40',(DELP(I),I=1,40)  
- 132    FORMAT(A10,/(10F8.3))
-        NHF=INT(DELP(1))        ! number of hours in fff
-        NLF=INT(DELP(2))        ! number of latitudes  in fff
-        NSF=INT(DELP(3))        ! number of seasons in fff
-        DJ1F=DELP(6)            ! first date in in fff
-        DELJUF=DELP(7)          ! delta day in fff 
-        IF (IDB3.GE.3) WRITE(IOSP,'(a,3i5,f9.3,f9.4)') 
-     &       'TSEASb',NHF,NLF,NSF,DJ1F,DELJUL
-      ENDIF
-C  ----------------------------new season loop loop loop------------
+
+C VVVVVVVVVVVVVVVVVVVVVVVVVV new season loop VVVVVVVVVVVVVVVVVVVVVVVVVV
 C
  100  DJU5=DJONE+FLOAT(J5)*DELJUL ! current julian date
       J5=J5+1                   ! increment season index
       IF (LSC .OR. J5.EQ.IDOWN) THEN !  LSC  invokes changes at each season
         CALL TCARD8 (2,IRL)       ! read parameter change cards  
-        IRET=IRL
+        IRET=IRL                !  IRL range is 1:7
         IF (IRL.GE.4) THEN
           WRITE (IOERR,*) 'TSEAS: TCard(2 return=',IRL 
           IF (IRL .GT. 5) IRET=10+IRL ! cannot continue this case
           GOTO 9             ! either 1-point or end-of-data
         ENDIF
-D     write (*,*)'TSEAS: ',J5,N5,LOPN2,IDOWN,IRL !<< ,KVALB,alb
+D     write (IOSP,*)'TSEAS: ',J5,N5,LOPN2,IDOWN,IRL !<< ,KVALB,alb
         CALL TDAY8 (1,IRL)        ! re-initialize day computations
         IF (IRL.NE.1) THEN
           WRITE (IOERR,*) 'TSEAS: TDAY(1 error=',IRL 
@@ -127,7 +110,7 @@ D     write (*,*)'TSEAS: ',J5,N5,LOPN2,IDOWN,IRL !<< ,KVALB,alb
         SJA=DAU                 ! TLATS uses SJA for annual average
       ENDIF
 C
-      SUBS4=SUBS                ! get R*4 version
+      SUBS4=SNGL(SUBS)                ! get R*4 version
       IF (KVALB .GT. 0) THEN
         ALB4=SEASALB(SUBS4)     ! variable soil albedo
         ALB=ALB4                ! move into R*8
@@ -137,74 +120,55 @@ C
         TAUD=TAUD4
       ENDIF
 
-Cvvvvvvvvvvvvvvvvvvvvvvvvvvv start of fff vvvvvvvvvvvvvvvvvvvvvvvvvvv
-      IF (LOPN3 .AND. SLOPE .GT. 0) THEN ! fetch far field temperatures
-C dj1f first date in the fff , deljuf=delta day in fff
-        SEAPYR=OPERIOD/DELJUF ! seasons per year in the file
-        FREC=DMOD(DJU5-DJ1F, OPERIOD)/DELJUF ! 0-based season index in fff
-        IF (FREC .LT. 0.) FREC=FREC+SEAPYR ! advance one year
-        FREC=FREC+1.D0          ! convert to 1-based season index
-        I1=NINT(FREC)           ! nearest whole number
-        FRAC=FREC-REAL(I1)      ! fraction way from nearest season 
-        IF (ABS(FRAC) .lT. DELSEAS) THEN ! use single season
-          I2=-2                 !  flag  indicating single season is OK
-          OMF=1.
-        ELSE                    ! need second season
-          I1=INT(FREC)          ! round down
-          FRAC=FREC-REAL(I1)    ! fraction way beyond lower season
-          OMF=1.-FRAC           ! proportion of the lower season
-          I2=I1+1               ! upper season
-          IF (I2 .GT. NSF) I2=1 ! assume wrap to first season
-        ENDIF
-        IF (IDB3.GE.3) WRITE(IOSP,'(a,f8.4,2f9.3,f9.5,2i4)')
-     &         'TSEASc',SEAPYR,DJU5,DJ1F,FRAC,I1,I2
-        IF (I1 .GT. NSF) THEN 
-          IRET=42                 ! signal an error
-          GOTO 9
-        ENDIF
-        CALL TFAR8(3,I1+1,DELP, FTS,FTP,FTA) ! get season I1. +1 skips KRCCOM
-        IF (DELP(3) .LE. 0.)  THEN 
-          IRET=43                 ! signal an error
-          GOTO 9
-        ENDIF
-        DO J=1,NLF              ! process first season, each latitude
-          CALL MVDF (FTS(1,J),FARTS(1,J,1),NHF,OMF) ! fTs=omf*F3Fs
-          IF (LATM) CALL MVDF (FTA(1,J),FARTS(1,J,2),NHF,OMF)! fTa=omf*F3Fa
-        ENDDO  ! J
-        IF (I2 .GT. 0) THEN     ! process second season, add fraction
-          CALL TFAR8(3,I2+1,DELP, FTS,FTP,FTA) ! get season I2
-          DO J=1,NLF
-            CALL MVDA (FTS(1,J),FARTS(1,J,1),NHF,OMF) ! fTs=fTs+omf*F3Fs
-            IF (LATM) CALL MVDA (FTA(1,J),FARTS(1,J,2),NHF,OMF) ! " for Ta
-          ENDDO  ! J
-        ENDIF                   ! I2 .GT. 0
-      ENDIF                     ! LOPN3 .AND. SLOPE .GT. 0
-C^^^^^^^^^^^^^^^^^^^^^^^^^^^ end of fff^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cvvvvvvvvvvvvvvvvvvvvvv start: Get date in fff vvvvvvvvvvvvvvvvvvvvvvvvvvv
+      IF (LOPN3 ) THEN ! fetch far field temperatures for this season
+        FFOLE=FFTOL             ! set tolerance
+        CALL TFAR8(3,DJU5,FFOLE,MEMI, FARTS(1,1,1),DU8H4,FARTS(1,1,2)) !surf
+        I1=MEMI(1)/2 ! near midday
+        I2=MEMI(2)/2 ! near the equator
+ 130    FORMAT ('Far near-noon near-equator [Ts and] Ta',2I4,2g11.4)
+D       IF (IDB6.GE.5) WRITE(IOSP,130) I1,I2,FARTS(I1,I2,1)
+D    &    ,FARTS(I1,I2,2)
 
-D       write (*,*)'TSEAS: ',J5,N5,LOPN2,IDOWN,SUBS ! ,KVALB,alb
+        IF (FFOLE .LT. 0.D0) THEN 
+          IRET=40+NINT(-FFOLE)              ! signal an error
+          GOTO 9
+        ENDIF
+        IF (LATM .AND. .NOT.LFAME) THEN ! still need Tatm
+          DUM8=FFTOL            ! set tolerance
+          CALL TFAR8(13,DJU5,DUM8,MEMA, DU8H4,DU8H4,FARTS(1,1,2)) ! Tatm
+          I1=MEMA(1)/2          ! near midday
+          I2=MEMA(2)/2          ! near the equator
+           IF (IDB6.GE.3) WRITE(IOSP,130)I1,I2,FARTS(I1,I2,2)
+          IF (DUM8 .LT. 0.D0) THEN 
+            IRET=40+NINT(-DUM8)  ! signal an error
+            GOTO 9
+          ENDIF
+        ENDIF                   ! if LATM
+      ENDIF                     ! LOPN3 .AND. SLOPE .GT. 0
+C^^^^^^^^^^^^^^^^^^^^^^^^ end: Get date in fff^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+D      write (IOSP,*)'TSEAS: ',J5,N5,LOPN2,IDOWN,SUBS ! ,KVALB,alb
 C======
 
       CALL TLATS8 (IQ,IRL)       ! execute latitude loop
 
 C======
-      IF (IRL.NE.1) THEN
+      IF (IRL.NE.1) THEN   ! range is 31:39
         WRITE(IOERR,*)' TSEAS:  TLAT error=',IRL 
-        IRET=30+IRL             ! cannot continue this case
+        IRET=IRL             ! cannot continue this case
       ENDIF
 C If there was a blowup, IRL will be 2  and will exit the season loop 
       IF (N4.GT.8 .AND. LATM) CALL TINT8 (FROST4, BUF, SUMF) !  MKS units  BUF = normalized area 
       IF (LP5) CALL TPRINT8 (5)  ! print latitude summary
       IF (LP6) CALL TPRINT8 (6)  !  & min and max layer temperature
-C
-C       write (*,*)'j5,jdisk,kold,k4out=',j5,jdisk,kold,k4out
-C       write(*,*)'s1', subs
       IF (J5.EQ.JDISK .AND. KOLD.EQ.0 .AND. LOPN2 ! write  KRCCOM record
      &  .AND. K4OUT.LT.0) CALL TDISK8 (5,KREC) ! must follow tday(1)
       IF (J5.GE.JDISK) CALL TDISK8 (2,KREC) ! write this season
 C
 C Check if more seasons and no blowup
       IF (J5.LT.N5 .AND. IRL.EQ.1) GO TO 100
-C  ---------------------------------------------------------------------
+C AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA  end season loop AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
       IF (.NOT.LONE) THEN
         CALL CPU_TIME(TIME2)
         TIME3=TIME2-TIME1
@@ -212,7 +176,6 @@ C  ---------------------------------------------------------------------
         WRITE(IOSP,115) TIME3,'end',J5,N5
       ENDIF  
       IRET=IRL
-   
-C     write(*,*)'s2', subs
+
 9     RETURN
       END

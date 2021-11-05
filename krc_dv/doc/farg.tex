@@ -26,7 +26,6 @@ Because the type of file (-1,-2 or -3) is stored in the file (as K4OUT in
 KRCCOM), the current value of K4OUT is ignored. Thus, it is possible to save a
 different type of direct-access by setting K4OUT as desired for output.
 
-
 To revert to ``self-heating'', include an input line with full path name less than 4 characters; e.g. 'off'
 \vspace{-3.mm}
 \begin{verbatim}
@@ -39,6 +38,7 @@ The latitudes in a fff must be within 0.1\qd of those of the slope run. The
 seasons of fff must include the range of the slope run. The number of hours,
 N24, need not match, TLATS will do cubic interpolation if needed.
 
+``ifof'' means ``if and only if''
 
 \subsubsection{How things work:  short file names as 'off'}
 Zone table: TCARD detects name length, sets LZONE true if length is 4 characters or more, else sets it false.
@@ -56,7 +56,7 @@ than 4 characters lengths, such as 'off'; to change to a new file, enter its
 name (4 characters or more).
 
 fff's are written as type -1,-2, or -3 by TDISK; they are read by
-TFAR. TDISK can read type -n files, but it is not used for that.
+TFAR. TDISK can read type -n files, but it is not used for that as it would override KRCCOM, which is dangerous.
 
 KRC will close any direct-access file open for write at the end of a case
 and turn off further writes to such files until a new direct-access file name is
@@ -67,8 +67,298 @@ A fff may be left open for read for multiple cases
 All type -n files contain KRCCOM with the values when the file being written was
 closed. Because such files are closed at the end of each case, the value of
 K4OUT must be the same as when the file was opened for write, and thus proper
-for the file.
+for the file. 
 
 Development details are in \S \ref{fffd}.
 
+\subsection{2018 Oct 13+:  v361 clarification}
 
+If slope is zero, the below-horizon factor is zero so fff values have no effect. However, the presence of an input fff can affect the logic, so best if none is open. 
+
+Reminder, K4OUT=-1, -2, -3 sets a direct-access output file to contain Tsurface, plus Tplanet and plus Tatmosphere respectively. Recommended file names are  -.tm1, -.tm2 and -.tm3 .
+
+If an fff output file is specified by change 8 21, its type is determined by K4OUT, and this is included in the file, but BEWARE, there is no check that the file-name extension follows the -.tmx convention. 
+
+Can use 8 21 to specify output fff file.  K4OUT -1 is
+recommended.; -2 is OK but Tplan should differ from Tsurf only by factor of
+$^4 \sqrt{\epsilon } $.  K4OUT=-3 should not be used as it will write Tatm, but
+the values are invalid.
+
+
+\subsubsection{Without atmosphere}
+
+Use change 8 3 to read an fff; only Tsurf is used so .tm1 is adequate.
+\\ If output any DA files, K4OUT should be -1. 
+
+\subsubsection{With atmosphere}
+
+For models with atmosphere, desire that the atmosphere be based on a flat (zero
+slope) model under the assumption that this represents the likely regional
+atmosphere temperature over a rough surface. The atmosphere of a flat case
+should replace normal atm calculations, but the below-the-horizon radiation
+should come from the latest fff read in !  Version 3.5.5. did not consider this.
+
+Thus need the following logic for far-field cases with atmosphere.
+
+\begin{enumerate}    % numbered items 
+ \item Should have run flat case for the appropriate parameters including
+ atmosphere, with output of a .tm3 file.
+
+ \item Must read some .tm3 to get the atmosphere to be used for any
+ following sloped cases. This should be a flat case.
+
+\item  KRC system needs to know to preserve that atmosphere, and following cases must not override it. 
+
+ \item Sloped cases should output .tm2 (Tsurf and Tplan). They should be named
+ so as to indicate the name of the flat-case atmosphere being used.
+
+Could output .tm3, but Tatm would be redundant with the flat .tm3 file
+
+\end{enumerate}
+
+Later users of these results wanting the atmosphere will need to read the
+flat-case for that.
+
+Required KRC system capabilities related to fff
+\qi Turn any fff activity off by using a short file name.
+\qi Write a .tmx independent of using fff for radiation
+\qii type governed by K4OUT
+\qi Read a .tm3 and hold the file active and hold the Tatm as Fatm.
+\qi Read a .tmx and hold the file active for Tsurf. 
+\qii If .tm3 and not active Tatm, use this to hold Fatm
+
+Therefore, must be able to call TFAR to get:
+ \qi - only atm, and hold
+\qi - surface, and atm if flag set
+
+Therefor, must be able to call TFAR to get:
+input flag for Atm : ignore, if there, required.
+ \qi Set 1, all in fff (if flag set, failure of Tatm is fatal)
+\qi -
+\qi - surface, and atm only if flag set(failure fatal
+
+See \S on logical units in Helplist
+
+\subsubsection{Implimentation}
+
+In all conditions, the number of hours (N24) and latitudes(N4) in the fff must match the current KRC run.
+
+KRC run with atmosphere (PTOTAL $>$ 1.)
+
+ If KRC is using a fff with an atmosphere, it does not generate any new
+ atmosphere temperatures. However, for simplicity,TSF(hour,latitude) is
+ generated and handled in the normal fashion. Code allows one to write a .tm3,
+ but it is a waste.
+
+LOPN3 logical flag is the indicator of whether a Far-Field-file is being used.
+\qi LSELF is the opposite of LOPN3
+ \\ If  LATM and LSELF, TDAY modifies and uses the atmosphere temperature TATMJ,
+ stored as TAF(hour,latitude))
+ \\ If  LATM and LOPN3, TDAY replaces TATMJ with HARTA(JJ), the fff atmosphere
+
+
+ The Tsurf and Tatm files MUST have same N24 in order to share the interpolation route CUBUTERP8
+
+\subsection{Essential logical flags} 
+All start as false.
+\\ LATM: There is an atmosphere $\equiv \ P>1$; 
+\\ LOPN3: Using far-field-file (fff). Specified by 8 3, \nf{FFAR} for far Tsurf
+\\ LFAME: Using the fff  \nf{FFAR} for far Tatm
+\\ LFATM: Using the fff  \nf{FFATM}, specified by 8 4, for far Tatm
+\qi when close FFATM, must set LFATM false.
+
+\ \ \ Action at each level:
+\\ TCARD: \ Read change lines, gets file names, close/open some logical units, sets open flags.
+\\ KRC (in the case loop): \ Set which fff to use for surface and atm. and sets flags.
+\qi Sets the value of LATM
+\qi If \nf{FFAR} valid and not open, then open it, set LOPN3 True.
+\qii Set LFAME as:  LFATM false and file has Tatm
+\qi If \nf{FFATM} valid and not open, then open it. Absence of Tatm is fatal error
+\qii Set LFATM True, set LFAME false.  If file was sloped, print warning.
+\qi LATM and LOPN3 both true, but LFAME and LFATM both false, is fatal.
+\\ TSEAS: \ Ifof LOPN3 then gets Tsur  [and Tatm] for date into FARTS (in common).
+\qi If LFAME, call TFAR to get Tsur and Tatm from  \nf{FFAR},  else only Tsur
+\qi If LFATM, call TFAR to get Tatm from \nf{FFATM}
+\qi TFAR calls WRAPER to determine the season indices to use,
+\qii then calls TFAREAD for surface (and again for atm) to read specific records
+\\ TLATS: \ Ifof LOPN3  extracts the proper latitudes from FARTS
+\qi Cubic interpolation of fff temperatures to each KRC timestep (usually needed)
+\qii Converts fff Tsurface into radiance in WORK then interpolates to FARAD
+\qi If LATM, interpolate fff Tatm into HARTA
+\\ TDAY
+\qi If LOPN3, add the below-horizon power FARAD[1:N2]
+\qi If LATM: If LOPN3 then  use values in HARTA[1:N2], else modify TATM
+\\  TLATS after TDAY: \ If LATM, and LOPN3 is false, transfer TATM to latitude-arrays
+
+Put as many checks as possible in  tfar8.f, it has access to both current KRCCOM
+and the version written to the fff.
+
+Required checks:
+\qi  FFF read must be successful
+\qi  Latitude set of fff must agree with current common
+\qi Dates of FFF must agree with with current common (for the last year).
+\qii Complicated to check. 
+
+
+KRC should have checks:
+\qi output .tmx file record is large enough for KRCCOM
+\qii NRECL is bytes, it must be at least 8*NWKRC, which is fixed for version 3.5+
+\qiii Version 3.5 \nf{krcc8m.f} is larger by a factor of 10
+\qii Although NRECL is based on firm-code parameters MAXNH*MAXN4, these might be changed for efficiency in specific applications, so always execute the test.
+
+ 
+\subsubsection{TFAR control} %....................
+TFAR, \nf{tfar8.f}, handles all interface with a fff. It can process two in parallel, with 4 actions set by the first argument
+\qi 1 = Open file .  arg2: : +1=check KRCCOM  +2=stat file
+\qi 2 = Return information about the file in  FFTS
+\qi 3 = Get temperatures (as many kinds as in file) at the date input in arg2.
+\qii Calls WRAPER to get record indices. Interpolates between bounding seasons if needed
+\qi 4 = Close the file. 
+\\ Adding 10 to these addresses the 2nd file, which return (modify) only the atmosphere array.
+
+It keeps an integer and a double vector of values for each file 
+
+\subsubsection{TFAR called by:} %....................
+
+KODE = [and +10]:
+\qi 1=open: KRC, in each case, if file name long and not open. arg5 is DUM8M
+\qi 2=help: TLATS, arg5 is FFELP (local)
+\qi 3=read: TSEAS, each season, arg5 is  FARTS(1,1,1), arg7 is  FARTS(1,1,2)
+\qii 13: arg5 is DU8H4, arg7 is  FARTS(1,1,2)
+\qi 4=close: KRC, after last case
+
+\subsubsection{WRAPER}
+
+WRAPER determines which seasonal records to read for Tsurf, and the fraction of 2nd season
+\qi If request date is close to a seasonal record, uses that only and sets fraction=0.
+\\ TFAR increments record indices as needed for Tplan or Tatm
+\\ TFAREAD will get one kind of temperature (hour,lat) for the requested season 
+\qi because FORTRAN keeps track of record size, TFAREAD needs only the logical unit, the record number[s] and fraction of second record.
+Julday of season J5 in TSEAS8 is: Dk=D1[DJONE]+J5*del[DELJUL]
+\\ Julday of seasonal record  K[KREC] in fff is: F1=D1+(JDISK+k-1)*del 
+\\ If want date Dk in fff,  want season at K in fff
+D1+J5*del = D1+(JDISK+k-1)*del +/-  M*year
+\qi where year is length of orbital year and M is any integer 
+\qiii subtract D1, divide by del
+\qi J5=(JDISK+k-1)    +/-  M*year/del
+\qi k=J5+1-JDISK +/-  M*Ny \ \  where Ny is the number of seasons/year 
+\qii Use M such that K is in range 1 to Ny
+\qiii if k lt 0 then k=k+round(k/ny)+1)*ny
+\qiii k=k mod ny 
+
+FFF could contain less or more than one year. Logic to find bounding seasons:
+\begin{enumerate} 
+\item Move date by integral years to be minimally inside file date range
+\item Convert date to nearest season index I1 and offset fraction x
+\item If x  is lt tolerance, use this single season
+\qi B: If I1 is outside 1:Nin; season is missing, use single closest with warning
+\item Else (x outside toler): convert to low season index I1 plus fraction x
+\qi B: If I1 is outside 1:Nin-1; season is missing, use single closest with warning
+\item I2=I1+1; if this is gt Nin, subtract a years worth of seasons
+\qi B:  If result is negative; season is missing, use single closest with warning
+\item  Use I1, I2 and x (which will be zero if using single season)
+ \end{enumerate}
+
+\subsubsection{CUBUTERP8}
+
+Cubic interpolation of uniformly spaced points to higher density by an integral
+factor using Hermite cubic spline. A two-stage routine, first stage sets up the
+interpolation basis functions for a specific density factor D (maximum 32). 2nd
+stage loops over intervals interpolating NY+3 points onto D*NY points; the 3 is
+for wrapping 2 leading points and one following.
+
+\begin{verbatim}
+2018oct20 8am, do  grep -in open t*8.f  and   grep -in write t*8.f > qw
+and search results for open or write to units not firmcoded at the top of krc8.f
+
+tday8.f:666:              IF (IDB5.GE.4)WRITE(47,22)(TTJ(I),I=1,N1) ! coarse  T
+tday8.f:716:D     &       WRITE(73,741)J5,J4,JJJ,JJ,EFROST,Q4,TFNOW  ! 2018jun22
+tday8.f:798:          IF (JSW.GT.0 .AND. IDB5.GE.7) WRITE(46,244) 
+tday8.f:809:C        IF (JJ.EQ.1 .OR. JJ.EQ.N2/2) WRITE(55,551) J5,J4,J3,TATMJ ! 2018jun30
+tday8.f:828:D           IF (IDB4.EQ.4) WRITE(73,741)J5,J4,JJJ,-1,SNOW,EFROST,TATMJ ! 2018jun22
+tfine8.f:341:352        WRITE(43,*)'N1...YTF',N1,FLAY,RLAY, KFL,N1F,RLAF
+tfine8.f:479:     &       WRITE(44,244) JFI,FINSJ,TSUR,ABRAD,SHEATF,POWER,FAC7,KN 
+tfine8.f:481:D          WRITE(44,244) JFI,FINSOL(JFI), (TTF(I),I=1,N1F)
+tfine8.f:516:        WRITE(47,22)(TTF(I),I=1,N1F) ! fine  T
+tfine8.f:517:        WRITE(47,22)(TRET(I),I=1,JLOW) ! coarse  T
+tlats8.f:201:         WRITE(75,*) 'J5+',J5,SUBS,SDEC,DAU,SLOPE,SLOAZI
+tlats8.f:202:         WRITE(75,*) 'MXX+',MXX,SKYFAC,FAC5X
+tlats8.f:330:333         WRITE(75,*)'FXX+',FXX,J4,DLAT
+tlats8.f:533:534           WRITE(75,*)'HXX+',HXX,JJ
+tlats8.f:551:C3         IF (LQ3) WRITE(88,777)JJ,COSI,COLL,HUV,QI,DIRECT,DIFFUSE,BOUNCE
+tlats8.f:554:          IF (LQ3) WRITE(88,777)JJ,COSI,COS2,AVET,HALB,DIRECT,ATMHEAT
+tlats8.f:561:C         IF (J5.EQ.IDB4) WRITE(53,531)J4,JJ,TATM,AVET,HUV ; 2018jun
+tlats8.f:678:D       write(44,344) j3,j4,j5,ncase,efrost,ave_a,taud,pres !dbw 44
+tlats8.f:706:D        IF (I.EQ.2) WRITE(72,721) J5,J4,J3,-1  ! top physical layer
+tlats8.f:715:D        WRITE(72,721),J5,J4,J3,-2,(FRO(I),I=J3P1-2,J3P1),EFP ! 2018jun22
+tlats8.f:730:        WRITE(76,761)SUBS,DLAT,ALB,SKRC,TAUD,PRES
+tlats8.f:740:          WRITE(76,762)QH,TSFH(I),ADGR(J),QS,TPFH(I)
+tun8.f:33:        WRITE(77,700) 4,NCOL,N24,N4,I,4, NRUN,NCASE ! dimensions:
+\end{verbatim}   
+
+\subsection{Convergence}
+
+One approach to rough surfaces is to have slopes have as a far field the same slope but of opposite azimuth, basically a symmetric valley. KRC can approximate this by a sequence of runs, as is done for the Beaming study.
+
+\begin{description}    % numbered items 
+ \item [0] Run a no-slope with the desired properties.
+ \item [1] Run a slope case, using the flat case as the fff
+ \item [2] Run a slope case with opposite azimuth, with the above case as fff
+ \item [3] Run a slope case with original azimuth, with the above case as fff
+\end{description}
+
+The last two steps can be repeated to improve model fidelity.  
+
+A test was run with 6 slope runs for a north (and south) facing 30\qd~ slope,
+and for a azimuth 100\qd~ (nearly east, part of the 20\qd~ azimuth spacing set)
+and 280\qd. The object was Bennu with I=200, A=0.03 and Khein reflectance
+(PHOG=.25). Case 1 sees a flat far-field, 2 sees far field surface with temperatures from case that saw a flat, 3 has a fff with temperatures of case 2, etc.
+
+The results for the equator on the last season are shown in Figs \ref{K361a}
+and \ref{K361b}; corresponding results for latitude 25N are shown in
+Figs \ref{K361c} and \ref{K361d}. For N/S facing slopes, viewing a flat surface versus a 6'th generation opposing slope is within about 1 deg, whereas E/W slopes need at least 1 generation of opposing slope to be within 1 K. 
+
+
+ 
+\begin{figure}[!ht] \igq{K361a}
+\caption[Valley temperatures]{Diurnal surface temperatures for opposing 30\qd~ slopes dipping N/S and 100/280\qd; for Bennu with I=200, A=0.03 and Khein reflectance
+(PHOG=.25). Letter in legend indicate the direction of dip. Number in legend is
+the sequence;
+\label{K361a}  K361a.png  }
+\end{figure} 
+% how made: krc35 /work1/krc/beam/BEn361K.t52 116 222 4
+
+\begin{figure}[!ht] \igq{K361b}
+\caption[Valley convergence]{Difference in surface temperature of early opposing-slope cases from the last (7th) in the sequence. Solid lines are the the first pair of cases, color coded as indicated in the legend. Dashed lines are the second pair of cases, with the same color scheme.
+\label{K361b}  K361b.png }
+\end{figure} 
+% how made: 
+
+\begin{figure}[!ht] \igq{K361c}
+\caption[Valley temperatures 25N]{Diurnal surface temperatures for opposing slopes at 25N. See caption of Fig.  \ref{K361a}
+\label{K361c}  K361c.png  }
+\end{figure} 
+% how made: 
+
+\begin{figure}[!ht] \igq{K361d}
+\caption[Valley convergence 25N]{COnvergencee of surface temperatures for opposing slopes at 25N.. See caption of Fig.  \ref{K361b}
+\label{K361d}  K361d.png  }
+\end{figure} 
+% how made: 
+
+\subsubsection{keystrokes} %..............................
+\vspace{-3.mm} 
+\begin{verbatim}
+.rnew kv3
+@535     calls krc35
+@2:  jlat? > 9   near equator
+@116      May do @11 to change 11:15, 
+          then @252 will return to kv3 and get new file   
+@222 reply u,  -2 2, 
+@861 =14 colors      @4  make Fig a   == @88 @802 mv idl.pg
+@860 =10 colors      @41 make Fig b 
+@2:  jlat? > 13   near 25N
+@861 @4   make Fig c .   @86  @41 make fig d
+
+
+\end{verbatim}  

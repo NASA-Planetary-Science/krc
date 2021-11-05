@@ -1,7 +1,6 @@
 \documentclass{article} 
 %\documentclass[draft]{article}  % See Skeleton.tex for examples of many things
 
-
 \usepackage{underscore} % accepts  _ in text mode
 % Comment the next two so can have explicit new commands for html
 % \usepackage{ifpdf} % detects if processing is by pdflatex
@@ -23,9 +22,11 @@
 \newcommand{\nvf}{\mathtt} % name of code variable in equation
 \newcommand{\nj}{\textsf}  % name of input parameter in text
 \newcommand{\njf}{\mathsf} % name of input parameter in equation
+\newcommand{\qd}{$^\circ$}        % degree symbol
+\newcommand{\qb}{\\ $ \bullet \ $}        % bullet subsection
 
 \title{KRC planetary surface temperatures: Helplist}
-\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/helplist.tex Version 3.5.6 2018jun22}
+\author{Hugh H. Kieffer \ \ File=-/krc/Doc/helplist.tex Version 3.6.5 2020apr13}
 %_History
 % 2016feb08  HK Update spare parameters
 % 2016nov21  HK 3.4.3
@@ -34,7 +35,8 @@
 \maketitle
 
 \tableofcontents
-
+%\listoffigures
+ \listoftables
 % \pagebreak
 
 \section{Introduction} %------------------------------------------------
@@ -45,15 +47,15 @@ is assumed that the user is familiar with the KRC journal article: H.H. Kieffer,
 Thermal model for analysis of Mars infrared mapping, J. Geophys. Res.: Planets,
 v.118, 451-570 (2013) [Ref. 1]
 
-The evolution of KRC code is contained in:  evolve.txt 
+The evolution of KRC code is contained in:  \nf{evolve.txt}
 
-A crude diagram of the call architecture is in:  flow.txt
+A crude diagram of the call architecture is in:  \nf{flow.txt}
 
-Capabilites new in version 3.4.x are decribed in: V34UG.tex (or .dvi or .pdf versions)
+Capabilites new in version 3.4.x are decribed in: \nf{V34UG.tex} (or .dvi or .pdf versions)
 
-Eclipse capabilites (V3.5) are described in: eclipse.tex  (``)
+Eclipse capabilites (V3.5) are described in: \nf{eclipse.tex}  (``)
 
-[[ Development for thermal beaming of asteroids is described in: Beaming.tex (``) ]] not released
+[[ Development for thermal beaming of asteroids is described in: \nf{Beaming.tex} (``) ]] not released
 
 \subsection{Notation use here}
 The following fonts styles have been partially implemented: 
@@ -88,7 +90,7 @@ temperature.
 Boundary condition treatment:
 \qi  Perturbation solution of quartic equation at surface for each iteration;
     temperature gradient assumed uniform in top interval.
-\qi  Lower boundary may be insulating or constant-temperature.
+\qi  Lower boundary may be insulating or constant-temperature, or fixed heatflow
 
 Atmospheric Radiation: KRC uses a one-layer atmosphere that is grey in both the
 solar and infra-red regions. The default atmospheric
@@ -103,6 +105,13 @@ comets and asteroids) by the PORB code set.
 
 Units are SI, except for use of days for orbital motion and rotation period 
 
+Note: Insolation at a season is computed on the assumption that the body is
+spinning at a fixed orbital position for that season. This is equivalent to
+assuming the ``day'' (sol) is short compared to the ``year'' (orbital
+period). This is equivalent to all longitudes having the same insolation. Hence,
+KRC is not appropriate for bodies with small synchronous rotations to their
+year, such as Mercury.
+
 Options:
 \qi  Different Physical properties below a set layer (IC). 
 \qii May define many zones via an input table
@@ -111,6 +120,9 @@ Options:
 \qi  Up to two zones of temperature-dependent conductivity and specific heat
 \qi Non-Lambertion solar absorption.
 \qi Global geothermal heat flow.
+\qi Eclipses by the planet or satellite.
+\qi Incident flux from a planet onto a satellite, thermal is sinusoidal.
+\qi For sloped surfaces, the ``far-field'' radiation can be defined by a prior KRC run.
 
 Atmosphere condensation: 
 \qi Global integral of frost-gas budget can control surface pressure.
@@ -118,7 +130,7 @@ Atmosphere condensation:
 \qi Allows different surface elevation for each latitude zone.
 \qii  Zonal frost saturation temperature tracks local surface pressure.
 \qi Option for cap albedo to depend upon mean daily insolation.
-\qii Frost albedo cay vary continuously with frost amount
+\qii Frost albedo can vary continuously with frost amount
 
 \subsection{Convergence Notes} %-----			
 
@@ -140,19 +152,21 @@ martian years, with the last output to disk. Parameter values are listed below
 their titles, which are in many cases identical to the code name, and last
 character of the title is above the last location in the field. Thus, integer
 values MUST be aligned. Titles with a leading "[" indicate that the value is not
-used. The recommended procedure is to copy master.inp and edit only the values
-you wish to change. The number of lines of Latitudes and Elevations must match
-the value of N4, e.g., 2 lines for N4=11:20, entries beyond the N4 position may
-be left blank or contain the end of the line. The 7 lines following Elevations
-are a geometry matrix for Mars orientation and orbit in 2010, and should not be
-touched; they could be replaced by running PORBMN carefully.
+  used. The recommended procedure is to copy master.inp and edit only the values
+  you wish to change. The number of lines of Latitudes and Elevations must match
+  the value of N4, e.g., 2 lines for N4=11:20, entries beyond the N4 position
+  may be left blank or contain the end of the line. The 7 lines following
+  Elevations are a geometry matrix, default is for Mars orientation and orbit in
+  2010. This matrix should not be edited; but can be replaced by the matirx for
+  other objects by the results of running PORBMN .
 
-The parameter title lines are skipped, so that you may put comments there carefully.
+The parameter title lines are skipped, so that you could put comments there
+carefully.
 
 The first input line is always KOLD,KEEP [I*], which sets file usage; these are
 described in \S \ref{dbf}. If KOLD=0, then a full set of input values is read.
 \qi If and only if there is a third non-zero integer, then KRC will read the next
-card as 6 debug flags, IDB1 to IBD6, which are normally zero.
+card as six debug flags, IDB1 to IBD6, which are normally zero.
   See \S \ref{debug} below \\
 The next (normally second) line is free text where you can outline the purpose 
 of your run; up to 84 characters.
@@ -161,8 +175,9 @@ Change lines may follow immediately after the geometry matrix (see \S \ref{pc})
 . The end of definition of a "case" is indicated by a "0/" line. Two successive
 "0/" lines ends the run.
 
-The source code for 'krcc8m.f' indicates which subroutine sets many of the 
-parameters; as the routine name in lowercase just below the parameter name.
+The source code for 'krcc8m.f' indicates for many of the parameters which
+subroutine sets it; as the routine name in lowercase just below the parameter
+name.
 \vspace{-3.mm} 
 \begin{verbatim} 
  - - - - - - - - - - - - - - - - - - - -
@@ -222,16 +237,17 @@ Type 1	Real parameters  (8F10.2) ================================
 36  DEPTH   Total model depth (scaled) (overrides FLAY if not 0.)
 37  DRSET   Perturbation factor in jump convergence. If = 0., then
               all layers reset to same average as surface layer. Else,
-             does quadratic curve between surface and bottom averages
-38  PHOG     Photometric function control
-             0=Lambert  <-1=Lommel-Seeliger  +=Kheim-Vasavada
-             else (-1< x <0) Minnaert with exponent -x (is positive)
+              does quadratic curve between surface and bottom averages
+38  PHOG     Reflectance photometric function control
+               0=Lambert  <-1=Lommel-Seeliger  +=Kheim-Vasavada
+               else (-1< x <0) Minnaert with exponent -x (is positive)
+               See V34UG.pdf, Sections 5 and 13
 39  GGT     Surface boundary condition iteration test on temperature
 40  DTMAX   Convergence test: RMS layer T changes in a day
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Orbit Geometry & Constants
 41  DJUL    Starting Julian date of run -2451545 (J2000.0) (N5>0)
-             If LKEY (logical itenm 12) is set True, this is desired Ls of 
+             If LKEY (logical item 12) is set True, this is desired Ls of 
              first disk output date (set by JDISK: integer item 12)
 42  DELJUL  Increment between seasons in Julian days (if N5>1)
 43  SDEC    Solar declination in degrees. (if Not LPROB)
@@ -261,14 +277,11 @@ Type 1	Real parameters  (8F10.2) ================================
 63  SphLo2  Quadratic    "
 64  SphLo3  Cubic coeff. "
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  Computed REAL values 
-65  HUGE    = 3.3E38   nearly largest  REAL*4 value
-66  TINY    = 2.0E-38  nearly smallest REAL*4 value
-67  EXPMIN  = 86.80  neg exponent that would almost cause underflow
+  Computed REAL values
 65  HUGE    = 1.D308    large  REAL*8 constant with margin
 66  TINY    = 1.D-307   small  REAL*8 constant with margin
-67  EXPMIN  = 700.d0    safe negative exponent
-68  FSPARE  Spare
+67  EXPMIN  = 700.d0    safe negative R*8 exponent
+68  YRIDAY  Length of a year in days
 69  FLOST   Atm frost 'lost' in the atm. in last day at current lat./season
             v356 and later, this is spare.
 70  RGAS    = 8.3145  ideal gas constant  (MKS=J/mol/K)
@@ -351,11 +364,15 @@ Type 2 Integer Parameters (8I10) ====================================
 20  IDISK2  Last season to disk for which TDISK prints notice
              Note: Special routines MKRC,KRCA and TYEARP use TDISK differently
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Computed Integer values
+Computed Integer values   But note 24 may be input
 21  KOLD    Season index for reading starting conditions
 22  KVALB   Flag: to use seasonal surface albedo ALB
 23  KVTAU   Flag: 1:TAUD=SEASTAU(SUBS)  2:CLIMTAU opacities for dust and ice
-24  ID24(4) spare
+24  ID24    Flag: Direct Access file word type: 4=R*4 else=R*8
+     this single item in 21:40 can be set by a change line: 2 24 x 'ID24' /
+25  NUMVER  Version number as an integer
+26  KFARAC  Sets reporting of TFAR8 reads
+27  NBKRC   Number of bytes in KRCCOM,   not used anywhere
 28  NFD     Number of real items read in
 39  NID     Number of integer items read in
 30  NLD     Number of logical items read in
@@ -412,7 +429,7 @@ Elevation(s) (10F7.2)  N4 values in Km corresponding to latitudes
 
 Orbital Parameters (LPORB=T) Format identical to that produced by PORB
 program set ASCII file output. So these can be directly pasted with an
-editor. see porbc8m.f
+editor. See porbc8m.f
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 \end{verbatim}
 
@@ -433,7 +450,7 @@ unchanged.  The 4 required items are:
 The print file will list each change as read, followed by the title of the
 changed item. It is a good idea to look at this print to be sure you changed
 what you intended.
-\vspace{-3.mm} 
+
 \begin{verbatim}
  Type     Meaning                                      Valid Index
 
@@ -445,15 +462,16 @@ what you intended.
    5   New Elevation Card(s) Follow                        any
    6   New Orbital Parm Cards Follow (LPORB Must be True)  any
    7   Text becomes new Title                              any
-   8   Text becomes new  output or input file name
+   8   Text becomes new output or input file name. Value ignored if not mentioned
          if index=3, name of far-field temperature file to read
                        value 0/1 sets report of each read off/on
-         if index=5, is name of type 5x (52) packed output file
-         if index=21, this is name of direct-access file
+         if index=4, name of far-field temperature file to read for held Tatm.
+         if index=5, name of type 5x (52) packed output file
+         if index=21, name of output direct-access file. Lasts for one case
          if index=22, call SEASALB to read variable ALBEDO
          if index=23, call SEASTAU to read variable TAUD
          if index=24, call CLIMTAU to read Mars climate
-         if index=25, name of new zone table
+         if index=25, name of new zone table to read
    9   Complete new set of input follows                   any
   10   Text becomes new One-Point input file name
   11   This is a set of parameters for "one-point" model 
@@ -463,12 +481,15 @@ what you intended.
   14   Set of 12 values for eclipse. See -/Doc/v35/eclipse.pdf sec. 5.5 
   e.g. 14  1 5.2026 71492. 0.6711D6 3121.6 3.551 0.01 6000. 12. 2 77 77 / Europa
   15   Set of 7 values for flux load from primary body (planet). " sec. 7.1
-  e.g. 15  0.62 0. 0.  0.21 0.21  0.  12. / Jupiter flux on Europa, nearside center
+  e.g. 15  0.62 0. 0.  0.21 0.21  0. 12. / Jupiter flux on Europa, nearside center
   16   Latitude and name for high-time-resolution surface temperature file
          See eclipse.pdf section 8
-
-
 \end{verbatim}
+ 
+\subsubsection{Type 8 notes}
+
+Each of the index actions can be terminated by using a file name of less than 4
+characters; .i.e. ``off''.
 
 For Type 8, SEASALB and SEASTAU read 2-column, white-separated text files. \\
 To start variable albedo, use input card: 
@@ -483,12 +504,18 @@ CLIMTAU files have dust and ice opacity over season and latitude. Uses BINF5 to
 read a binary array (72 seasons, 36 latitudes, 2=dust/ice) of opacities. The
 sample file \nf{THEMIS1yearDustIce.bin5} is described in section [159] of Ref 1.
 
+Index=3 or =4 will read type -n file to be used for far-field surface and atmosphere.  See \S \ref{fff}
+
+Index=5 writes a dense type 52 file that can hold many cases and contains virtually all the input and output values! See \S \ref{type52}. It cannot be input to KRC but an IDL reader \np{readkrc52} is provided.
+
+\subsubsection{Other types}
 For Type 12 and 13, 8 white-space-separated coefficients must follow after 
 the type on the same line, with no intervening index or text 
 
 Type 14, 15, 16 apply to all following cases until a corresponding change line
 with the 2nd item 0 .
  
+
 \section{Contents of COMMOMS } %_______________________
  COMMON /KRCCOM/ \ Input and transfer variables. See krcc8m.f  
 \\ COMMON /DAYCOM/ \ Layer and time-of-day items. See dayc8m.f  
@@ -506,46 +533,138 @@ A listing of all Fortran commons can be generated by these Linux commands: \\
 cd /home/hkieffer/krc/src [replace top part of path with local installation] \\ 
 rm allinc.txt \\ 
 cat  *c8m.f $>$ allinc.txt 
+\pagebreak
               
 \section{Error Returns} %_______________________
+
+If you run into errors that are not related to blunders in the input file,
+please contact your source for KRC.
+
+\subsection{``Case had fatal error''} %-----------------------
+Message to both the print and error files, the value printed is explained in Table \ref{ercode.tab} 
+
+\begin{table} 
+\caption[Return codes]{Return codes, as seen at KRC main, after return from TSEAS, and maybe from lower routine:}
+\label{ercode.tab}
+\rule[.05in]{7.in}{.01in}
+\begin{tabbing} 
+WWWW \= WWW \= WWWWWWWW \=   \kill 
+in  \>  value\> Comment  \\
+TCARD \> \>  2:19 \\
+   \>  2 \> restarted from disk record \\
+   \>  3 \> continue from current conditions \\
+   \>  4 \> Switch to "one-point" mode \\
+   \>  15 \> END of data  \\
+   \>  16 \> Error reading buffer of one-point or T-dependent coefficients \\
+   \>  17 \> Early End Of File for above \\
+TDAY8(1 \> \> initiation  [by +20] \\
+   \>   23 \> Some layer unstable   \\
+   \>   24 \> Too many Layers generated by zone table \\
+   \>   27 \> TFINE initiation failed  \\
+TLATS \> \> 21:29 from lower TDAY(2 [by +20] \\
+   \>  22 \> numerical blowup \\
+   \>  25 \> ECLIPSE failed \\
+   \>  28 \> ECLIPSE reaches midnight (possible near pole of body) \\
+   \>  31:36 \> Error n-30 in TFAR, see below [by +30] \\
+   \>  37 \> Using far-field file, but N2 is not an integral multiple of the number of hours in the fff. \\
+   \>  38 \> Using fff, but that has no match to current latitude \\
+   \>  39 \> ECLIPSE return error at current latitude. \\
+TSEAS \>  \> none in TSEAS itself \\
+TFAR \> \> Error when arg3 (R*8) returns negative: use magnitude +40 \\
+  \> 40+ \>  magnitude below, +3 for 2nd file \\
+   \> 1  \>   request for file information, but none open \\
+   \> 2  \>   invalid number of temperature types (records per season) \\
+   \> 3  \>   an I/O error occured in TFAREAD \\ 
+TDISK \> \> In TDISK, will STOP. Error opening Direct Access file. See also \S \ref{edisk} \\
+\end{tabbing} 
+\rule[.25in]{7.in}{.01in}
+\vspace{-.1in}
+\end{table}
+
 \subsection{Tday Blowup} %------------------------------------
-There are two triggers:
-\qi  (ADELN.GT.0.8):  $\frac{ | \Delta T |}{T} > 0.8$ 
-\qi (TSUR.GT.TBLOW): tblow $= \frac{\langle S \rangle}{\epsilon \sigma}$
+In initiation step TDAY8(1
+
+ (QQ.LT. ARC3): convergence factor less than safety factor specified by input
+iten 1:22, which should never be less than 0.8. In theory, this factor should be
+1.0, but KRC is generally stable down to 0.8 for temperature-independent
+materials. For temperature-dependent materials, KRC uses the values at the
+forecast global mean temperature; if this error occurs, increase ARC3 and the
+layer thicknesses.
+
+ (TSUR.LE. 0. .OR. TSUR.GT.TBLOW): Surface kinetic temperature outside
+reasonable range. \nv{TBLOW} is set (in TLATS) as twice the equilibrium
+temperature for the surface perpendicular to the specified insolation at the
+current season.
 
 In either case, control goes to 340 in TDAY; iteration is terminated and several
 values are sent to the print file. TDISK is called to output the current season
 and to close the file. TPRINT is called to print out the full input set and the
-latest daily convergence.
+latest daily convergence. The return code is set to 2.
 
-\subsection{Other errors: INCOMPLETE} %---
-Case had FATAL error=          41 ... Running with atmosphere but FFF has none 
-
-If you run into errors that are not related to blunders in the input file,
-please contact the author.
-\vspace{-3.mm} 
-\begin{verbatim}
- "Parameter error in TDAY(1)" : Convergence factor < .8 classic. 
-        Instability anticipated.  
- "UNSTABLE; Layer..... TDAY(1): 
-
-DRSET: 0=>     Reset by delta_average_T for each layer:
-                 else: reset by {linear + DRSET*quadratic}*{<surf>-<botm>}
-TDAY: LRESET   Reset midnight T's for all but top layer.
-      LDAY     Last day computations
-\end{verbatim}
+\subsection{TDISK error explanations \label{edisk} } %--------------------
+Below are extracts from the FORTRAN code. Material between single quotes is printed; items following on the same line are variables whose value will be printed. 
+\qi 'P' goes to print file. \ \ 'E' goes to error log.
+\qi 'DA'  is direct-access \ \  @ indicates action taken
+\\ 
+\\ P: 'TDISK Error:  KODE,KREC,JREC=',KODE,KREC,JREC
+\\ E:  ' TDISK:1, ERROR OPENING FILE. IOSTAT=',IOS
+\\ E:   '  IOD2=',IOD2,'  status=',CSTAT,'  recl=',NRECL
+\\ E:   '  file=  ',FDIRA
+\qii  Trying to open DA file, but failed: reading a file that does not exist or writting a file that already exists.
+\qii @ KRC stops
+\\ 
+\\ E: 'TDISK: K4OUT invalid, will use -3:',K4OUT
+\qi Trying to open a DA file, but the value of K4OUT in the input file invalid.
+\qii  @ Locally sets type to .tm1 and proceeds
+\\ 
+\\ E: 'TDISK: Record smaller than KRCCOM. R*8 words:',NWTOT,NWKRC
+\qi Some change to the source code krcc8m.f has generated a file record length smaller than KRCCOM. 
+\qii Fatal, @ will stop
+\\ 
+\\ P:  'Bad size change, CLOSE file. See Error File'
+\\ P: 'Closed direct access file. Type=',ITOP
+\\ E: 'TDISK: Invalid Change of N24, NLAT, or \#to Disk for K4OUT=52'
+\\ E: 'TDISKe:',N24,MM1, N4,JJJ(4),J,JJJ(5)
+\qi Change to any of these would change the size of a Type 52 array, not allowed.
+\qii @  Closes the file, file will be unreliable
+\\ 
+\\ E:  ' TDISK:2, WRITE, BUT NO FILE OPEN'
+\qi   Trying to write a seasonal record, but file is not open
+\qii @ Will continue calculations
+\\ 
+\\ E: 'TDISK:3, READ, BUT NO FILE OPEN'
+\qi Trying to read a DA record, but the file-open earlier failed 
+\qii @ Will continue calculations, results unreliable  
+\\ 
+\\ E: 'TDISK:4, no file was open'
+\qi Asked to close a file that was not open.   No action.
+\\ 
+\\ E: 'TDISK:5,wrong conditions: LOPN2,ITOP',LOPN2,ITOP
+\qi  Trying to write KRCCOM to a DA file, and either the file was not open or the open file was the wrong type. No other action.
+\\   
+\\ E: 'TDISK:7, Asked to close but LOPN4 false',JREC
+\qi Some routine wants to write a Type 52 file, but contents are not defined.
+\qi Should never occur; programming error. @ KRC continues
+\\ 
+\\ E: 'TDISK:5, Called with invalid KODE=',kode
+\qi Should never occur; programming error. @ KRC continues
 
 
 \section{DISK BINARY FILES \label{dbf} } %_______________________
 
 The routine TDISK is used to read or write seasonal/global direct-access binary
-files and to write multi-case bin5 files. The first season to write is specified
-by JDISK, all following seasons will go to the same file. For direct-access
-files, each file record consists of KRCCOM plus LATCOM or KRCCOM plus
-DAYCOM. Writing of bin5 and direct-access files are independent of each other
-and may be simultaneous.
+files and to write multi-case type 52 (.bin5) files. The first season to write
+is specified by JDISK, all following seasons will go to the same file. For
+direct-access files type 0 or positive, each file record consists of KRCCOM plus
+LATCOM or KRCCOM.  plus DAYCOM. Type -n have one record the contines KRCCOM
+followed by n records of temperature for each season. Writing of type 52 and
+direct-access files are independent of each other and may be simultaneous.
 
-Disk output is largely controlled by the KRC and TSEAS routines.
+Binary files are REAL*8, with the single exception that type -n may be written
+as REAL*4 (to save space for really large runs) by setting ID24 to 4 (see \S
+\ref{pc}; R*4 files can be read with the TFAR and TFAREAD routines, which will
+auto-detect the precision; no other use of binary R*4 files with KRC versions
+3.1.1 or later has been tested!
 
 \subsection{Items which control file I/O } %------------
 \vspace{-3.mm} 
@@ -568,8 +687,10 @@ JDISK sets the first season to save results
 N5    sets the last season to run
 
 K4OUT sets the direct-access record content: (ignored for Type 52)
- -1:-3  Will output first record of KRCCOM,ALAT,ELEV, then records of TSF, +TPF, +Tatm
-          For each season. Each record is MAXNH,MAXN4 = 96*37 = 3552 real*8 words    
+ -1:-3  First record is COMKRC=/KRCCOM/= FD(96R8),ALAT(37R8),ELEV(37R8)
+         ,ID(40I4), LD(20L4), KITLE(C84), DAYTIM(C20)   Sizes set in krcc8m.f
+         Then records of TSF, [TPF, [Tatm]]
+          For each season. Each record is MAXNH,MAXN4 = 96*37 = 3552 real*8 words
  0      Will output records of KRCCOM+LATCOM for each season
  1:49   Will output records of KRCCOM+DAYCOM for the last computed latitude.
 \end{verbatim}
@@ -685,16 +806,97 @@ The number of cases allowed is set by the size of case one, and printed as MASE
 at the end of the first case in the print output. Cases beyond the maximum that
 can be stored will be executed, but not saved.
 
+\subsection{Logical units} %_______________________
+See table \ref{filecon.tab}. Note that setting IDB1 to 99 will redirect all IOPM
+and IOERR output to IOSP so that all print output is chronological there. This
+can be usefull in tracking down causes of errors.
+
+\begin{table} 
+\caption{Guide to file connections.}
+\label{filecon.tab}
+\begin{center} \begin{tabular}{ | r l c c l l | } \hline
+Type8 & Routine & UNITS & UNITS & FILCOM &   \\
+Index & used    & IOD  & flag & name   & Discussion \\  \hline
+ 3 & TFAR:4     & IOD3=13 & LOPN3 & FFAR & fff Tsurf; must remain open \\
+ 4 & TFAR ?      & IODA=14  & LFATM  & FFATM  & ttt Tatm;  must remain open \\
+ 5 & TDISK:6,2,7 & --  & LOPN4 & FDISK  & .type 52 output, calls BINF5 calls primeio, brief \\  
+21 & TDISK:1,2,4 & IOD2=2  & LOPN2 & FDIRA & write .tmx, till closed \\
+22 & SEASALB  & IOD1=1  & KVALB & FVALB & read, calls READTXT360, brief \\
+23 & SEASTAU  & IOD1  & KVTAU=1 & FVTAU & read, calls READTXT360, brief \\
+24 & CLIMTAU  & --    & KVTAU=2 & FVTAU & read, calls BINF5 calls primeio, brief \\  
+   &          &     & &       & \ \  error could leave FID open \\
+25 & READZONE & IOD1=1  &  LZONE & FZONE & read,zone table, brief  \\
+- & input & IOIN=3 & - &  & input file. Default is krc.inp or [any].inp \\
+- & keyboard & IOKEY=5 & & & manual input \\
+- & print & IOSP=7 & - & & print file. default is [any].prt \\
+- & errors & IOERR=9 & - &  & eLog[date:time to msec] \\ 
+ \hline  \end{tabular} \end{center} \end{table}
+
+
+\subsubsection{ASCII Output Files} %------------------
+Reconstructed  2017oct01
+\vspace{-3.mm}
+\begin{verbatim}
+----.prt  General results. Things in output are controlled by LP1:6 & LPGLOB
+                          and most of the six IDBG values
+
+eLog---.---   Error Log, named for time as yyyymmddThhmmss.fff
+
+fort.43, 44 and 47. tfine8.f , Usually only if eclipse case. see eclipse.tex 
+
+fort 71  tlats8.f:  Debug: surface conditions
+
+fort.72  tlats8.f:  Debug: temperatures and frost prediction
+
+fort.75  tlats8.f:  Debug: geometry details
+
+fort.76  tlats8.f: mimic Mike Mellon ASCII files
+
+fort.77    tun8.f:  Special items, firmcoded
+
+\end{verbatim}
+\section{Use of logical units} %____
+
+\begin{table} 
+\caption[Logical units]{Guide to logical units used.'D' means only if D-lines are compiled }
+\label{lunit.tab}
+\begin{center} \begin{tabular}{ | l r l l | } \hline
+name  & number &  routine[s] &  purpose \\ \hline
+IOD1  & 1    &       & explanation file ||  zone table (briefly open) \\
+IOD2  & 2    & tdisk & direct-access write ( and read) \\
+IOIN  & 3    &       & Input file: defined in units.inc \\
+IOKEY & 5    &       & keyboard:     " " \\ 
+IOPM  & 6    &       & moniter:      " " Can be redirected \\
+IOSP  & 7    &       & print file:   " " \\
+IOERR & 9    &       & errors:       " " was IOPM \\
+IOD3  & 13   &       & direct-access far-field, read only \\
+IODA  & 14   &       & direct-access far-field, atm, read only \\
+ifun & \^{ } &  tfar & iod2 or ioda  \\
+? &  ? & BINF5 &  primio system, brief \\
+- & 43 & tfine & \\
+- & 44 & tfine & \\
+- & 46 & tday  & \\
+- & 47 & tday  & \\
+- & 47 & tfine & \\
+D & 71 & tlats & \\
+D & 72 & tlats & \\
+D & 73 & tday  & \\
+D & 75 & tlats & \\
+- & 76 & tlats & \\
+- & 77 & TUN8  & special user firm-code output \\
+D & 88 & tlats & \\  \hline
+\end{tabular} \end{center} \end{table}
+
 \section{Optional input files} %_______________________
 \subsection{Text}
 \subsubsection{Zone depth table}
 Name is defined by a change card: 8 25 x 'fileName' / . May have up to 20 lines
 of comments before a ``C_END'' line. Then each row define a zone and must
 contain 4 columns:
-\qi Col 1: thickness, m
-\qi Col 2: density, kg/m$^3$ \hspace{2.0 cm} But: =-1=use DENS, -2=use DENS2
-\qi Col 3: Conductivity, SI Units. \ $\lceil$   If negative then col 4 is a pointer
-\qi Col 4: Specific heat, SI Units. \  $\lfloor$  1=upper material, 2=lower material
+\qi Col 1: ZDZ; thickness, m
+\qi Col 2: ZDEN; density, kg/m$^3$ \hspace{2.0 cm} But: =-1=use DENS, -2=use DENS2
+\qi Col 3: ZCOND; Conductivity, SI Units. \ $\lceil$   If negative then col 4 is a pointer: 1=upper material, 2=lower material
+\qi Col 4: ZSPH; Specific heat, SI Units. \ \  $\lfloor$ as in real input 3:16,  +2 for at T-dependent at Tglobal
 \\ Must be at least 3 zones; otherwise could use two layers within input parameters. 
 \\ The thickness of the last zone is ignored; KRC will fill out to N1 geometric layers.
 \\ Must not be any trailing blank lines
@@ -751,6 +953,88 @@ Firm-coded for 72 seasons and 36 latitudes, both uniformly spaced.
 
 Example: \nf{/work1/mars/opacity/THEMIS1yearDustIce.bin5}
 
+\subsection{Far-field files (fff) \label{fff} }
+Prior to version 3.4.1, for sloped surfaces the radiation coming from ``below
+the horizon'', the ``far-field'', was assumed to be from a surface with the same
+temperature and properties as the sloped surface being calculated; this is
+called ``self-heating'' And, the atmosphere temperature was calculated as if the
+entire surface was at the current slope. Version 3.4.1 introduced the concept of
+a far-field file (fff), output from a prior KRC run, that set the far field
+surface temperature and was used for the atmosphere temperature.
+
+Version 3.6.1 allows the far-field surface temperature and the atmosphere
+temperature to come from different prior runs. Specifically, the atmosphere
+would typically be from a ``flat'' run; as commonly the surface regionally, say
+over a radius similar at least as great as the atmospheric scale height, is
+close to level. The far-field surface viewed by a slope is typically flat or
+tilted toward the current slope, i.e., of opposite azimuth.
+
+Reminder: KRC direct-access -n files have records that are a fixed size, based
+on the maximum sizes of N24 and N4, and have one record for each temperature
+stored , Ts [Tp, [Ta]] (based on the value of K4OUT) for each season.  The
+original KRC run input parameters are stored in the first record.
+
+However, only the emissivity is extracted from the first record. The atmosphere
+paramters of an fff should match the current run.
+
+FFF's can be written as REAL*8 (the default) or REAL*4, depending on the values
+of ID24. When read, the precision is auto-detected and a REAL*4 fff is converted
+to REAL*8 in the TFAREAD routine
+
+
+
+Type -n direct-access files are written by a change line:
+\vspace{-4.mm} 
+\begin{verbatim}
+8 21 0  'fineName.tmx' / output a direct-access filere
+\end{verbatim}
+\vspace{-4.mm} 
+which lasts only for one case.
+
+Type -n direct-access files to be used as fff are read by a change line
+\vspace{-4.mm} 
+\begin{verbatim}
+8 3 0  'fineName.tmx' / read a fff to be used for far surface
+8 4 0  'fineName.tm3' / read a fff to be used for atmosphere
+\end{verbatim}
+\vspace{-4.mm} 
+which is active until turned off by using a similar change line except the entire file name has no more than 4 characters; e.g.,
+\vspace{-4.mm} 
+\begin{verbatim}
+8 3 0  'off' / 
+\end{verbatim}
+
+If there is no atmosphere, use is simple. Type -1,-2, or -3 can be used, but only Tsurface is active.
+
+With an atmosphere, it is more complex. An 8 3 ... change line will read a file
+to be used for the far surface. If that file is type -3, its atmosphere values
+will be used. If not, then an 8 4 ... change line specifying a type -3 file must
+be present; such a line overrides any active fff atmosphere values.  Both 8 3 ... and 8 4 ... values remain in effect until turned off by
+a corresponding change line with a short file name.
+\vspace{-3.mm} 
+\begin{verbatim}
+8 4 0  'fineName.tmx' / read a fff to be used for the atmosphere
+\end{verbatim}
+
+\subsubsection{fff Algorithm Details:} 
+All interface with an fff, except closing the unit, is through TFAR.
+\\ TCARD:
+\qi 8 3 ... closes logical unit IOD3, sets IOPN3 false, and updates the FFAR file name
+\qi 8 4 ... closes logical unit IODA, sets LFATM false and updates the FFATM file name
+\\ KRC: 
+\qi If IOPN3 false and FFAR length 4+, calls TFAR(1 to open FFAR 
+\qi If LFATM false and FFATM length 4+, calls TFAR(11 to open FFATM
+\qii If that  fff case was sloped, prints warning 
+\qi If the only type -3 read is FFAR, uses that for Tatm and sets FAME true (same file for both T's)
+\qi If case has an atmosphere, and fff surface is specified but no fff atm is specifed; case will be skipped as invalid.
+\\ TSEAS:
+\qi Calls TFAR to interpolate to current season
+\qii If LOPN3 true, updates Tsurf using FFAR. If fff is type -3, Tatm is also updated. 
+\qii If KRC case has an atmosphere and LFAME=false, then updates Tatm using FFATM
+\\ TFAR:
+\qi Updates IOPN3 or LFATM when it opens the associated file
+\qi Returns as many temperatures as are in the file.
+
 \section{Handy things} %_______________________
 
 The first "hour" in printout and output arrays is  1/N24 of a
@@ -777,23 +1061,6 @@ Note: changing DELJUL will cause reset of DJUL \\
 Must increase the value of N5: e.g., 2 5 [bigger] 'Increase stopping season' 
 \qi Reset will not occur because J5 continues incrementing
 
-
-\subsection{ASCII Output Files} %------------------
-Reconstructed  2017oct01
-\vspace{-3.mm}
-\begin{verbatim}
-----.prt  General results. Things in output are controlled by LP1:6 & LPGLOB
-
-eLog---.---   Error Log, named for time as yyyymmddThhmmss.fff
-
-fort.75  tlats8.f:  Debug geometry details
-
-fort.76   tlats.f: mimic Mike Mellon ASCII files
-
-fort.77    tun8.f:  Special items, firmcoded
-fort.43. 44  and 47. tfin8.f , Usually only if eclipse case. see eclipse.tex 
-
-\end{verbatim}
 
 \subsection{ To run two material types } %--------------
 
@@ -924,63 +1191,74 @@ If the first input line has a no-zero third number, then the second line is 6
 white-separated debug-control integers: IDB1 to IDB6
 % grep -in idb *3.f     grep -in idb tseas8.f
 
+Most of these were convered into D-lines in v361, except the IDB2.GE.3 drint of zone table details in TDAY
+
 \vspace{-3.mm} 
 \begin{verbatim}
-      2017sep30   ]$ grep -in IDB *8.f
-krc8.f:141:      IF (IDB6.GT.6 .AND. IDB6.LE.99) THEN
-krc8.f:142:        WRITE (IOPM,*) 'Switching IOPM output to  fort.',idb6
-krc8.f:143:        IOPM=IDB6
+2018 Oct 23 01:59:14  grep -in IDB *8.f > qdb  then   grep -i idb1 qdb  etc
+
 porb08.f:16:        LOP=IDB1.GT.3
-tcard8.f:97:      IF (IDB2.GE.5) WRITE(IOSP,*) 'TCARD-A',IQ
-tcard8.f:112:      Set all IDB to 0, read and write them
-tcard8.f:145:      IF (IDB1.GE.1) WRITE(IOPM,*)'Before PORB0'
-tcard8.f:147:      IF (IDB1.GE.1) WRITE(IOPM,*)'AFTER PORB0'
-tcard8.f:421:      IF (IDB1.NE.0) WRITE(IOSP,*)'TCARD Exit: IRET=',IRET,NFD,ID(1) !< dbug
-tday8.f:84:      IF (IDB2.GE.5) WRITE(IOSP,*) 'TDAY IQ,J4=',IQ,J4,JJO
-tday8.f:157:        IF (IDB2.GE.3) WRITE(IOSP,*)'Zlay  K  J   DSCAL     DDZ'
-tday8.f:230:          IF (IDB2.GE.3) WRITE(IOSP,'(a,2i3,6f8.3,i3,f8.4)')  
-tday8.f:386:      IF (IDB4.GE.2) WRITE(*,'(a,2I4,2f8.5,f10.3,e12.5)') 
-tday8.f:404:        IF (IDB4.GE.2) WRITE(IOSP,'(i3,2f12.3)') J,SCONVG(J),ZDZ(J)
-tday8.f:596:      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
-tday8.f:651:              IF (IDB5.GE.4)WRITE(47,22)(TTJ(I),I=1,N1) ! coarse  T
-tday8.f:778:          IF (J7.GT.0 .AND. IDB5.GE.7) WRITE(46,244) 
-tday8.f:853:      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
-tday8.f:873: 9    IF (IDB2.GE.6) WRITE(IOSP,*) 'TDAYx'
-tdisk8.f:115:      IF (IDB3.GE.3) WRITE(IOSP,*)'TDISKa ',KODE,KREC,NCASE,J5,K4OUT
-tdisk8.f:116:      IF (IDB3.GE.4) WRITE(IOSP,31)'TDISKa N3,N4+',N3,N4,N5,J5,MASE !<dbug
-tdisk8.f:117:      IF (IDB3.GE.5) WRITE(*   ,31)'TDISKa N3,N4+',N3,N4,N5,J5,MASE !<dbug
-tdisk8.f:282:        IF (IDB3.GE.3) WRITE(IOSP,*)'TDISKc KREC=',KREC,LOPN2,IOD2,I
-tdisk8.f:341:        IRET=IDB3               !  +1=report many values   +2 report progress 
-tdisk8.f:358:      IF (IDB3.GE.7) WRITE(IOSP,*)'TDISKx  KREC=',KREC
-tfar8.f:67:      IF (IDB3.EQ.2) WRITE(IOSP,*)'TFAR:0 ',KODE,KREC
-tfar8.f:82:        IF (IDB3.GE.3) WRITE(IOSP,*)'TFARc KREC=',KREC,LOPN3,IOD3
-tfar8.f:191:      IF (IDB3.GE.7) WRITE(IOSP,*)'TFARx:  KODE,KREC=',KODE,KREC
-tfine8.f:93:      IF (IDB5.GE.1) WRITE(IOSP,*) 'TFINE IQ,J4=',IQ,J4
-tfine8.f:123:      IF (IDB5.GE.1) PRINT *,'QB..',QB,RLAY,RLAF,BF1,N1F,JLOW
-tfine8.f:139:        IF (IDB5.GE.6) WRITE(IOPM,30),'I,j..',I,J,QB,DIFFI(I)
-tfine8.f:184:      IF (IDB5.GE.1) WRITE(IOSP,'(a,i3,f12.3)') 
-tfine8.f:208:        IF (IRET.LT.1 .OR. IDB5.GE.2) WRITE(42,'(A,I4,2G12.5,F8.1)')  !
-tfine8.f:302:      IF (IDB5.GE.4) THEN
-tfine8.f:318:      IF (IDB5.GE.3) WRITE(IOSP,'(a,2f12.4,g13.5)') 
-tfine8.f:334:      IF (IDB5.GE.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
-tfine8.f:451:      IF (IDB5.GE.4) THEN
-tfine8.f:476:        I=IDB3                  !  +1=report many values   +2 report progress 
-tfine8.f:492: 9    IF (IDB5.GE.1) WRITE(IOSP,*) 'TFINE exit'
+tcard8.f:128:     IF (IDB1.EQ.99) THEN 'Switching IOPM and IOERR output to IOSP'
+tcard8.f:155:      IF (IDB1.GE.1) WRITE(IOPM,*)'Before PORB0'
+tcard8.f:157:      IF (IDB1.GE.1) WRITE(IOPM,*)'AFTER PORB0'
+tcard8.f:459:      IF (IDB1.NE.0) WRITE(IOSP,*)'TCARD Exit: IRET=',IRET,NFD,ID(1)
+tseas8.f:59:      IF (IDB1.NE.0) WRITE(IOSP,*) 'TSEASa',IQ,J5,LSC,N5,LONE
+
+tcard8.f:102:      IF (IDB2.GE.5) WRITE(IOSP,*) 'TCARD-A',IQ
+tday8.f:87:      IF (IDB2.GE.5) WRITE(IOSP,*) 'TDAY IQ,J4=',IQ,J4,JJO
+tday8.f:160:        IF (IDB2.GE.3) WRITE(IOSP,*)'Zlay  K  J   DSCAL     DDZ'
+tday8.f:233:          IF (IDB2.GE.3) WRITE(IOSP,'(a,2i3,6f8.3,i3,f8.4)')  
+tday8.f:599:      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
+tday8.f:885:      IF (IDB2.EQ.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
+tday8.f:905: 9    IF (IDB2.GE.6) WRITE(IOSP,*) 'TDAYx'
 tlats8.f:52:C 2016sep09 HK Do not print T-equilb unless IDB2.ge.5
-tlats8.f:128:      LQ1=IDB2.GE.5             ! once per season or latitude
-tlats8.f:129:      LQ2=IDB2.GE.9             ! each time of day
-tlats8.f:130:      IF (IDB2.NE.0) WRITE(IOSP,*)'TLATSa',N3,N4,J5,LATM,LQ1,LQ2
-tlats8.f:179:      IF (IDB2.GT.0 .AND. J5.EQ.1) WRITE(IOPM,*)'SKYFAC,FAC5X=',
-tlats8.f:265:          IF (IDB2.GE. 5) then
-tlats8.f:282:            IF (IDB2.GE. 5) then
-tlats8.f:651:      IF (IDB2.EQ.4) WRITE(IOPM,*)'J4,5 +',J4,J5,TEQUIL,TATMJ
-tlats8.f:754:        I=IDB3                  !  +1=report many values   +2 report progress 
-tlats8.f:766: 9    IF (IDB2.GE.3) WRITE(IOSP,*)'TLATSx',N1,N1PIB,N2,N24,J3
-tseas8.f:62:      IF (IDB1.NE.0) WRITE(IOSP,*) 'TSEASa',IQ,J5,LSC,N5,LONE
-tseas8.f:88:        IF (IDB1.EQ.3) WRITE(*,132)'DELP1:40',(DELP(I),I=1,40)  
-tseas8.f:95:        IF (IDB3.GE.3) WRITE(IOSP,'(a,3i5,f9.3,f9.4)') 
-tseas8.f:159:        IF (IDB3.GE.3) WRITE(IOSP,'(a,f8.4,2f9.3,f9.5,2i4)')
-        grep -in lq tlats33.f
+tlats8.f:129:      LQ1=IDB2.GE.5             ! once per season or latitude
+tlats8.f:130:      LQ2=IDB2.GE.9             ! each time of day
+tlats8.f:131:      IF (IDB2.NE.0) WRITE(IOSP,*)'TLATSa',N3,N4,J5,LATM,LQ1,LQ2
+tlats8.f:274:          IF (IDB2.GE. 5) then
+tlats8.f:291:            IF (IDB2.GE. 5) then
+tlats8.f:647:          IF (IDB2.GE.1) WRITE(IOSP,*)' Tatm,Beta=',TATMJ,BETA
+tlats8.f:667:      IF (IDB2.EQ.4) WRITE(IOPM,*)'J4,5 +',J4,J5,TEQUIL,TATMJ
+tlats8.f:775: 9    IF (IDB2.GE.3) WRITE(IOSP,*)'TLATSx',N1,N1PIB,N2,N24,J3
+
+tdisk8.f:123:      IF (IDB3.GE.3) WRITE(IOSP,31)'TDISKa',KODE,KREC,J5,K4OUT,ITOP
+tdisk8.f:124:      IF (IDB3.GE.4) WRITE(IOSP,31)'TDISKb',N3,N4,N5,J5,MASE !<dbug
+tdisk8.f:153:      IF (IDB3 .GE. 4) THEN
+tdisk8.f:162:      IF (IDB3 .GE. 4) THEN
+tdisk8.f:318:        IF (IDB3.GE.3) WRITE(IOSP,*)'TDISKc KREC=',KREC,IOD2,ITOP,I
+tdisk8.f:376:        IRET=IDB3  !  +1=report many values   +2 report progress 
+tdisk8.f:393:      IF (IDB3.GE.7) WRITE(IOSP,*)'TDISKx  KREC,JREC=',KREC,JREC
+tfine8.f:541:        I=IDB3     !  +1=report many values   +2 report progress 
+tlats8.f:762:        I=IDB3     !  +1=report many values   +2 report progress 
+
+krc8.f:122:C- Lines are to redirect error to monitor, but IDB4 not yet known!
+krc8.f:125:C-      IF (MODULO(IDB4,2) .EQ. 1) THEN ! no error file 
+tday8.f:389:      IF (IDB4.GE.2) WRITE(*,'(a,2I4,2f8.5,f10.3,e12.5)') 
+tday8.f:407:        IF (IDB4.GE.2) WRITE(IOSP,'(i3,2f12.3)') J,SCONVG(J),ZDZ(J)
+tday8.f:715:D            IF (IDB4.EQ.4 .AND. MOD(JJ,NZ).EQ.0 )  ! N48 per day
+tday8.f:828:D           IF (IDB4.EQ.4) WRITE(73,741)J5,J4,JJJ,-1,SNOW,EFROST,TATMJ
+tlats8.f:566:C         IF (J5.EQ.IDB4) WRITE(53,531)J4,JJ,TATM,AVET,HUV ; 2018jun
+
+tday8.f:666:              IF (IDB5.GE.4)WRITE(47,22)(TTJ(I),I=1,N1) ! coarse  T
+tday8.f:798:          IF (JSW.GT.0 .AND. IDB5.GE.7) WRITE(46,244) 
+tfine8.f:107:      IF (IDB5.GE.1) WRITE(IOSP,*) 'TFINE IQ,J4,J5=',IQ,J4,J5
+tfine8.f:139:      IF (IDB5.GE.1) WRITE(IOPM,*)'QB..',QB,RLAY,RLAF,BF1,N1F,JLOW
+tfine8.f:155:        IF (IDB5.GE.6) WRITE(IOPM,30),'I,j..',I,J,QB,DIFFI(I)
+tfine8.f:201:      IF (IDB5.GE.1) WRITE(IOSP,'(a,i3,f12.3)') 
+tfine8.f:225:        IF (IRET.LT.1 .OR. IDB5.GE.2) WRITE(42,'(A,I4,2G12.5,F8.1)')
+tfine8.f:340:      IF (IDB5.GE.4) THEN
+tfine8.f:357:      IF (IDB5.GE.3) WRITE(IOSP,'(a,2f12.4,g13.5)') 
+tfine8.f:372:      IF (IDB5.GE.2) WRITE(IOSP,119) LZONE,LALCON,j5,IK1,IK2,IK3,IK4
+tfine8.f:478:          IF (IDB5.GE.6 .AND. (JJ.LT.(J7P+3)  .OR. ABS(JJ-J8).LT.3))
+tfine8.f:515:      IF (IDB5.GE.4) THEN
+tfine8.f:551: 9    IF (IDB5.GE.1) WRITE(IOSP,*) 'TFINE exit'
+
+tfar8.f:87:      IF (IDB6.GE.2) WRITE(IOSP,*)'TFAR:0 ',KODIN,FFATE,FFOLE
+tfar8.f:104:      IF (IDB6.GE.2) WRITE(IOSP,*)'TFARfile: ',FILEIN(1:ILEN),I
+tfar8.f:292:      IF (IDB6.GE.4) WRITE(IOSP,*)'TFARx:FFOLE+ ',FFOLE,IFUN,LOPF
+tlats8.f:187:      IF (IDB6.GT.3) WRITE(IOPM,*)'SKYFAC,FAC5X=',
+tseas8:129        IF (IDB6.GE.5) WRITE(IOSP,130) I1,I2,FARTS(I1,I2,1)
+about 2017    grep -in lq tlats33.f
 128:      LQ1=IDB2.GE.5             ! once per season or latitude
 129:      LQ2=IDB2.GE.9             ! each time of day
 130:      IF (IDB2.NE.0) WRITE(IOSP,*)'TLATSa',N3,N4,J5,LATM,LQ1,LQ2
@@ -1146,6 +1424,8 @@ after any number of parameter changes; it must NOT be changed later.
 Set IDOWN to the season at the beginning of which wish to (first) change
 parameters. The next set of changes could include a revised (larger) IDOWN.
 
+CAUTION: This has not been tested in recent versions 
+
 
 \subsection{Use of common PORBCM}%-----------
 Contents are described in porbcm8.f \\
@@ -1294,7 +1574,7 @@ and the surface set to frost temperature.
 % 48  AtmCp   Specific heat at constant pressure of the atmosphere [J/kg/K]
 % 72  PRES    Local surface pressure at current season. compute in TLATS
 
-\subsection{Seasonal prediction} %-----------
+\subsection{Seasonal prediction \ \  Update 2020apr11} %-----------
 
 Several quantities are stored in TDAY at midnight;
  with index J3P1: TT1,TTS, TTB, and if Atm., TTA,FRO. These are effectively at the start of day J3+1. Index 1 is set initially as the global equilibrium T.; after season 1, these are set set to the prediction from the prior season.
@@ -1310,8 +1590,44 @@ Up to version 355:
 Version 356: The full daily time series for a season is passed to EPRED, along with the index of the last valid value.  If 3 or more points valid, does asymptotic predict limited by the latest slope, there is no minimum FP.
 Else, if 2 points valid, does linear predication; else, uses the last valid value.
 
+Outline of code: 
+\qb For each latitude, if the first season, TTJ is set linear with depth between TSUR and TBOT; which in turn depend upon how IIB is set; otherwise start with forecast for the last midnight of the prior season.
+\qb TDAY runs until convergence, saving the profile each midnight.
+\qb For each layer, the temperatures at midnight are forecast to the end of the season.
+
+Annotated code extracts:
+\vspace{-3.mm} 
+\begin{verbatim}
+ daycom:: TTJ(MAXN1P)       ! Layer temperatures (TTJ(1) is surface temperature)
+          TT1(MAXN1,MAXN3)  ! Temperatures at start of day for each layer and day
+ latcom:: TMN4(MAXN1,MAXN4) ! predicted convergence midnight temperature
+
+Line in TLATS [2020 Apr 11 17:39:42]
+    before TDAY
+642. (J5.LE.1): CALL MVD(TTJ,TT1,N1) ! temperature profile, start of first day
+660.   else:    CALL MVD(TMN4(1,J4),TT1,N1PIB) ! copy forecast midnight values 
+667. CALL TDAY
+715. I=1,N1  
+    CALL MV21D (TT1(I,1),MAXN1,WORK,J3P1) ! transfer all defined values for layer I
+    TMN4(I,J4)= EPRED8(WORK,FP,J3P1, TFNOW,TBLOW) ! forecast to end of season
+\end{verbatim}  
+
+
 \section{Non-standard FORTRAN}
 All thought to be removed in Version 3+
+
+Although the SAVE option is used in some routines, this has not been done for all routines that depend upon values being consistent between successive calls, so `` -fno-automatic `` must be invoked in the Makefile.
+
+\subsection{Modifying size parameters}
+Most arrays are sized using PARAMETER's set in krcc8m.f. Hopefully, these could
+be modified without breaking the KRC system. If you do so, extensive testing is
+recommended.
+
+In particular, if a user were generating jillions of direct access files, it
+would be efficient to set MAXN4 and MAXNH to the values of N4 and N24; however,
+their product must be larger than the size of KRCCOM (NWKRC), or twice as large
+if writing single-precision files. In version 3.6.1 there is a test for this,
+which will STOP if the condition is violated.
 
 \appendix %=================================================================
 
@@ -1364,6 +1680,33 @@ time doubling; ZDZ (temporary)
 
 480: Print the layer table
 
+\subsection {TDISK called by}
+\begin{verbatim}
+
+krc8.f:228:   IF (.NOT.LOPN2 .AND. I.GE.4) CALL TDISK8 (1,0) ! open output disk file   
+tcard8.f:137:   CALL TDISK8 (1,1)         ! open old file to read starting conditions
+
+tday8.f:902:  IF (J5.GE.JDISK) CALL TDISK8(2,I) ! write current season if valid
+tseas8.f:169:  IF (J5.GE.JDISK) CALL TDISK8 (2,KREC) ! write this season
+
+tcard8.f:138:   CALL TDISK8 (3,KOLD)      ! read starting record; will override  KRCCOM
+
+krc8.f:231:   IF (.NOT.LOPN4 .AND. I.GE.4) CALL TDISK8 (6,0) ! open output type 5x
+krc8.f:313:   IF (LOPN2) CALL TDISK8 (4,KREC) ! close FDIRA, cannot hold multiple cases
+krc8.f:334:   IF (LOPN2) CALL TDISK8 (4,KREC) ! all done: close disk files
+tcard8.f:263: IF (LOPN2) CALL TDISK8 (4,0)    ! close prior direct-access file
+tcard8.f:310: IF (LOPN2) CALL TDISK8 (4,0)   ! must close disk files if open
+tcard8.f:140:            CALL TDISK8 (4,0)       ! close 'starting' file
+
+tseas8.f:168:  .AND. K4OUT.LT.0) CALL TDISK8 (5,KREC) ! must follow tday(1)
+ 
+krc8.f:231:   IF (.NOT.LOPN4 .AND. I.GE.4) CALL TDISK8 (6,0) ! open output type 5x
+
+krc8.f:337:   IF (LOPN4) CALL TDISK8 (7,KREC) ! type 5x
+tcard8.f:258: IF (LOPN4) CALL TDISK8 (7,0)    ! close current bin5
+tcard8.f:312: IF (LOPN4) CALL TDISK8 (7,0)    
+
+\end{verbatim} 
 \end{document} %===============================================================
 %============================================================================
 %============================================================================

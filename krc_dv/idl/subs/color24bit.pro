@@ -13,7 +13,7 @@
 ; plt   in_  Flag. If set, will plot each color vector
 ; brf   in_  Real  Brightness factor
 ; put   in_  Flag. If set, and lc<0, will load the load table
-; func. out. Lonarr(256) of 24-bit values for ture color
+; func. out. Lonarr(256) of 24-bit values for true color
 ;; common colors, r_orig, g_orig, b_orig, r_curr, g_curr, b_curr
 ;_Calls  GETPAN
 ;_Usage
@@ -177,7 +177,7 @@ if keyword_set(plt) then begin
     q=min(abs(ctab-255*256L^2),ib) ; loc of blue
     q=min(abs(ctab-255*256L  ),ig) ; loc of green
     q=min(abs(ctab-255       ),ir) ; loc of red
-    DEVICE, DECOMPOSED = 1 ; set to true color
+    device, decomposed = 1 ; set to true color
     plot,v3,yran=[-5,260],/nodata $
       ,titl='...__=v1=red  __ __=v2=green  - - -=v3=blue  ...=average'
     oplot,v3,line=2, color=ctab[ib]
@@ -185,8 +185,8 @@ if keyword_set(plt) then begin
     oplot,v1,line=4, color=ctab[ir]
     oplot,(fix(v1)+v2+v3)/3,psym=3 ; white for total
     for i=0,255 do $            ; quick colorbar
-        XYOUTS,i-1,20,'|',color=ctab[i],charth=3,charsize=2
-    DEVICE, DECOMPOSED = 0 ; set to pseudo-color
+        xyouts,i-1,20,'|',color=ctab[i],charth=3,charsize=2
+    device, decomposed = 0 ; set to pseudo-color
 
 endif
 

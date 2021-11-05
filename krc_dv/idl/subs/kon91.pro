@@ -15,7 +15,7 @@ Pro kon91, ptitl,prior,hold,kon,kons,kitel, maxk=maxk,get=get
 ; Easiest to leave section before  ask: calling to setcolor in main routine
 ; because of surrogates for elements of kcc[]
 ;_Usage  The following actions are reserved here:
-; -8 -3 -1 100:3 121:2 340 344 8 80 801:4 808:810 81 82 850:860 87 88
+; -8 -3 -1  121:2 340 344 8 80 801:4 808:810 81 82 850:860 87 88
 ;    9 99 990:5 
 ;	992 To generate a line in storage for each kon.
 ;		Then 994 produces a full listing of all
@@ -31,12 +31,13 @@ Pro kon91, ptitl,prior,hold,kon,kons,kitel, maxk=maxk,get=get
 ;          Direct-code for .eps output instead of TV2LP 
 ; 2012jan24 HK Incorporate call to SETWIND
 ; 2012mar29 HK Add action 808   
-; 2012may14 HK Add action 810   
+; 2012may14 HK Add action 810  
+; 2019jun04 HK Delete 100:103, largely redundant with 890+ 
 ;_Liens If caller uses   common SETCOLOR_COM2  he will have to detect kon in
 ;  range 850:882 to refresh any variable dependant upon that common.
 ;_End            .comp kon91
 
-common SETCOLOR_COM2, kcc,linecol,kkc,kkl,kkp,fixkkc,fixkkl,fixkkp,kink,scex1
+common setcolor_com2, kcc,linecol,kkc,kkl,kkp,fixkkc,fixkkl,fixkkp,kink,scex1
 
 kite=ptitl+'@'+strtrim(kon,2)   ; follows date in subtitle      fils[2]+' '+
 if kon ge 850 and kon le 899 then begin ; set to set of high-contrast colors
@@ -50,11 +51,6 @@ case kon of ;...................................................................
 -3: i=1                         ;-  -------- KON91  null
 
 -1: begin & print,'Any key to GO' & qi=get_kbrd(1) & end ;- Wait
-100: wset,0                     ; wset: 0
-101: erase                      ;+ Clear the default window
-102: wset,2                     ;+ wset: 2
-103: begin & window,3,retain=2,xsize=640,ysize=512,xpos=2560+640,ypos=1064; Window 3 for output
-  wset,3 & end
                    
 122: GETPINTS,'Action sequence',kons,0,0 ;- Modify  kons  sequence
 121: kons=-3 ;- + Reset to null
@@ -116,16 +112,30 @@ kkl=replicate(0,i)  & kcc[3]=i & end  ; REQ that scex1 loaded
 
 ; next set becoming obsolete
 ;81: GRAPH,81,hard               ;- Start Graph to color file and printer
-;80: GRAPH,0,hard               ;- Reset plot output device
-8:  GRAPH,8,hard                ;- Start Graph to file and printer
-87: GRAPH,7,hard                ;- Close plot device, no spawn of plot
-9:  GRAPH,9,hard                ;- End a plot, save and print the file
+;80: GRAPH,0,hard               ;- Reset plot output device; 
+; 8: GRAPH,8,hard     87:GRAPH,7,hard    GRAPH,9,hard    Expanded 2019nov01
+8: begin                ;- Start Graph to file and printer
+  SETCOLOR,852          ; white background
+  SETCOLOR,857          ; save current colors and set to all black
+  set_plot,'PS'         ; postscript device
+  device,file='idl.eps',/landscape ; create output file
+end
+87: begin    ;- Close plot device, no spawn of plot
+  device,/close_file            ; close the plot file
+  set_plot,'X'                  ; direct future output to monitor
+  device,retain=1
+end
+9: begin    ;- End a plot[s] and print the file
+  device,/close_file            ; close the plot file
+  spawn,'lp idl.eps'
+  set_plot,'X'                  ; direct future output to monitor
+  device,retain=1
+end
 
 99: MAKE99,ptitl,prior,hold,maxk=maxk,get=get; make guide to calling program
 
 990: begin ; KON91 action guide
 print,'-8=StopInKON91  -3=null  -1=pause    0=Stop    888=setcolorGuide'
-print,'100=wset,0  101=erase  102=wset,2  103=window for output   899=wind'
 print,'121=kons=-3  122=Edit Kons  801/2/3/4 output to eps/png/jpg/-eps'
 print,'340/4=load grey/myColor 808=actionlabel 809=Warning: mv  810=BandClr'
 print,'80/81/82=type/start/endFig  8=newPS 87=close 88=subtitle 9=plotPS'

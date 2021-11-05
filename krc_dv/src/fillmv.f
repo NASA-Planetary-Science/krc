@@ -1,14 +1,16 @@
-C_Titl FILLMV  A bunch of routines to Fill or Move N words Byte Integer, Real
-C Includes  FILLB FILLI FILLL FILLR FILLD  
-C             MVB   MVI   MVL   MVR   MVD MVDF MVDM  MV21D
-C BEWARE: these routines still allow writting outside the input arrays! 
-C
+C_Titl FILLMV  Many routines, Fill or Move N words: Byte Integer Long Real Double
+C Includes  FILLB  FILLI  FILLL  FILLR  FILLD  
+C             MVB  MVI  MVL  MVR  MV8R  MVD  MV4D  MVDF  MVDM  MV21D
+C BEWARE: These routines still allow writting outside the input arrays! 
+C   However, debugger should catch this.
 C_DESC 
-C *****  fortran version does not have overlap protection  *****
+C *****  FORTRAN version does not have overlap protection  *****
+C So, it could be used to move arrays to lower indices, but not higher!
 C_Hist 2016aug22  Hugh Kieffer.  Create to replace R2R series, which combined
 C fill and move, thus could not compile with -Wall and debugger could not
 C check overflow. 
-C 2018jun23 HK Add 
+C 2018jun23 HK Add  MV21D
+C 2018oct17 HK Add  MV8R  MV4D  
 
 C------------------------------- BYTE --------------------------
 
@@ -138,6 +140,21 @@ C_PAUSE
       RETURN
       END
 
+      SUBROUTINE MV8R (RA,RB,N)
+C_TITL  MV4D  REAL*8 to REAL*4 array move
+      IMPLICIT NONE
+C_ARGS
+      REAL*8 RA(N)              ! [In] Source array or constant
+      REAL*4 RB(N)              ! [Out] Destination array
+      INTEGER N                 ! [In]  Number of items to move:
+C_PAUSE
+      INTEGER*4 I
+      DO I=1,N
+        RB(I)=SNGL(RA(I))
+      ENDDO      
+      RETURN
+      END
+
 C------------------------------- R*8 --------------------------
 
       SUBROUTINE FILLD (RA,RB,N)
@@ -160,6 +177,21 @@ C_TITL  MVD  REAL*8 to REAL*8 array move
       IMPLICIT NONE
 C_ARGS
       REAL*8 RA(N)              ! [In]  Source array or constant
+      REAL*8 RB(N)              ! [Out] Destination array
+      INTEGER N                 ! [In]  Number of items to move:
+C_PAUSE
+      INTEGER*4 I
+      DO I=1,N
+        RB(I)=RA(I)
+      ENDDO      
+      RETURN
+      END
+
+      SUBROUTINE MV4D (RA,RB,N)
+C_TITL  MV4D  REAL*4 to REAL*8 array move
+      IMPLICIT NONE
+C_ARGS
+      REAL*4 RA(N)              ! [In] Source array or constant
       REAL*8 RB(N)              ! [Out] Destination array
       INTEGER N                 ! [In]  Number of items to move:
 C_PAUSE
@@ -198,7 +230,7 @@ C_ARGS
       REAL*8 FAC                ! multiply factor
 C_DESC  
 C      arg2 = arg2 + arg4*arg1 for arg3 items
-C_END
+C_PAUSE
       INTEGER*4 I
       DO I=1,N
         RB(I)=RB(I) + FAC*RA(I)
@@ -218,7 +250,7 @@ C_USE
 C If RA is (5,7) and you want all the (3,*) items, call as (RA(3,1),5, RB,7)
 C " If you want (3,4:7) items  call as (RA(3,4),5, RB,4); etc.
 C If you want consecutive items in Dimen 1, easier to use, e.g.,  MVD (RA(1,3),RB,5))
-C_PAUSE
+C_END
       INTEGER*4 I
       DO I=1,N
         RB(I)=RA(1,I)

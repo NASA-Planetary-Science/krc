@@ -84,6 +84,8 @@ pro make99, id,prior, hold, maxk=maxk,all=all,get=get,ofile=ofile,comf=comf $
 ; 2016jun20 HK Increase maxk default from 200
 ; 2016nov12 HK Address existing output file of same name
 ; 2018mar01 HK Avoid duplicate processing of  comf
+; 2018sep07 HK Handle the rare case that lowest kon is duplicated
+; 2018oct31 HK If I/O error, print current directory, [can't find ./subs/kon99.pro
 ;_END        .comp make99
 
 ; help, id,prior, hold, maxk,all,get,ofile,comf,quiet & print,'prior=',prior
@@ -128,7 +130,7 @@ tab=string(9B)                  ; horizontal Tab character
 hold=strarr(maxk)
 kkon=lonarr(maxk)
 kh=-1                           ; count of output guide lines
-k=-1                            ; count of kon  values
+kv=-1                            ; count of kon  values
 kd=-1  ; current level below idltop
 ; Find source file; search progressively lower directories.
 ; Use of any explicit letters in mask requires the proper level of /* .
@@ -224,9 +226,9 @@ if bb[0] lt 45 or bb[0] gt 57 then goto,next ; first character not a digit
 ; j2=79                           ; 80'th column in source file
 kl=long(skon)                   ; convert to long integer
 if kl eq 99 then goto,nomore    ; kon=99 is beginning of guide section
-if k ge maxk-1 then goto,full   ; no more room for storage
-k=k+1                           ; increment number of kon's found
-kkon[k]=kl                      ; save the kon number
+if kv ge maxk-1 then goto,full   ; no more room for storage
+kv=kv+1                           ; increment number of kon's found
+kkon[kv]=kl                      ; save the kon number
 
 ; Process the rest of the  kon  line
 
@@ -350,11 +352,15 @@ goto,redo                       ; process this
 full: Message,'   WARNING   Out of storage room   WARNING ',/con,/info
 nomore:
 hold=hold[0:kh] ; prune the holding array
-kkon=kkon[0:k]
+kkon=kkon[0:kv]
 ; test for duplicate kon cases
 ii=sort(kkon)
 uu=uniq(kkon[ii])
-if n_elements(uu) ne k+1 then begin
+if uu[0] ne 0 then begin ; rare case not caught by 'del gt 1' test
+  print,'Duplicate:',kkon[ii[0]]
+  kv=kv-1                       ; decrement required number of uniq
+endif
+if n_elements(uu) ne kv+1 then begin
     errs=errs+'  Some duplicate kon .... '
     del=uu-shift(uu,1)          ; increment in unique list
     iu=where(del gt 1)          ; where list had duplicates
@@ -501,6 +507,8 @@ return
 
 bad: j=1
 print,'MAKE99 read error: line,err_string=',link,!err_string
+cd,current=curd                 ; get current directory
+print,'Current directory is: ',curd
 read,j,prompt='Enter 0 to stop, else 1 to return > '
 if j eq 0 then stop
 return

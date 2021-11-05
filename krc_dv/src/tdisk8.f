@@ -85,11 +85,14 @@ C 2016aug11 HK Avoid use of MINT here as it is in common and could conflict with
 C    the use by TFAR8
 C 2016aug21 HK Type -n record sizes all the same.
 C 2018may29 HK Simplify record indexing. Small changes to debug output items
-C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
+C 2018sep12 HK STOP if file does not open.  
+C 2018oct20 HK Re-enable  KODE=3    Allow type -x to be R*4
+C 2018nov05 HK Prepend D to lines activated by IDBx
+C_End 789012345678901234567890123456789012345678901234567890123456789012_4567890
 
 C In OPEN statement: RECL=rl
 C If -xl[d] is not set, rl is number of characters, and record length is rl.
-C [ If -xl[d] is set, rl is number of words, and record length is rl*word_length.  ]
+C [If -xl[d] set, rl is number of words, and record length is rl*word_length.]
 
 C JJJ are the IDL SIZE sent to BIN5 files;  JJJ[1]= dimensionality
 C MMj are the number of words in the j'th dimension
@@ -106,16 +109,19 @@ C Make arrays that overlay each of the major   Commons
       INTEGER*4 KHEAD,NDX,ND4,MASE,MM1,MM2,MM3,MM4 ! multiple array dimensions
       INTEGER*4 NSOUT           ! number of seasons expected to be output
       CHARACTER*3 CSTAT         ! file status, and reuse for file type
-CD      CHARACTER*8 BUFF        ! conversion from integer to string
-      CHARACTER*25 HEADTX     ! will go into bin5 header
+      CHARACTER*25 HEADTX       ! will go into bin5 header
       INTEGER*4 HEADLEN /25/
+      REAL*4 FFR4(NUMH4)        ! array to match file record
+
+C 2018oct20 debugging
+D     INTEGER*4 BUFF(13)        ! for file status
+
       SAVE IDX,NDX,JREC,MASE,MMM ! insure these 
       SAVE FRONT,NSOUT,ITOP           ! remain defined
 C
- 31   FORMAT(A,6I7)             !<dbug
-      IF (IDB3.GE.3) WRITE(IOSP,31)'TDISKa',KODE,KREC,J5,K4OUT,ITOP
-      IF (IDB3.GE.4) WRITE(IOSP,31)'TDISKb',N3,N4,N5,J5,MASE !<dbug
-      IF (IDB3.GE.5) WRITE(*   ,31)'TDISKb',N3,N4,N5,J5,MASE !<dbug
+D 31  FORMAT(A,6I7)             !<dbug
+D     IF (IDB3.GE.3) WRITE(IOSP,31)'TDISKa',KODE,KREC,J5,K4OUT,ITOP
+D     IF (IDB3.GE.4) WRITE(IOSP,31)'TDISKb',N3,N4,N5,J5,MASE !<dbug
 
       SELECT CASE (KODE)
 
@@ -132,19 +138,36 @@ C Note. Case and KRCCOM are completely defined at this point
       ITOP=K4OUT                ! remember what kind of file is open
 C     recl may be bytes or longwords, depending upon  OS and compiler options.
       IF (K4OUT.LT.0) THEN      !  K4OUT is negative  .tmN
-            IF (K4OUT.LT.-3) THEN ! error
-              WRITE(IOERR,*)'TDISK: K4OUT invalid, will use -3:',K4OUT
-              ITOP=-3
-            ENDIF
-        NWTOT=MAXNH*MAXN4  !  TSF or  TPF or Tatm
+        IF (K4OUT.LT.-3) THEN   ! error
+          WRITE(IOERR,*)'TDISK: K4OUT invalid, will use -3:',K4OUT
+          ITOP=-3
+        ENDIF
+        NWTOT=NUMH4             !  TSF or  TPF or Tatm
+        IF (ID24 .EQ. 4) NWTOT=NWTOT/2 ! will write R*4 to file
+        IF (NWTOT.LT.NWKRC) THEN ! KRCCOM will not fit in one record
+          WRITE(IOERR,*)'TDISK: Record smaller than KRCCOM. R*8 words:'
+     &    ,NWTOT,NWKRC  ! This is fatal. Can happen only if parameters in
+          STOP          ! krcc8m.f MAXN4 and/or MAXNH decreased (a lot).
+        ENDIF
       ELSEIF (K4OUT.EQ.0) THEN  ! .t0
         NWTOT=NWKRC+NWLAT       !  KRCCOM & LATCOM
       ELSE                      !  K4OUT is 1:49
         NWTOT=NWKRC+NWDAY       !  KRCCOM & DAYCOM
       ENDIF
       NRECL=8*NWTOT      ! bytes: or  NRECL=NWTOT  ! depends upon compiler <<<<
+D     IF (IDB3 .GE. 4) THEN
+D       CALL STAT(FDIRA, BUFF)   ! get file status
+D       write(iopm,*)'STAT=',buff
+D       CALL FSTAT(IOD2, BUFF)  ! get file status
+D       write(iopm,*)'FSTAT=',buff
+D       write(iopm,*)'iod2+',iod2,fdira,cstat,nrecl
+D     ENDIF
       OPEN (UNIT=IOD2,FILE=FDIRA,ACCESS='DIRECT',STATUS=CSTAT
      &     ,RECL=NRECL,ERR=191,IOSTAT=IOS)
+D     IF (IDB3 .GE. 4) THEN
+D       CALL FSTAT(IOD2, BUFF)  ! get file status
+D       write(iopm,*)'BUFF=',buff
+D     ENDIF
       LOPN2=.TRUE.
       JREC=0                    ! no records written yet
       I=LNBLNK(FDIRA)           ! last non-blank character in file name
@@ -156,19 +179,34 @@ C
       CASE(2)   ! write a season (internal record count)  2  2  2  2  2  2  2  2
         JOUT=J5-JDISK           ! 0-based season count after start to disk
         IF (JOUT.LT.0) THEN     ! should not happen
-          PRINT *,'TDISK: JOUT NEG',JOUT,J5,JDISK,NCASE
+          WRITE(IOPM,*)'TDISK: JOUT NEG',JOUT,J5,JDISK,NCASE
           GOTO 9
         ENDIF
       IF (LOPN2) THEN       !----- write direct-access record ----------
         IF (ITOP .LT. 0) THEN         ! K4OUT -n 
 C  record to write: 1{=header} +abs(ITOP)*JOUT +1{now} . 
           PREC=2-ITOP*(JOUT) ! krccom+ n*(seasons to disk already)+this
-          I=PREC              ! Record number in WRITE may be auto-incremented, 
-          WRITE(IOD2,REC=I)TSF ! so use throw-away variable
-          I=PREC+1
-          IF (ITOP .LE. -2) WRITE(IOD2,REC=I)TPF ! Type -2 or -3
-          I=PREC+2
-          IF (ITOP .LE. -3) WRITE(IOD2,REC=I)TAF  ! Type -3
+          I=PREC  ! Record number in WRITE may be auto-incremented,
+          IF (ID24.NE.4) THEN   ! R*8 words
+            WRITE(IOD2,REC=I)TSF 
+            I=PREC+1
+            IF (ITOP .LE. -2) WRITE(IOD2,REC=I)TPF ! Type -2 or -3
+            I=PREC+2
+            IF (ITOP .LE. -3) WRITE(IOD2,REC=I)TAF ! Type -3
+          ELSE                  ! write all R*4
+            CALL MV8R (TSF,FFR4,NUMH4) ! from R*8 to R*4
+            WRITE(IOD2,REC=I)FFR4 ! so use throw-away variable
+            I=PREC+1
+            IF (ITOP .LE. -2) THEN
+              CALL MV8R (TPF,FFR4,NUMH4) ! 
+              WRITE(IOD2,REC=I)FFR4! Type -2 or -3
+            ENDIF
+            I=PREC+2
+            IF (ITOP .LE. -3) THEN
+              CALL MV8R (TAF,FFR4,NUMH4) !
+              WRITE(IOD2,REC=I)FFR4 ! Type -3
+            ENDIF
+          ENDIF   ! DA word size
         ELSEIF (ITOP .EQ. 0) THEN      ! K4OUT 0 
           WRITE(IOD2,REC=I)COMKRC,COMLAT ! .tm0
         ELSE                           ! K4OUT=1:49
@@ -243,15 +281,13 @@ C     write(*,*)'t1', subs
         ENDDO
 D     WRITE(IOSP,*)'JOUT,J,I,K',JOUT,J,I,K
       ENDIF                     !---------------------------------------------
-      IF (.NOT. (LOPN2.OR.LOPN4)) ! no file active
+      IF (.NOT. (LOPN2.OR.LOPN4))  ! no file active
      &     WRITE (IOERR,*) ' TDISK:2, WRITE, BUT NO FILE OPEN'
 C     
       CASE(3) !   read requested direct-access record  3  3  3  3  3  3  3  3
-C Reading onto common could be catastrophic in KRC model. Comment the next few
-C lines fit the first IF if using TDISK in a different environment
-         WRITE (IOERR,*) ' TDISK3 dangerous request to read DA record:'
-         WRITE (*,*) ' TDISK3 dangerous, Will refuse' ! take no action        
-      IF (LOPN2 .AND. (2 .GT. 3) ) THEN
+C Reading onto common could be catastrophic in KRC model;  BEWARE
+      WRITE (*,*) ' TDISK3 reading DA record:',KREC
+      IF (LOPN2) THEN
         I=KREC ! desired record or season
         IF (ITOP.EQ.0) THEN     ! K4OUT 0
           READ(IOD2,REC=I)COMKRC,COMLAT ! .tm0  DANGEROUS
@@ -261,10 +297,10 @@ C lines fit the first IF if using TDISK in a different environment
           IF (I.EQ.1) THEN  
             READ(IOD2,REC=I) COMKRC ! DANGEROUS
           ELSE
-            READ(IOD2,REC=I) TPF  ! TPF is least harmful of proper size arrays
+            READ(IOD2,REC=I) TPF ! Tplan is least dangerous of proper size arrays
           ENDIF
         ENDIF
-        WRITE(IOSP,310)FDIRA(1:LNBLNK(FDISK)),KREC
+        WRITE(IOSP,310)FDIRA(1:LNBLNK(FDIRA)),KREC
  310    FORMAT('TDISK:  READ FILE= ',A,' RECORD=',I3)
         IERR=IOS
         JREC=I
@@ -284,7 +320,7 @@ C
       CASE(5) ! output COMMON as first DA record          5  5  5  5  5  5  5  5
       IF (LOPN2 .AND. ITOP.LE.0) THEN
         I=1                  ! need room for NWKRC items
-        IF (IDB3.GE.3) WRITE(IOSP,*)'TDISKc KREC=',KREC,IOD2,ITOP,I
+D       IF (IDB3.GE.3) WRITE(IOSP,*)'TDISKc KREC=',KREC,IOD2,ITOP,I
         WRITE (IOD2,REC=I) COMKRC
       ELSE 
         WRITE(IOERR,*)'TDISK:5,wrong conditions: LOPN2,ITOP',LOPN2,ITOP
@@ -304,7 +340,7 @@ C
       JJJ(9) = HEADLEN          ! header length
       KHEAD   =5*NSOUT          !  Extra words in case header
 D     WRITE(IOSP,13)K4OUT,JJJ
-D     13      FORMAT ('Initiated custom output: K4OUT=',I3,/'JJJ=',10I6)
+D 13      FORMAT ('Initiated custom output: K4OUT=',I3,/'JJJ=',10I6)
 C     at this point, jbb(2:n) contain the dimension needed for data.
 C Need to update next to last for NDX, and compute the number of cases possible
       IDX=JJJ(1)-1              ! dimension that has extra size
@@ -331,7 +367,7 @@ C     C      IF (IDX.LT.2) THEN STOP ! ensure enough dimensions for this scheme
       FRONT(2)=DFLOAT(IDX)      ! 1-based index of dimension with extra values
       FRONT(3)=DFLOAT(NDX)      ! Number of those extra
       FRONT(4)=DFLOAT(NSOUT)    ! number of output seasons
-      PRINT *,'KOMMON,KASE=',KOMMON,KASE
+      WRITE(IOPM,*)'KOMMON,KASE=',KOMMON,KASE
       WRITE(IOSP,*),'KOMMON,KASE=',KOMMON,KASE
       WRITE(IOSP,*),'RASE,MASE,MTOT=',RASE,MASE,KASE*MASE
       LOPN4=.TRUE.
@@ -348,7 +384,7 @@ C
         I=LNBLNK(FDISK)         ! last non-blank character in file name
         WRITE (IOSP,*)'  File name=',FDISK(1:I)
         LOPN4=.FALSE.
-        NCASE=0                 ! ensure next file indexing start at 1 
+        FDISK='no'              ! no file specified
       ELSE 
         WRITE(IOERR,*)'TDISK:7, Asked to close but LOPN4 false',JREC
       ENDIF
@@ -358,13 +394,14 @@ C
       END SELECT  !^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
  9    CONTINUE
-C     print *,'exit TDISK8  KREC=',KREC
-      IF (IDB3.GE.7) WRITE(IOSP,*)'TDISKx  KREC,JREC=',KREC,JREC
+C     write(iopm,*)'exit TDISK8  KREC=',KREC
+D     IF (IDB3.GE.7) WRITE(IOSP,*)'TDISKx  KREC,JREC=',KREC,JREC
       RETURN
 
 C ERROR section    
  191  WRITE (IOERR,*) ' TDISK:1, ERROR OPENING FILE. IOSTAT=',IOS
       WRITE (IOERR,*) '  IOD2=',IOD2,'  status=',CSTAT,'  recl=',NRECL
       WRITE (IOERR,*) '  file=  ',FDIRA
-      GOTO 9
+      WRITE (IOSP,*)'TDISK Error:  KODE,KREC,JREC=',KODE,KREC,JREC
+      STOP ! GOTO 9
       END

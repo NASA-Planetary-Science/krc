@@ -4,7 +4,7 @@ function readtxtcol, name, sp=sp, nskip=nskip,ncol=ncol,mrow=mrow,fill=fill $
 ; name	in.  File name
 ; sp	In.  String for separater type. Valid are W=white, C=comma, T=tab
 ;		  D=comma, process Double quotes first, then 
-;                 replace any interior commas with colons
+;                     replace any interior commas with colons
 ;		  0[zero] = no separation done     :=:
 ;		  Default is white space
 ; nskip	in_  Number of comment lines to skip; -=search for C_END. Default=0
@@ -52,7 +52,8 @@ mtop=50                       ; maximum top lines saved when nskip negative
 ; 2013jul23 HK Allow retention of "top" lines even if nskip is negative
 ; 2016mar08 HK Add the keywords cend and ilun
 ; 2017feb01 HK Correct actions with ilun that left LUN assigned
-; 2017apr04 HK fix typo in above action
+; 2017apr04 HK Fix typo in above action
+; 2019oct04 HK Add ; % # ! as valid separator, common coding comment chars.
 ;_End                 .comp readtxtcol
 
 if !dbug ge 8 then  help,name,sp,nskip,ncol,mrow,fill,quiet,cend,ilun,top
@@ -81,8 +82,8 @@ endif
 
 verb=not keyword_set(quiet)
 if not keyword_set(sp) then sp='W' ; default is white space
-valid=['W','C','D','T'       ,'0',':']
-sepp= [' ',',',',',string(9B),'' ,':']   ; separator
+valid=['W','C','D','T'       ,'0',':',';','%','#','!']
+sepp= [' ',',',',',string(9B),'' ,':',';','%','#','!']   ; separator
 kode=where(valid eq strupcase(sp)) & kode=kode[0] ; separation kode
 if kode lt 0 then message,'invalid separater'
 

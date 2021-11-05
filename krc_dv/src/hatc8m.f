@@ -5,6 +5,7 @@ C_Titl  hatc8m.f   HATCOM: common to store post-2003 items in  KRC
      &, TOFALB(MAXNH,MAXN4)  ! hourly top-of-atm albedo, not predicted
      &, DOWNVIS(MAXNH,MAXN4) ! hourly net downward solar flux
      &, DOWNIR(MAXNH,MAXN4)  ! hourly net downward thermal flux
+     &, DUM8M(NUMH4) ! MAXNH*MAXN4 dummy, can be used for arrays up to this size 
      &, HEAT1M               ! Mean upward heat flow into surface on last day
      &, SALB                 ! spherical albedo of the soil
       REAL*8 FARTS(MAXNH,MAXN4,2) ! far-field Tsurf/Tatm for current season
@@ -17,8 +18,8 @@ C     &, TMN4Y(MAXN6,MAXN1,MAXN4)! midnight temperatures (year,layer,lat.)
       INTEGER*4 I4XT  ! 4-byte fill to make common size multiple of 8 bytes
 C  Note, order in commom based on size, not the same order as above.
       INTEGER NWHAT    ! size of this common in  R*8 words
-      PARAMETER (NWHAT= (6*MAXNH+3)*MAXN4+2*MAXFF+22)  
-      COMMON /HATCOM/ FARTS,TAF,TOFALB,DOWNVIS,DOWNIR !  MAXNH*MAXN4*(2+4)
+      PARAMETER (NWHAT= (7*MAXNH+3)*MAXN4+2*MAXFF+22)  
+      COMMON /HATCOM/ FARTS,TAF,TOFALB,DOWNVIS,DOWNIR,DUM8M !  MAXNH*MAXN4*(2+4)
      & ,TEXTRA,HEATMM                    !  MAXN4*(2+1) 
      & ,FARAD,HARTA                      !  MAXFF*2
      & ,PARC,PARW, HEAT1M,SALB, NLAD,I4XT !  12+7+2+1 =22 
@@ -40,5 +41,6 @@ C  It has different uses in these two routines.
 C 2017apr06 HK Add NLAD (and i4xt).  Order common by variable size
 C 2018jan21 HK Increase size of PARC by 1 to accomodate lat-dep. bias
 C 2018jan21 HK Move  ALBJ,SOLDIF,FINSOL,PLANH,PLANV from  HATCOM  to DAYCOM
+C 2018oct17 HK Add DUMM8, used by TSEAS and TLATS
 C_End __________________________________________________________________________
 

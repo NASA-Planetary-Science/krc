@@ -10,8 +10,9 @@ pro bin5, code, name,heds,aa, verb=verb,note=note,quiet=quiet,idx=idx,arc=arc $
 ; aa	in/out	Numeric array, any size; NOT structures or strings.
 ;		For Read, if open error occurs, this will be the error number.
 ; verb	in_	Integer. Verbosity: If set, will print file name before file
-; 	      action. If =2, for Read, will also print file date and any subset.
-;	      >= 3, will request confirmation. If no conf., aa is unaltered.
+; 	      action. for Read, If >=2, will also print file date and any subset.
+;	           >=3 will also print header 
+;                  >=4 will request confirmation. If no conf., aa is unaltered.
 ;        For write, =4 asks for confirm only if file already exist, 5 never asks 
 ;             +10  will print debug values and stop before return
 ; note  in_	String. Notification of what the array represents. Ignored if
@@ -74,6 +75,8 @@ postyp0= 12 ; byte position in  types  between last type 1 and first type 2
 ; 2013feb20 HK Revise extraction of word type to avoid problem of embedded nulls
 ; 2013mar01 HK Add notification for write if file exists
 ; 2015mar10 HK Revise write logic to remove looping for header size
+; 2019apr14 HK Change read verb=3 to print header, now =4  for confirmation
+; 2019oct31 HK Allow modification of name for write when file exists.
 ;_End
 
 valid=[1,2,3,4,5,6,9,12,13,14,15] ; all the numeric types
@@ -132,7 +135,7 @@ if j ne 0 then begin            ; at least one dangerous character found
 endif
 if kwv ge 1 then print,'Will write '+note+' file: ',fame,' Size= ',strtrim(siza,2)
 
-j=0
+again: j=0
 if kwv ge 3 and kwv lt 5 then begin  ; check for pre-existence
     ss=findfile(fame,count=j)
     if j ne 0 then print,'FILE EXISTS'
@@ -140,8 +143,13 @@ endif
 
 if kwv eq 3 or (kwv eq 4 and j eq 1) then begin ; ask for confirmation
     print,'bin5 HEAD=',heds
-    read,prompt='Enter 19 to confirm ',qq 
-    if qq ne '19' then  begin
+    read,prompt='Enter 19 to confirm, 20 to modify name ',qq 
+    if qq eq '20' then begin 
+      read,fame,prompt='Revised complete pathname > '
+      print,'got: ',fame
+      goto,again ; check for existence of revised file
+    endif
+    if qq ne '19' then begin
         print,'No confirmation, BIN5 quitting'
         exc=0
         goto, done 
@@ -263,7 +271,8 @@ heds=STRTRIM(heds)		; and trim trailing blanks
 if kwv ge 1 then print,'Will Read '+note+' file: ',fame,' Size= ',strtrim(siza,2)
 if kwv ge 2 then print, '  File date= ', date $
 	  ,'   Head_length= ',strtrim(strlen(heds),2)
-if kwv ge 3 then begin ; ask for confirmation
+if kwv ge 3 then print,heds
+if kwv ge 4 then begin ; ask for confirmation
     read,prompt='Enter 19 to confirm ',qq 
     if qq ne '19' then  begin
         print,'no confirmation, BIN5-R quitting' 

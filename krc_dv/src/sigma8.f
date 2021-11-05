@@ -2,11 +2,13 @@
 C_TITLE  SIGMA8  Compute mean and standard deviation of real*8 array 
       IMPLICIT NONE
 C_ARGS
-      REAL*8 BUF(N)   ! [In] array
       INTEGER N       ! [In]  number of items in BUF
+      REAL*8 BUF(N)   ! [In] array
       REAL*8 AVE      ! [Out] average value of input array
       REAL*8 SIG      ! [Out] standard deviation of input array
 C_Hist    2016aug18 Convert sigma.f from R*4 to R*8 
+C 2018oct18 HK reverse order of BUF and N in type definition becasue
+C make of idl ftnwrap64.so protested
 C_END
     
       INTEGER I                 ! index

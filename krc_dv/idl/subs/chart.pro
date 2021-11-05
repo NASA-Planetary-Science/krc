@@ -62,7 +62,8 @@ PRO chart, yyy, title=title,parti=parti,xtit=xtit,range=range,dlin=dlin,psy=psy 
 ; 2017mar29 HK  Incorporate common SETCOLOR_COM2
 ; 2017nov13 HK  Revise how range formatted and displayed
 ; 2018mar21 HK  Add  marg  and  lax  keywords
-;_End          .comp chart
+; 2019jun21 HK FIx number of tloc
+;_End                                 .comp chart
 
 ssy=size(yyy) & nd=ssy[1]
 mp = ssy(2)                     ; number of panels
@@ -80,7 +81,8 @@ if not keyword_set(csize) then csize=1.    ; default charsize for xyouts
 if not keyword_set(cthick) then cthick=1.  ; default charthick  for xyouts
 if not keyword_set(cclr) then cclr=!P.color  ; default color for xyouts
 if not keyword_set(xtit) then xtit='Count' ; default X-axis label
-if not keyword_set(tloc) then tloc=replicate(0.4,mp) ; strip label Y location
+if not keyword_set(tloc) then tloc=0.4; strip label Y location
+if n_elements(tloc) lt mp then tloc=replicate(tloc,mp) ; ensure enough
 if not keyword_set(psy) then psy=0         ; no symbols
 if not keyword_set(clr) then begin 
     kok= !D.name eq 'X'        ; color ok for this device. false for B&W printer

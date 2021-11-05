@@ -25,13 +25,13 @@ C Next 2 items are in J2000 equatorial system (default)
 C_Desc  
 C Planetary orbital elements referred to mean ecliptic and equinox of J2000
 C Reads files in  degrees, returns radians
-C read a file based on:
-C  1:  http://iau-comm4.jpl.nasa.gov/XSChap8.pdf Table 8.10.2
-C  2:  IAU Working Group on Cartographic Coordinates and Rotational Elements
-C  3:  Minor planets, several with spin axis defined
-C  4:  Asteroids, minor-planets, comets based on JPL Horizon cut/paste
-C  5:  Comet elements [from Ted Bowell 1985sep07]
-C  6:  ExoPlanets
+C read a ---.tab file based on:
+C  1: standish  http://iau-comm4.jpl.nasa.gov/XSChap8.pdf Table 8.10.2
+C  2: spinaxis  IAU Working Group on Cartographic Coordinates and Rotational Elements
+C  3: minor     Minor planets, several with spin axis defined
+C  4: small     Asteroids, minor-planets, comets based on JPL Horizon cut/paste
+C  5: comet     Comet elements [from Ted Bowell 1985sep07]
+C  6: exoplan   ExoPlanets
 C
 C Longitude of the node, omega. From vernal equinox in plane of reference to 
 C       the ascending node
@@ -57,6 +57,7 @@ C 2013feb02 HK Change base date from 1950 to J2000. All data files use C_END
 C          Separate files for Solar system planets into orbits and spin vectors
 C 2013jun19 HK Add flag for Pole position in B1950 ecliptic
 C 2014jun09 HK Convert to R*8  Untabify    2016may23 HK remove unused variable
+C 2019dec05 HK Comments only
 C_End&___1_________2_________3_________4_________5_________6_________.72
 
       INTEGER NFILES
@@ -220,7 +221,7 @@ C COCOMC uses west longitude, so negate RA
 C using only trig
         lambda=rdeg*vvv(7)      ! RA in Radians
         beta=rdeg*vvv(8)        ! Dec in radians
-C algoritym from Dmitry Savransky 
+C algorithym from Dmitry Savransky 
         sd = sin(obl50)*sin(lambda)*cos(beta) + cos(obl50)*sin(beta)
         cacd = cos(lambda)*cos(beta)
         sacd = cos(obl50)*sin(lambda)*cos(beta) -sin(obl50)*sin(beta)

@@ -17,7 +17,7 @@ Version 356 default values.  19 latitudes with mean Mars zonal elevations
     SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
   646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
         N1        N2        N3        N4        N5       N24       IIB       IC2
-        28      1536        15        19       120        48         0         7
+        28      1536        15        19       120        48         0       999
      NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14 TUN_Flx15     KPREF
          3        24         0        81         0        45        65         1
      K4OUT     JBARE     Notif    IDISK2                                     end
@@ -40,7 +40,5 @@ Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
    0.000000      0.3244965      0.8559126      0.4026359     -0.9458869    
   0.2936298      0.1381285       0.000000     -0.4256703      0.9048783   
 8 5 0 './out/master356.t52' / Disk file name for Run 1
-0/
-2 8 999 'IC2' / homogenous: ignore the 2nd material
 0/
 0/  ======================= end of run

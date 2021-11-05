@@ -1,5 +1,5 @@
 function readkrc52, finame,ttt,uuu,vvv,itemt,itemu,itemv, ddd,ggg,itemd,itemg $
-,t51=t51, vern=vern
+,t51=t51,fall=fall, sver=sver
 ;_Titl  READKRC52  Read KRC type 52 or 51 bin5 file
 ; finame in.  String of file name
 ; ttt	out.	Fltarr(hour,item,latitude,season,case) Item labels are in itemt
@@ -22,8 +22,9 @@ function readkrc52, finame,ttt,uuu,vvv,itemt,itemu,itemv, ddd,ggg,itemd,itemg $
 ; ggg	out.	Fltarr(item,latitude,season,case) Item labels are in itemg
 ;                Items: 'NDJ4','DTM4','TTA4','FROST4','AFRO4','HEATMM'
 ; itemd,g out.  Strarr ID's for the items in ddd, and ggg
+; fall  in_     Flag. Return all cases, 
 ; t51   in_     Flag. If set, presumes input file is type 51
-; vern  out_    String of KRC version
+; sver  out_    String of KRC version
 ; func. out.	Structure of krccom. If an error, returns negative integer
 ;        -1: -4 are from READKRCCOM, -5 = failure here
 ;_Desc
@@ -48,6 +49,7 @@ function readkrc52, finame,ttt,uuu,vvv,itemt,itemu,itemv, ddd,ggg,itemd,itemg $
 ; 2014mar12 HK Accomodate Version 3 REAL*8
 ; 2014apr26 HK Fix offset of 1 in getting old version latitudes
 ; 2015dec24 HK Detect and omit cases flagged as invalid.
+; 2018nov01 HK     print indices of the valids ones, Omit unless fall=true
 ;_End           .comp readkrc52
 
 ; help,finame,ttt,uuu,vvv,itemt,itemu,itemv,log,dbug,jword
@@ -65,6 +67,8 @@ function readkrc52, finame,ttt,uuu,vvv,itemt,itemu,itemv, ddd,ggg,itemd,itemg $
 ; the last two are as many layers as fit within the number of Hours
 
 t52=not keyword_set(t51) 
+if not keyword_set(fall) then fall = 0b ; insurance
+ 
 BIN5,'R',finame,head,aaa,/verb
 siza=size(aaa)   ; [Hour or layer,7 items,latitude,1+season,[case]]
 ; items are [Ts,Tp,Ta,downVIS,downIR,<-- by hour   3+Tmin, 3+Tmax <-- by layer]
@@ -76,7 +80,7 @@ if siza[0] eq 4 then begin      ; only one case, force to 5 dimensions
     aaa=reform(aaa,siza[1],siza[2],siza[3],siza[4],1,/overwrite)
     siza=size(aaa)
  endif
-vern=GETVERS(head,ii) ; look for version number.
+sver=GETVERS(head,ii) ; look for version number.
 dod=siza[siza[0]+1] eq 5 ; double precision version
 ;dom = total((ii-[2,2,0])*[1.e4,100.,1]) ge 0 ; True if using J2000.0 dates
 
@@ -145,12 +149,14 @@ if t52 then begin
   ii=where(ndj4 gt 0,i)
   if i lt ncase then begin
     message,'WARNING, Number of stored and valid cases:'+string(ncase,i),/con
-    Print,'Will omit all invalid cases'
-    ttt=ttt[*,*,*,*,ii]
-    ddd=ddd[*,*,*,*,ii]
-    ggg=ggg[*,*,*,ii]
-    uuu=uuu[*,*,ii]
-    vvv=vvv[*,*,ii]
+    Print,'Valid (ndj4>0) cases =',ii,form='(a,99i3)'
+    if not fall then begin 
+      ttt=ttt[*,*,*,*,ii]
+      ddd=ddd[*,*,*,*,ii]
+      ggg=ggg[*,*,*,ii]
+      uuu=uuu[*,*,ii]
+      vvv=vvv[*,*,ii]
+    endif
   endif
 endif
 

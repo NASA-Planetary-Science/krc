@@ -9,25 +9,28 @@ C_Vars
       INCLUDE 'filc8m.f'
 C_Args
       REAL*4 LSUB               !in. season; l-sub-s in degrees.
-C     If large negative, will read file and save values
+C          If large negative, will read file and save values
+C          Then, function will be return from BINF5, not 0 is failure
       REAL*4 ALAT               !in. Latitude in degrees
       REAL*4 TAUICE             !out. opacity of water-ice cloud
 C     Function                  !out. opacity of aerosol dust
 C_Desc
-C  Initally reads a file of opacity versus Ls and latitude
+C  Initially reads a file of opacity versus Ls and latitude
 C  For each positive date request, does linear interpolation, with wrap around.
 C output will be negative if error occured
 C File dimensions firm-coded here
 C_Hist  Hugh_Kieffer  2012mar20 Derive from seastau.f
 C 2012mar27 HK  Include tau-ice 
 C 2016may12 HK Update include names
+C 2018aug11 HK Improve error statements
 C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
 
 C local variables
       REAL*4 DDATA(NUMX,NUMY,2) ! holds the table
       INTEGER*4 MAXH /512/      !! These 2
       CHARACTER*512 HEADER      !! must agree
-      INTEGER*4 ID(10)            ! array type and dimensions
+      CHARACTER*100 BUF         ! error message
+      INTEGER*4 ID(10)          ! array type and dimensions
       INTEGER*4 I,J             ! number of defined dates
       INTEGER*4 RET             !  BINF5 return code  
       REAL*4 DELLS,DELLAT,OUT
@@ -47,15 +50,21 @@ C local variables
          ID(4)=2                ! tau dust and ice
          ID(8)=4                ! singPrec float
          ID(9)=MAXH             ! inform routine how much room for header
-         RET=3                  ! ask for both debug
+         RET=3                  ! ask for both debug sets
          CALL BINF5 ('R',FVTAU, HEADER,ID,DDATA, RET)
          PRINT *,'CLIMTAU RET=',RET
          PRINT *,'ID=',ID
          PRINT *,HEADER
 C         Print *,(DDATA(I,I,0),I=1,NUMY)
-        IF (RET.LT. 0)
-     +          WRITE(IOERR,*)'CLIMTAU error opening input file>',FVTAU
-        OUT=RET
+         IF (RET.NE. 0) THEN
+           I = LNBLNK(FVTAU)
+           WRITE (BUF,*)'CLIMTAU error opening input file> ' 
+     &          ,FVTAU(1:i),RET
+           PRINT *,BUF          ! to screen
+           WRITE(IOERR,*)BUF    ! to error log
+           WRITE(IOSP,*)BUF     ! to print file
+         ENDIF
+         OUT=RET
 
         ELSE                    ! bi-linear interpolate
 

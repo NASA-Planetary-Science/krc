@@ -1,22 +1,22 @@
 %\title{Description of the bin5 file system -i}
 \begin{verbatim}
-           Description of the "bin5" file system  
-               Hugh Kieffer 2010may12
+        Description of the "bin5" and "bin8" file system  
+               Hugh Kieffer 2020jan16
 
 The bin5 file system is designed to allow transfer of binary arrays between
-different languages, operating systems and hardware types. Each bin5 file
+different languages, operating systems and hardware types. Each bin5/8 file
 contains a leading 512 byte (or multiple thereof) region that is ASCII text
-and describes the array which follows it.
+and describes the array which follows it. .bin5 files are written/read by 
+bin5.pro (single binary array) and .bin8 by bin8.pro (up to 3 binary arrays); 
+bin8.pro can read/write .bin5 files by not using its default extension.
 
 The first few words are integers separated by spaces, these define 
-the array size and type
+the array sizes and type using the IDL 'size' convention:
   The first integer is the number of dimensions to the array, N.
   The next N integers are the sizes of each dimension, in the order of 
     most-rapidly varying index first, 
-
 Then comes an integer that defines the word type; this follow the IDL
-convention. Values greater than 4 are not supported in Fortran as of 2002sep.
-
+convention. Word types greater than 5 are not supported in Fortran.
        1	Byte	
        2	Integer	
        3	Longword integer	
@@ -36,18 +36,27 @@ convention. Values greater than 4 are not supported in Fortran as of 2002sep.
 The next integer is the number of elements in the array, this is redundant with
 the product of the dimension sizes.
 
-Files written after 1999march should have a final integer that indicates the
+Files written after 1999march should have the next integer that indicates the
 number of leading ASCII bytes in the file; this is always a multiple of 512.
+Bin8 files can then have 1 or 2 more sets of size definitions for the 2nd and 
+3rd binary arrays.
 
 Next is some text bounded by << .. >>; the first part will usually be
 "<<IDL_SIZE + headlen " , the latter part should be the creation date of the
 file, e.g.," Tue Jul 9 05:08:18 2002 >>"
 
 This is followed by the "header", which is free text describing the file. Files
-from Hugh Kieffer may contain Keyword=value sections and/or embedded small
-arrays. Embedded arrays use a separator,such as |,#, or ^, between each element,
-the separator is doubled to indicate the limits of the embedded array.  E.g.,
-Geom=||7.|0.|7.|0.|0.|1.||  Such arrays are created/read by strum.pro
+ may contain Keyword=value sections and/or embedded small arrays. Embedded
+ arrays use a separator,such as |,#, or ^, between each element, the separator
+ is doubled to indicate the limits of the embedded array.  E.g.,
+ Geom=||7.|0.|7.|0.|0.|1.|| Such arrays are created/read by strum.pro
+
+Keyword=value: Keywords must be unique in all the header text. Values are 
+defined as starting at the first non-blank after the next "=" and ending just 
+before the next non-blank  or  matching delimiter.
+If the first non-blank character after '=" is a valid starting delimiter, values 
+separated by commas constitute a value-array. Valid delimiters are: 
+single quotes, double quotes, matching left/right parens or brackets.
 
 The last 5 bytes of the ASCII section should always be "C_END"; these should be
 immediately preceeded by a 5- or 8-byte indication of the source hardware
@@ -70,5 +79,11 @@ spectrum: Match mean and StdDev of Apollo with Breccia fraction: 0.05. Geom=
                              x86_64  C_END
  
 This example defines a single-precision floating-point array sized (32,2)
+
+
+BIN8,R: If there are more arguments than arrays in the file, 
+            those args are returned as -1
+  If there are more arrays in the file than arguments, those arrays are ignored. 
+bin8.pro is coded in a fashion that would allow simple extension to more arrays.
 
 \end{verbatim}

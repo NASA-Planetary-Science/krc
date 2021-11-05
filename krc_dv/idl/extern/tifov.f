@@ -2,15 +2,15 @@
 C_Titl  TIFOV:  interpolate thermal models to a location in 4 dimensions
       IMPLICIT NONE
 C_Vars
-	INCLUDE 'modcom.inc'
-	INCLUDE 'errcom.inc'
+        INCLUDE 'modcom.inc'
+        INCLUDE 'errcom.inc'
 C_arg
-      REAL*4 ALAT	!in. request latitude, degrees
-      REAL*4 HOUR	!in. request time of day; 24 hours per solar day
-      REAL*4 PRES	!in. request pressure, per modcom.inc. -= use default 
-      REAL*4 TAUR	!in. request atmospheric dust opacity; -= use default
+      REAL*4 ALAT       !in. request latitude, degrees
+      REAL*4 HOUR       !in. request time of day; 24 hours per solar day
+      REAL*4 PRES       !in. request pressure, per modcom.inc. -= use default 
+      REAL*4 TAUR       !in. request atmospheric dust opacity; -= use default
       REAL*4 TOUT(2*NIA)!out. model temperatures for all inertia and albedos 
-C			at the specified location, pressure and opacity
+C                       at the specified location, pressure and opacity
 C  First  NIA are for the surface, 2nd  NIA are for the top-of-atmosphere.
 C  Upon initial call,  TOUT(1) <0. means there was an error in pressure (-1)
 C    or opacity (-2) values in  COMMOM.
@@ -38,7 +38,7 @@ C_History
 C  97sep09  Hugh_Kieffer  USGS_Flagstaff
 C  98apr24  HHK convert to bi-cubic splines for hour/latitude   may22 debug
 C  98jun29  HHk normaalize pressure for the quadratic interpolation
-
+C 2019dec29 HK Untabify
 C_End 789012345678901234567890123456789012345678901234567890123456789012_4567890
         INTEGER KHLO /1/    ! assign error counter for invalid low hour
         INTEGER KHHI /2/    ! assign error counter for invalid high hour

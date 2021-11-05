@@ -19,41 +19,36 @@ C_Hist  Hugh_Kieffer  2006sep09
 C 2011jul31 HK  Use  FINTERP rather than  RNDEX (which was failing) and RNTERP
 C 2012feb26 HK  Remove unused variables
 C 2016may12 HK Update include names
+C 2018oct16 HK Use IOD1 rather than IOD3
+C 2020apr10 HK Clean-up D lines
 C_End6789012345678901234567890123456789012345678901234567890123456789012_4567890
 
 C local variables
       REAL XXX(MROW)            ! holds the table of  Ls in degrees
       REAL YYY(MROW)            ! holds tau on that date
-      INTEGER I,KK              ! number of defined dates
+      INTEGER KK              ! number of defined dates
       REAL G,OUT
       REAL FINTERP              ! called function
       INTEGER READTXT360        ! called function
       SAVE XXX,YYY,KK
 
-D      IF (IDB5.GT.3) WRITE(*,*)'SEASTAU',LSUB,kk,yyy(1),yyy(kk) ! <<<<< temporary
       OUT=-1.                   ! possible error flag
 
       IF (LSUB .LT. -90.)  THEN ! read the file
-         KK=READTXT360(FVTAU,IOD3,XXX,YYY)
-         IF (IDB5.NE.0) THEN
-            WRITE (*,*) 'SEASTAU FVTAU=', FVTAU
-            WRITE (*,*) 'SEASTAU kk=', KK
-            DO I=1,KK
-               WRITE (*,*) I,XXX(I),YYY(I)
-            ENDDO
-         ENDIF
+        KK=READTXT360(FVTAU,IOD1,XXX,YYY) ! open,read,close unit
         OUT=KK
         IF (KK.LT. 1)
      +          WRITE(IOERR,*)'SEASTAU error opening input file =',FVTAU
+D       IF (IDB5.NE.0) WRITE(*,*)'SEASTAU',LSUB,kk,yyy(1),yyy(kk) 
+
 
         ELSE                    ! interpolate
 
           G=AMOD(LSUB,360.)     ! insure within 0. to 360.
           OUT=FINTERP(G,XXX,KK,YYY)   ! linear interpolation 
-          IF (IDB5.GT.1) WRITE(*,*)'SEASTAU',LSUB,G,OUT
+D         IF (IDB5.GT.3) WRITE(*,*)'SEASTAUx',LSUB,G,OUT
       ENDIF
 
       SEASTAU=OUT
-D     WRITE (*,*) 'SEASTAU lsub,out=', LSUB,G,F,OUT
       RETURN
       END

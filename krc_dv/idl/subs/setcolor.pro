@@ -150,7 +150,7 @@ if inj ge 851 then begin
            kink=replicate(cblack,20) & end
     858: if n_elements(hink) gt 2 then kink=hink ; recover colors saved @857,863
     859: GETPINTS,'kink==!binc index set',kink,0,255
-    860: kink=[255,130,197,209,254,40,225,15,52,110] ; 10 on black
+    860: kink=[255,130,197,209,254,40,225,15,65,110] ; 10 on black
     861: kink=[15,33,40,50,85,112,130,150,170,195,209,221,254,255] ; 14 on black
     862: kink=[13,30,32,40,50,60,85,114,130,143,170,197,209,221,232,254,255] ;17
     863: begin & if kcc[6] gt 2 then hink=kink ; black and gray

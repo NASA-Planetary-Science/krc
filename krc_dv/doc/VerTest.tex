@@ -1,0 +1,603 @@
+\documentclass{article} 
+\usepackage{underscore} % accepts  _ in text mode
+\usepackage{ifpdf} % detects if processing is by pdflatex
+\usepackage{/home/hkieffer/gong/tex/newcom}  % Hughs conventions
+% \newcommand{\qj}{\\ \hspace*{-2.em}}      % outdent 1
+
+\newcommand{\qfo}[1]{$\Longrightarrow$ \textit{#1}} % indicate output file
+
+\title{Testing of successive KRC versions   DRAFT}
+\author{Hugh H. Kieffer  \ \ File=-/krc/Doc/VerTest.tex 2018nov05}
+\begin{document} %==========================================================
+\maketitle
+\tableofcontents
+%\listoffigures
+%\listoftables
+\hrulefill .\hrulefill
+% \pagebreak 
+
+\section{Introduction}
+ALERT: There is also an older document \nf{-/krc/VER/Vtest.tex} and .pdf which has not been integrated with this document. 
+
+This document is a guide to running a standard minimal sets of cases on two versions of KRC and analysis of any changes in the output temperatures.
+
+\subsection{Notation}
+Program and routines are in UPPERCASE plain text or as \np{routine} 
+\qi If \np{PROGRM [,N]} , then \np{N} indicates a major control code. 
+
+Code variables are in plain text, or in single quotes or as \nv{variab} and within equations as $\nvf{variab}$.. 
+
+Input parameters are shown as \nj{INPUT}. % and within equations as $\njf{INPUT}$
+
+Files are indicated in plain text or as \nf{file.ext} 
+
+Material within a \LaTeX verbatim section will appear \verb+ in this font style + .
+
+For convenience, some physical parameter default values are shown within square
+brackets at their point of mention.
+
+Symbols: 
+\qi -/ is the equivalent of $\sim /$, as the tilde is a special symbol in LaTeX
+\qi ]] is the command prompt, as the dollar sign is a special symbol in LaTeX
+
+\subsection{Input file}
+
+Find the desired input file for the base version, usually  \nf{-/krc/tes/bbbTest.inp}
+
+Edit all instances of bbb to vvv for the new version. Save as \nf{-/krc/tes/vvvTest.inp} 
+
+Run krc on the new input file; should produce a Type 52 output file \nf{vvvTest.t52}
+
+Locate the Type 52 output file for the base version. If not available, locate the installation of the base version and run that version of krc on the base input file.
+
+
+Edit \nf{-/idl/krc/kv3.pro}
+\qi add a line in \nv{parff} for the new version
+
+
+In IDL:  
+\\ .rnew kv3
+\\ @114    sets the names
+\qi  respond:  4 CR  355 361  CR 
+\\ 115 123 reads the two version files 
+\qii kons=[201,202,207,252,22, 26, 200,207,252,22,12] ; ttt=A, tth=B
+\qi Many options for case range, items 7=kr1 and 8=kr2  [extract from arrsub.pro] 
+\qiii  both -  :    arg1[k2]    -arg1[k1]    single 
+\qiii  k1 is - :    arg1[*]     -arg1[k2]    set
+\qiii  k2 $<$k1  :    arg1[*]     -arg2[*]     set
+\qiii  both + \& =:  arg1[k2]    -arg2[k1]    single
+\qiii  both +   :   arg1[k1:k2] -arg2[k1:k2] set
+\\ 116 123 does comparisons.
+\qi kons=[233,56,561,562,563,564,565,61,622,-1,63] ; Compare versions After 115
+\qii 233.. KRCINDIFF changes REQ 26 
+\qii 55... Delta .t52
+\qii 56... Select array and item
+\qii 561.. Prepare the base and difference   REQ 252,26,252  56
+\qii 562.. Stats versus latitude  REQ ttt and 561
+\qii 564.. uuu
+\qii 565.. vvv
+\qii 61... Plot LS-LSH
+\qii 622.. Clot Tx for 1 hour \& lat, Ver A and B, all cases
+\qii -1... Wait
+\qii 63... Stats on VerB-VerA (briefer than 56x) REQ 550
+\qi at 56: Which array: t d g u or v >  enter t to select \nv{ttt}  array
+\qii Which item, 0-based:  enter 0 to select Tsurf
+\\ 535 to call KRC35
+\qi jlat? respond   2
+\qi 112 123
+
+to look at one .t52: 
+
+\section{361 consistency test}
+
+\subsection{t361b} %-------------------------------
+Test fff options, using equi-area lat bands for Mars, N2=1536
+Cases 1:4 with atm,
+\qi 1: flat  \ \ \qfo{t361bflat.tm3} R*8
+\qi 2: slope 0.1\qd
+\qi 3:  slope 0.1\qd~ and flat fff for surface and atm
+\qi 4:  slope 30\qd~ and flat fff for surface and atm
+\\ Cases 5:8 the same, but no atmosphere
+\qi 5: flat  \ \ \qfo{t361bp0flat.tm1} R*4
+=======
+
+krc35
+\qi 112
+\qi 123
+\qi 18
+
+Input t361a.inp, Mars, with 5 latitudes, 1 year spinup; fast version, cases are
+\qi 1: flat, \qfo{t361aflat.tm3}
+\qi 2:  0.1\qd~ slope, output 4-byte, \qfo{t361atiny.tm3}
+\qi 3: 0.1\qd~ slope, fff=\nf{361aflat.tm3}  no 
+\qi 4: 30\qd~ slope, same fff in, output 8-byte, \qfo{t361aHi.tm3}
+\qi 5: no Atm, no fff, flat, output 8-byte \qfo{t361ap0flat.tm1}
+\qi 6: no Atm, 0.1\qd~ slope, output 4-byte \qfo{t361ap0tiny.tm1} 
+\qi 7: no Atm, 0.1\qd~ slope, fff=\nf{361aflat.tm1}, output 8-byte \qfo{t361ap0Lo8.tm1} 
+\qi 8:  no Atm, 30\qd~ slope, same fff in, output 8-byte, \qfo{t361ap0Hi.tm1}
+\qi 9: =8, but fff in is 4-byte ,nf{t361ap0tiny.tm1}
+
+These same cases were run for a more detailed ``slow'' input file, t361b, that had 4 times as many time steps, more and thinner layers, and a 2-year spinup, 
+
+\begin{verbatim}
+0 0 1 / KOLD: season to start with;  KEEP: continue saving data in same disk file
+ 0 0 0 0 0 0  / IDB1 to IDB6
+V361 consistency tests   5 lat,  fast Run: 40 seas with 1 yr spinup
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .25      0.95     200.0      2.77     928.0    1.0275      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5  27.95460     546.0      .055      200.     180.0     1711.
+      TAUD     DUSTA    TAURAT     TWILI  Hen-Gren ARC3/Safe     SLOPE    SLOAZI
+       0.3       .90      0.25       0.0       0.5     0.801       0.0       90.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET      PHOG       GGT     DTMAX
+    1.2000     .1800    2.0000       0.0       0.0       0.0       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+   151.293 17.174822      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24        IB        IC
+        18       384        15         5        81        48         0         7
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+         3        24         0        41         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -3         0        20         0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+ -60.00 -30.00   0.00  30.00  60.00      0      0      0      0      0
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7
+   1.22   1.17   0.17  -1.99  -4.08      0      0      0      0      0
+ 2013 Jul 24 11:28:09=RUNTIME.  IPLAN AND TC= 104.0 0.10000 Mars:Mars
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586    
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373    
+   5.544402       0.000000       0.000000       686.9929       3397.977    
+   24.62296       0.000000      -1.240317       0.000000       0.000000    
+   0.000000      0.3244965      0.8559126      0.4026359     -0.9458869    
+  0.2936298      0.1381285       0.000000     -0.4256703      0.9048783 
+2 8 999 'IC2'   / homogenous: ignore the 2nd material
+8  5 0 './out/t361a.t52'   / type 52 file name for Run
+8 21 0 './out/t361aflat.tm3'   / output fff
+0/ 
+3  2 0 'LP2' / turn off print of parameters 
+1 23 0.1 'SLOPE' / 
+2 24 4 'ID24' / DA out file R*4    
+8 21 0 './out/t361atiny.tm3'   / output fff
+0/  
+2 24 8 'ID24' / DA out file R*8    
+8 3 0 './out/t361aflat.tm3' / fff input for Tsur and Tatm
+0/ 
+1 23 30. 'SLOPE' /   
+8 21 0 './out/t361aHi.tm1'   / output fff
+0/  ------------------------------------------------------
+8 3 0 'off' / fff input for Tsur and Tatm
+1 12 0.1 'PTOTAL' / no atm
+1 23 0. 'SLOPE' / flat   
+2 17 -1 'K4OUT' / output type .tm1  
+8 21 0 './out/t361ap0flat.tm1' / DA output of type K4out
+0/
+1 23 0.1 'SLOPE' / 
+2 24 4 'ID24' / DA out file R*4    
+8 21 0 './out/t361ap0tiny.tm1'   / output fff 
+0/
+2 24 8 'ID24' / DA out file R*8    
+8 3 0 './out/t361ap0flat.tm1' / fff input for Tsur and Tatm R*8   
+8 21 0 './out/t361ap0Lo8.tm1'   / output fff
+0/ 
+1 23 30. 'SLOPE' /  
+8 21 0 './out/t361ap0Hi.tm1'   / output fff
+0/ 
+8 3 0 './out/t361ap0tiny.tm1' / fff input for Tsur and Tatm R*4
+0/ 
+0/  ======================= end of run
+\end{verbatim}   
+
+\section{361 vrs 355  2018oct27} %_________________________________________
+355: /home/hkieffer/krc/tes/out/355Test.t52
+\\ 361 input file
+\begin{verbatim}
+ 0 0 1 / KOLD: season to start with; KEEP: continue saving data in same disk file
+  0 0 0 0 0 0 / six debug flags
+V361 test cases   5 lat, 40 seas with 2 yr spinup  First cases Compat with 321
+    ALBEDO     EMISS   INERTIA     COND2     DENS2    PERIOD SPEC_HEAT   DENSITY
+       .25      0.95     200.0      2.77     928.0    1.0275      647.     1600.
+      CABR       AMW    SatPrA    PTOTAL     FANON      TATM     TDEEP   SpHeat2
+      0.11      43.5  27.95460     546.0      .055      200.     180.0     1711.
+      TAUD     DUSTA    TAURAT     TWILI  Hen-Gren ARC3/Safe     SLOPE    SLOAZI
+       0.3       .90      0.25       0.0       0.5     0.801       0.0       90.
+    TFROST    CFROST    AFROST     FEMIS       AF1       AF2    FROEXT    SatPrB
+     146.0   589944.       .65      0.95      0.54    0.0009       50.   3182.48
+      RLAY      FLAY     CONVF     DEPTH     DRSET      PHOG       GGT     DTMAX
+    1.2000     .1800    2.0000       0.0       0.0       0.0       0.1       0.1
+      DJUL    DELJUL  SOLARDEC       DAU     LsubS    SOLCON      GRAV     AtmCp
+   151.293 17.174822      00.0     1.465        .0     1368.     3.727     735.9
+    ConUp0    ConUp1    ConUp2    ConUp3    ConLo0    ConLo1    ConLo2    ConLo3
+  0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291
+    SphUp0    SphUp1    SphUp2    SphUp3    SphLo0    SphLo1    SphLo2    SphLo3
+  646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532
+        N1        N2        N3        N4        N5       N24        IB        IC
+        20       384        15         5       120        48         0         7
+     NRSET      NMHA      NRUN     JDISK     IDOWN    FlxP14    FlxP15     KPREF
+         3        24         0        81         0        45        65         1
+     K4OUT     JBARE     Notif    IDISK2                                     end
+        -2         0        20         0                                       0
+    LP1    LP2    LP3    LP4    LP5    LP6 LPGLOB   LVFA   LVFT  LkofT
+      F      T      F      F      F      F      F      F      F      F
+  LPORB   LKEY    LSC  LZONE  LOCAL  Prt76 LPTAVE  Prt78  Prt79  L_ONE
+      T      F      F      F      T      F      F      F      F      F
+Latitudes: in 10F7.2  _____7 _____7 _____7 _____7 _____7 _____7 _____7
+ -60.00 -30.00   0.00  30.00  60.00      0      0      0      0      0
+ _____7 _____7 _____7 Elevations: in 10F7.2 ____7 _____7 _____7 _____7
+   1.22   1.17   0.17  -1.99  -4.08      0      0      0      0      0
+ 2013 Jul 24 11:28:09=RUNTIME.  IPLAN AND TC= 104.0 0.10000 Mars:Mars
+   104.0000      0.1000000      0.8644665      0.3226901E-01  -1.281586    
+  0.9340198E-01   1.523712      0.4090926       0.000000      0.9229373    
+   5.544402       0.000000       0.000000       686.9929       3397.977    
+   24.62296       0.000000      -1.240317       0.000000       0.000000    
+   0.000000      0.3244965      0.8559126      0.4026359     -0.9458869    
+  0.2936298      0.1381285       0.000000     -0.4256703      0.9048783 
+1 34  .2160 'FLAY' / match first physical layer of older versions
+1 35 3 'CONVF' / attempt to match V2 run
+8 5 0 './out/361Test.t52' / Type 52 file to write
+3 2 1 'LP2' / turn on printing parameters and layer table
+2 17 -3 'K4OUT' / file type
+8 21 0 './out/361Testflat.tm3' / Direct-access file to write one case
+0/ 
+3 2 0 'LP2' / turn on printing parameters and layer table 
+3 10 1 'LkofT' / T-dependent properties 
+2 24 4 'ID24'  / .tmx output files to have R*4 seasonal records
+8 21 0 './out/361Testtdep.tm3' / Direct-access file to write one case
+0/  
+3 10 0 'LkofT' / reset
+3 8 1 'LVFA' / use variable frost albedo 
+3 9 1 'LVFT' / use variable frost temperature 
+2 20 0 'IDISK2' / TDISK not write every action
+0/ 
+1 12 .5 'PTOTAL' / no atm
+2 17 -1 'K4OUT' / file type
+8 21 0 './out/361Testp0flat.tm1' / Direct-access file to write one case
+0/
+1 38 0.15 'PhotoF' / set to Kheim-like 
+0/ 
+3 10 1 'LkofT' / T-dependent properties
+0/  
+12 0.038640 0.0  0.0 0.0  2.77 0.0 0.0 0.0    /  constant Conductivity
+13 647.0 0.0 0.0 0.0  1711.  0.0 0.0 0.0      / constant Specific heat
+0/ 
+12 0.038640 -0.002145  0.002347 -0.000750  2.766722 -1.298966  0.629224 -0.527291/ reset Cond
+13 646.6275  246.6678  -49.8216    7.9520  1710.648  721.8740  57.44873  24.37532 / reset SpecHeat
+3 10 0 'LkofT' / reset
+1 12 546. 'PTOTAL' / reset to Mars
+1 23 33. 'SLOPE'    / dune slip face
+1 24 45. 'AZIMUTH'  / facing north-east  self-heating
+0/
+8 3 0 './out/361Testflat.tm3'   / Far-field input
+0/
+0/  ======================= end of run  9 cases
+\end{verbatim} 
+
+There are no differences in the input real, integer or logical values that were
+common to both versions. The last case is different in that v355 used far
+surface and atmosphere temperatures from the fff sloped run whereas v361 used
+far surface from the sloped run but atmosphere from a flat run.
+
+Statistics on delta between v355 and v361 follow. The overall result is that differences in the 3 temperate latitudes and excluding the last case average 6 mK.
+
+\begin{verbatim} 
+     IDL     KRC
+       0   1_MarsBase
+       1   2_LKofT
+       2   3_varFrost
+       3   4_noAtm
+       4   5_Kheim
+       5   6_LkofT
+       6   7_Tdep=0
+       7   8_MarsAtmSLope
+       8   9_AtmSLope+fff 
+
+Doing -------------->     233
+KRCINDIFF: test for changes. Input limits:       64     120     220
+out  i    Label     Arg1       Arg2       Arg1-Arg2
+ 68 67   FSPARE      686.99      0.0000      686.99
+ 70 69     RGAS      8.3145      8.3145 -4.0200e-05
+ 71 70   TATMIN      143.40      143.39   0.0099579
+ 72 71     PRES      913.99      912.59      1.4075
+ 73 72  OPACITY     0.50219     0.50142  0.00077335
+ 74 73    TAUIR     0.30969     0.30921  0.00047690
+ 75 74   TAUEFF     0.61937     0.61842  0.00095380
+ 76 75    TATMJ      165.44      165.99    -0.54723
+ 82 81   TEQUIL      192.25      192.24   0.0090752
+ 83 82    TBLOW      639.68      639.67   0.0040329
+ 85 84   SCALEH      8.1796      8.2050   -0.025351
+ 86 85     BETA     0.46172     0.46120  0.00051366
+ 95 94    SIGSB  5.6704e-08  5.6705e-08 -1.4300e-12
+124 23     ID24       8       0       8
+125 24     ID25     361       0     361
+138 37       J3      13       9       4
+
+All latitudes and cases:
+
+Doing -------------->     562 
+                     Mean       StdDev      Minimum      Maximum
+         1       0.615758      7.60132     -71.1419      65.3827  signed
+N=   86400        1.90106      7.38547      0.00000      71.1419  absolute
+Doing -------------->     562
+361Test: case -1 - 0:  Tsurf. CaseRange=all  LatRange=all  SeasonRange=all
+         -60.         -30.           0.          30.          60.
+Mean= (each case) last row and column are average
+     -2.02910   0.00344616  -0.00858017   0.00355852     -6.79919     -1.76597
+     -1.99398   0.00349064    0.0820432   0.00650857     -6.74363     -1.72911
+    -0.399473   0.00344585  -0.00858017   0.00355852     -6.41686     -1.36358
+     0.134830   0.00339933   0.00986396  -0.00999871   -0.0377676    0.0200654
+    -0.274034   0.00332084    0.0111150    0.0383585   -0.0208800   -0.0484240
+    -0.391245   0.00337858   -0.0502521    0.0204039   0.00288379   -0.0829663
+    -0.274035   0.00332083  -0.00199543   -0.0358335   -0.0208797   -0.0658845
+     -1.98045   0.00352382   0.00564316   0.00327734     -14.0404     -3.20168
+      36.0563      18.0498      12.1962      14.1494      30.7379      22.2379
+      3.20542      2.00857      1.35950      1.57547    -0.370974      1.55560
+StDev=
+      9.09687  0.000248898    0.0157836  4.95179e-05      10.1153      3.84565
+      9.15079  0.000249321    0.0433477    0.0116389      10.0071      3.84263
+      1.35262  0.000248693    0.0157836  4.95179e-05      13.1998      2.91370
+     0.157151  0.000235163    0.0164952    0.0206014    0.0449523    0.0478869
+     0.310699  0.000246759    0.0154983    0.0275865     0.200145     0.110835
+     0.563285  0.000253814    0.0457277    0.0238048     0.184378     0.163490
+     0.310699  0.000246757   0.00905440    0.0231420     0.200145     0.108658
+      5.14155  0.000174013   0.00681441  0.000173474      26.1971      6.26917
+      19.0224      8.75377      3.73860      4.03524      17.0699      10.5240
+      5.01178     0.972853     0.434123     0.460254      8.57988      3.09178
+
+
+Omitting the last case, and the polar latitudes.
+ The large Tplan
+
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs
+   Tsurf    0.00159    0.01209   -0.09047    0.11352    0.00614    0.11352
+   Tplan  -10.58744   14.50282  -47.55258    0.10210   10.59131   47.55258
+    Tatm    0.00083    0.00594   -0.01043    0.07620    0.00304    0.07620
+ DownVIS    0.00000    0.00002   -0.00039    0.00046    0.00000    0.00046
+  DownIR    0.00035    0.00268   -0.00827    0.03465    0.00069    0.03465
+
+Mean= (each case), last row and column are average. All in milliK 
+ Idx    -30.      0.     30. Average
+  1     1.4     5.4     1.4     2.7
+  2     1.4    32.5     3.9    12.6
+  3     1.4     5.4     1.4     2.7
+  4     1.3     6.1     6.9     4.8
+  5     1.3     6.0    16.3     7.8
+  6     1.3    20.6    10.1    10.7
+  7     1.3     2.8    14.2     6.1
+  8     1.4     2.3     1.3     1.7
+  9     1.4    10.1     6.9     6.1 <<< grand average
+   StDev
+  1     0.1     4.6     0.0     1.6
+  2     0.1    17.2     3.6     6.9
+  3     0.1     4.6     0.0     1.6
+  4     0.1     4.6     5.8     3.5
+  5     0.1     4.6     9.2     4.6
+  6     0.1    17.2     7.2     8.2
+  7     0.1     2.3     9.2     3.9
+  8     0.1     2.6     0.1     0.9
+  9     0.1     7.2     4.4     3.9
+\end{verbatim} 
+
+  For these 3 latitudes and 8 cases, all seasons and all hours, the change in
+  Tsurf has mean=1.6 mK, stDev 12. mK, minimum -0.090 K and max 0.114 K. Values
+  for the average absolute change over hour and season is shown in
+  Fig. \ref{vt562a}
+
+\begin{figure}[!ht] \igq{vt562a}
+\caption[Delta Diurnal Average]{Average of the absolute change in diurnal
+  average Tsurf between version 355 and 361. Abscissa is latitude index, -30, 0,
+  +30, and right-most is the average. Ordinate is log scale, so the largest
+  values is 0.032K for case 2, temperature-dependant properties, for the equator.
+\label{vt562a}  vt562a.png }
+\end{figure} 
+% how made
+
+\subsection{2018 Nov 5 08:25:56} %----------------------------
+Make most IDBx actions into D lines, make krc without debug
+
+Run t361a and t361b; fast and slow versions of the same cases
+\\ IDL kv3, @114, the @11 to reset 1=t361a  6=t361b
+\qi 115 123  
+
+The fast run had 18 layers to a total depth of 19.07 diurnal skin depths, 384 times-steps per sol, and 1 year spin-up, total time 1.732 s. The slow case had  28 layers to a total depth of 28.36 diurnal skin depths, 1536 times-steps per sol, and 2 year spin-up; total time 9.992 s, a factor of 5.77 slower.
+
+Typical difference in surface temperature is shown in Figure \ref{tsdelt}.
+\begin{figure}[!ht] \igq{tsdelt}
+\caption[Delta Tsurf,fast-slow ]{Delta surface temperature at the equator on the last date of run; fast-slow run, Changes are largely as dawn and dusk.
+\label{tsdelt} tsdelt.png }
+\end{figure} 
+% how made clot,reform(dtt[*,0,2,40,*]),caset,tsiz=2.,titl=['hour index','Delta Tsurf at equator, last season',kite]
+
+\begin{verbatim}
+kv3 -------------->     233
+KRCINDIFF: test for changes. Input limits:       64     120     220
+out  i    Label     Arg1       Arg2       Arg1-Arg2  At end of run!!
+ 33 32     RLAY      1.2000      1.1500    0.050000
+ 34 33     FLAY     0.18000     0.10000    0.080000
+ 35 34    CONVF      2.0000      3.0000     -1.0000
+ 43 42     SDEC    0.029749    0.029745  4.2494e-06
+ 44 43     D_AU      1.5578      1.5578  2.4722e-08
+ 45 44    LsubS    0.069890    0.069880  9.9829e-06
+ 71 70   TATMIN      143.73      143.73 -5.4216e-06
+ 72 71     PRES      961.10      961.10 -0.00083496
+ 73 72  OPACITY     0.52808     0.52808 -4.5877e-07
+ 74 73    TAUIR     0.32565     0.32565 -2.8291e-07
+ 75 74   TAUEFF     0.65129     0.65129 -5.6582e-07
+ 76 75    TATMJ      147.33      147.33  0.00051625
+ 80 79    PZREF      555.03      555.03  0.00032544
+ 82 81   TEQUIL      169.53      169.53  0.00014449
+ 83 82    TBLOW      639.68      639.68 -5.0757e-06
+ 85 84   SCALEH      7.4309      7.4309  1.9693e-05
+ 86 85     BETA     0.47863     0.47863 -2.9500e-07
+ 87 86     DJU5      838.29      1525.3     -686.99
+ 88 87      DAM      90.052      90.052  7.3603e-06
+ 89 88   EFROST      404.02      378.44      25.573
+101  0       N1      18      28     -10
+102  1       N2     384    1536   -1152
+105  4       N5      81     121     -40
+112 11    JDISK      41      81     -40
+119 18    Notif      20      40     -20
+131 30     N1M1      17      27     -10
+132 31      NLW       2       3      -1
+134 33      KKK       8      10      -2
+135 34    N1PIB      18      28     -10
+140 39       J5      41      81     -40
+
+kv3 -------------->     561
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs
+   Tsurf   -0.21798    1.12928  -56.37955    3.18767    0.43530   56.37955
+   Tplan   -0.01241    0.66178  -44.30767    0.85996    0.10438   44.30767
+    Tatm    0.03516    0.12683   -0.49962    0.53894    0.08384    0.53894
+ DownVIS   -0.00253    4.38939 -319.07159    4.18801    0.82042  319.07159
+  DownIR    0.01096    0.05719   -0.14041    0.37316    0.02448    0.37316
+QY              DOUBLE    = Array[48, 5, 41, 9]
+QB              DOUBLE    = Array[48, 5, 41, 9]
+QP              DOUBLE    = Array[48, 5, 41, 9]
+Tsurf CaseRange=all  LatRange=0:4  SeasonRange=all  hour   lat  seas  case
+ quilt before any other display
+                   Mean       StdDev      Minimum      Maximum
+         1      -0.217980      1.12928     -56.3796      3.18767  signed
+N=   88560       0.435299      1.06456      0.00000      56.3796  absolute
+kv3 -------------->     562
+Mean= (each case) last row and column are average
+t361a - t361b:  Tsurf. CaseRange=all  LatRange=0:4  SeasonRange=all
+Idx    -60.    -30.      0.     30.     60. Average
+  1   111.4  -144.6   -65.0   -58.8   108.7    -9.6
+  2   111.4  -144.6   -65.0   -58.8   108.7    -9.6
+  3   107.5  -149.5   -68.9   -63.7   107.4   -13.4
+  4   110.2  -153.0   -66.6   -64.9  -668.6  -168.6
+  5 -1004.6  -155.4   -94.7   -97.0  -555.7  -381.5
+  6 -1004.7  -155.4   -94.5   -97.1  -555.7  -381.5
+  7 -1004.7  -155.4   -94.5   -97.1  -555.7  -381.5
+  8  -760.0  -157.2   -80.8  -112.6  -429.7  -308.0
+  9  -760.0  -157.2   -80.8  -112.6  -429.7  -308.0
+ 10  -454.8  -152.5   -79.0   -84.7  -318.9  -218.0
+StDev=
+  1   291.8   309.7    87.2   155.4   286.2   226.1
+  2   291.7   309.7    87.2   155.4   286.2   226.0
+  3   293.0   307.4    84.9   157.2   289.4   226.4
+  4   315.1   319.7    91.4   162.7  4837.8  1145.3
+  5  1741.9   252.7    73.3   131.8  1203.6   680.7
+  6  1741.9   252.8    73.3   131.8  1203.6   680.7
+  7  1741.9   252.8    73.3   131.8  1203.6   680.7
+  8  1348.0   282.6    78.8   172.1   944.0   565.1
+  9  1348.0   282.6    78.8   172.1   944.0   565.1
+ 10  1012.6   285.5    80.9   152.3  1244.3   555.1
+kv3 -------------->     564
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=Lat
+    Lat.    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+    elev    0.00000    0.00000    0.00000    0.00000    0.00000    0.00000
+kv3 -------------->     565
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs  0]=DJU5
+    DJU5 -686.99286    0.00000 -686.99286 -686.99286  686.99286  686.99286
+
+
+
+    Item       Mean     StdDev        Min        Max    MeanAbs     MaxAbs
+   Tsurf   -0.10539    0.35730  -10.24632    3.18767    0.26774   10.24632
+   Tplan   -0.03121    0.18829   -1.10532    0.55193    0.10101    1.10532
+    Tatm   -0.01053    0.09343   -0.49962    0.22083    0.06587    0.49962
+ DownVIS    0.00146    4.73669 -319.07159    4.18801    0.99135  319.07159
+  DownIR    0.00162    0.04177   -0.14041    0.23393    0.02246    0.23393
+QY              DOUBLE    = Array[48, 3, 41, 9]
+QB              DOUBLE    = Array[48, 3, 41, 9]
+QP              DOUBLE    = Array[48, 3, 41, 9]
+Tsurf CaseRange=all  LatRange=1:3  SeasonRange=all  hour   lat  seas  case
+ quilt before any other display
+                   Mean       StdDev      Minimum      Maximum
+         1      -0.105391     0.357299     -10.2463      3.18767  signed
+N=   53136       0.267737     0.259008  7.11211e-06      10.2463  absolute
+kv3 -------------->     562
+Mean= (each case) last row and column are average
+t361a - t361b:  Tsurf. CaseRange=all  LatRange=1:3  SeasonRange=all
+Idx    -30.      0.     30. Average
+  1  -144.6   -65.0   -58.8   -89.4
+  2  -144.6   -65.0   -58.8   -89.4
+  3  -149.5   -68.9   -63.7   -94.1
+  4  -153.0   -66.6   -64.9   -94.9
+  5  -155.4   -94.7   -97.0  -115.7
+  6  -155.4   -94.5   -97.1  -115.7
+  7  -155.4   -94.5   -97.1  -115.7
+  8  -157.2   -80.8  -112.6  -116.8
+  9  -157.2   -80.8  -112.6  -116.9
+ 10  -152.5   -79.0   -84.7  -105.4
+StDev=
+  1   309.7    87.2   155.4   184.1
+  2   309.7    87.2   155.4   184.1
+  3   307.4    84.9   157.2   183.2
+  4   319.7    91.4   162.7   191.2
+  5   252.7    73.3   131.8   152.6
+  6   252.8    73.3   131.8   152.6
+  7   252.8    73.3   131.8   152.6
+  8   282.6    78.8   172.1   177.8
+  9   282.6    78.8   172.1   177.8
+ 10   285.5    80.9   152.3   172.9
+\end{verbatim} 
+ 
+\section{2018 Nov 13 16:29:52  extra case in .t52}
+ writing .t52 seems to be resetting krccom itesms to zero
+
+last case is extra and empty.
+
+krc8.f NCASE starts at 1
+\\ incremented after seasons, just before: CALL TCARD8 (2,IRC)       ! read set of parameter changes
+\\  decrement by 1 IF (IRL.EQ.3), rare continuing from prior run
+\\ decrement by 1 if no more cases
+
+WHen no more cases, 
+\qi IF (LOPN2) CALL TDISK8 (4,KREC) ! all done: close direct acess output file
+\qi IF (LOPN4) CALL TDISK8 (7,KREC) ! type 5x
+\qi  there: JJJ(IDX+2) = NCASE
+\qii WRITE(IOSP,603)IDX,JJJ
+\qii IDX= 4  JJJ=    5   48    7   19   42    0    0    5   25    0
+ \\ ERROR JJJ(6) prints as zero, but should be positive !
+
+But , both KRC and TCARD can call TDISK (7 to write file, and TDISK resets NCASE=0!! fatal error
+
+NCASE modified only by KRC
+Decide; reset it if open new t52?  or let increase thur all of run?
+  which could be hundreds!
+
+
+NRUN starts at 0 in KRC
+increments in TCARD when change specifies T52 file , also updates FDISK
+
+
+3.6.2:
+\\ Runs are 1-based, linked to type 5x files.
+\\ Cases are 1-based, linked to case in any Type 5x file
+\\ File open,  TDISK (1 and 6, must occur before seasons 
+\\ File close, TDISK (4 must occur after seasons , (7 must occur after TCARD changes
+\\ TCARD change must occur after Seasons (except one-Point)
+\\ Thus
+\\  Runs start at zero, increment when 5x files are opened
+\\  Cases start at 0, increment at very top of season loop. Reset to 1 just before Type 5x file opened. 
+
+\end{document} %#############################################################
+% ===================== stuff beyond here ignored =============================
+
+\ref{}
+\begin{figure}[!ht] \igq{}
+\caption[]{
+\label{}  .png }
+\end{figure} 
+% how made
+ 
+\begin{table} \caption[]{}  \label{}
+\begin{verbatim}
+---
+\end{verbatim}
+\vspace{-3.0mm}
+\hrulefill \end{table}  
+
+
+
+\subsection{} %----------------------------

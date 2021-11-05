@@ -40,7 +40,7 @@ for j=0,n-1 do begin		; each item
   rv=val(j)                     ; move into equivalenced area
   keyj=strtrim(key(j),2)	; trim both ends
   rem0=0B                       ; unset the "remove trailing 0's" flag
-  if type eq 7 then ss=strcompress(val(j),/REMOVE_ALL) $
+  if type eq 7 then ss=strcompress(val(j),/remove_all) $
   else begin                    ; numeric
     if keyword_set(fmt) then form='('+fmt(j)+')' else begin
       del=.5

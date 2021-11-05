@@ -1,84 +1,141 @@
 \documentclass{article} 
 \usepackage{underscore} % accepts  _ in text mode
 \usepackage{ifpdf} % detects if processing is by pdflatex
-\usepackage{/home/hkieffer/gong/tex/newcom}  % Hughs conventions
+\usepackage{newcom}  % Hughs conventions, modify in this directory
+
 % \newcommand{\qj}{\\ \hspace*{-2.em}}      % outdent 1
 \newcommand{\erfc}{\mathrm{erfc}}  % error function inside math
 \newcommand{\qeq}{\hspace{25.mm}} % space original equation number to the right
 %\newcommand{\qI}{\} % s
 \newcommand{\bq}{$ < \! > \!   \! >$ } %  begin quote
 \newcommand{\eq}{ $< \! \! < \! > $ } %  end quote
+
+\newcommand{\qh}[1]{\\ \hspace*{#1.em} #1 \hspace*{0.4em} } %  LOOP indent
+\newcommand{\qH}[1]{\\ \hspace*{#1.em}  \hspace*{1.3em} } %  LOOP additional
+
 % Use only one of the following two
 \newcommand{\ql}[1]{\label{eq:#1} \hspace{1cm} \mathrm{eq:#1} \end{equation}}
 %\newcommand{\ql}[1]{\label{eq:#1} \end{equation} } % for final
+
+% USE ONE OF NEXT TWO: first = greatly diminished labnotes, second =  mid-size
+\newcommand{\qln}{\tiny \setlength{\baselineskip}{4.pt} \setlength{\parskip}{0.5pt} } % start tiny notes
+%\newcommand{\qln}{\footnotesize \setlength{\baselineskip}{8.pt} \setlength{\parskip}{2.2pt}} % minor reduction for lab notes
+
+\newcommand{\qlf}{\footnotesize \setlength{\baselineskip}{8.pt} \setlength{\parskip}{2.2pt}} % minor reduction for lab notes
+\newcommand{\qnl}{\normalsize \setlength{\baselineskip}{12.pt} \setlength{\parskip}{4.3pt}} % end lab notes
+%\qln % v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v
+%\qnl % ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
+
 \title{Rough Surfaces and Thermal Beaming using KRC models}
 \author{Hugh H. Kieffer  \ \ File=-/krc/Doc/DV3/Beaming.tex  2016Mar}
 % josh  c=602-770-9724    ??> 208-331-7998
 % davidsson icarus submitted
 \begin{document} %==========================================================
-\maketitle
+\maketitle 
+\setlength{\baselineskip}{8.pt} 
 \tableofcontents
 \listoffigures
-%\listoftables
+\listoftables
+\setlength{\baselineskip}{12.pt} 
 \hrulefill .\hrulefill
 % \pagebreak
 
 \begin{abstract}
 ``Thermal beaming'', the non-isotropic thermal emission of a rough surface, is
-  implimented as a post-KRC process.  KRC is first run for a uniform grid of
-  slopes and azimuths, azimuths being ``cases'' in a single file and each type
-  52 output file being named to indicate the slope used; these KRC runs normally
-  are for a planetary set of latitudes and for a planetary year (after
-  spinup). An IDL program reads the KRC files and progressively narrows in on
-  particular surface points and season, models of surface slope distributions,
-  and viewing directions. A set of observation wavelengths can be defined, and
-  the surface facets at different slopes/azimuths (and thus temperatures) are
-  summed based on their abundance in the slope model and their black-body
-  radiance at each wavelength, yielding a forecast infrared spectrum. While
-  designed primarily for airless bodies, an ``atmosphere-present'' mode accounts
-  for an atmosphere grey spectral radiance at the appropriate viewing geometry.
+  implimented as a post-KRC process.  KRC is first run through a series of steps
+  to generates results for 'ramps' that view similar flat-lying material and
+  then ``valleys'' that view the opposite wall of a valley. This is done for a
+  uniform grid of slopes and azimuths, with output files being named to indicate
+  the slope, azimuth and far-field used; these KRC runs normally are for a
+  planetary egual-area set of latitudes and for a planetary year (after spinup). An IDL
+  program reads the KRC files and progressively narrows in on particular surface
+  points and season, models of surface slope distributions, and viewing
+  directions. A set of observation wavelengths can be defined, and the
+  black-body radiance at each wavelength for surface facets at different
+  slopes/azimuths (and thus temperatures) are summed based on their abundance in
+  the slope model, yielding a forecast infrared spectrum. While designed
+  primarily for airless bodies, an ``atmosphere-present'' mode accounts for an
+  atmosphere of grey spectral radiance at the appropriate viewing geometry.
 \end{abstract}
 
 Remaining Steps \begin{enumerate}    % numbered items 
 %\item Recover the discussion in V34 design 
 %\item Define the model set needed
-% \item Generate the input file(s). Models must have consistent naming
-% \item Run the models
+ \item Generate the input file(s). Models must have consistent naming
+\qi Ben* used large obliquity
+\qii Have BenZ34Z00.t52 for  Z= A B J K L
+\qii Need step 4, BenZ34Zeq.t52, for all 5
+\qi BEn* used 2014 proper pole
+\\ Have BEnA: 00 and eq; need B J K L
+\qi run IDL krcinpgen;  mode 2. (see \S \ref{krcseq}) cat input file
+\qi run IDL krcinpgen;  mode 3.  cat input file
+ \item Run the models, inp= EZ2, takes 1 min.  inp=EZ3 take 40 min .
 % \item Design the integation algorithm
 % \item Write the integration routine
 %\qi Look at starting with krchemi
 % \item Run the integration, Study the results
  \item Complete the UG document
 
+\item Analytic theory or approximations
+\qi -  for homogeneous surfaces.  parameter Q= inertia/period ? 
+\qi homogeous rotating spheres
+
+Carslaw: [2.12](3) \qb \mathbf{k}=\left( \omega/ 2 \kappa \right) ^{\frac{1}{2}} \qe
+
+\item Figures
+\qi emissivity versus direction for rotating spheres (asteroids) 
+\qii homogeneous:function of obliquity and of $Q=P I^2 \equiv=P \kappa\rho C_p $
+\qii extreme layers, 50/1000
+\end{enumerate}
+
 The symbols \bq and \eq  are used here to bound direct quotes from articles.
 
-\end{enumerate}
+ALERT: KRC runs before 2017feb23, V 3.4.3, had azimuth reversed,
+\qi But, 2018dec13 removed all -/krc/beam/ *.inp and output before 2018
+
+ALERT: Some KRC runs had bad parameters. Revealed by BEAMLIST; see \S \ref{sbeam} and Table \ref{runt}
+\qi ??  redo A radiance+  
 
 % \hrulefill MOVE: \hrulefill
 
-\subsection{Notation \label{nota} }
-Quotes and comments on journal articles are not required to follow this notation.
-Geometry notation is in \$\ref{geom}'
-\\ $i$ = incidence angle on regional horizontal; or an index, hopefully clear by context
-\\ $i'$ = incidence angle on individual tilt facet
+\subsection{Notation \qlabel{nota} }
+Quotes and comments on journal articles may not follow this notation. There are some other local exceptions.
+Geometry notation is in \S \$\ref{geom}
+\\ $a$ or $\phi$ : azimuth angle  $0 \leq a \leq 360^\circ $ of down-dip; often relative to body North
+\\ $\mathcal{B}$ :  the Planck function
+\\ $i$ : incidence angle on regional horizontal (measured from the regional zenith)
+\qii  or an index, hopefully clear by context
+\\ $i'$ : incidence angle on individual tilt facet
 \\ $\mu_0$ and $\mu_0'$: cosine of the above incidence angles
 \qi  A facet is in the dark if either or both $\mu_0$'s is/are less than 0
-\\ $e$ = emergence (viewing) angle on regional horizontal
-\\ $e'$ = emergence angle on individual tilt facet
+\\ $e_v$ : emergence (viewing) angle relative to the regional zenith
+\\ $e'_v$ :  emergence angle relative to an individual tilt facet normal
 \\ $\mu$ and $\mu'$: cosine of the above emergence angles
-\qi  A facet is invisible if either or both $\mu$'s is/are less than 0
-\\ TI is thermal inertia
-\\ $\bigcap$ : optional complexity
+\qi  A facet is invisible if either $\mu$'s is less than 0 
+\\ $p$ probability function
+\\ $\mathcal{R}$ : radiance
+\\ $s$ or $\theta$ slope  $0 \leq s \leq 90^\circ $ [from horizontal] of a facet. $s$ is sometimes $\tan \theta$
+\\ $T$ : surface kinetic temperature
+\\ $T_b$ : brightness temperature
+\\ TI or I: thermal inertia
+\\ $\epsilon_\lambda$ : surface spectral emissivity 
+\\ $\lambda$ :  wavelength or wavenumber
+\\ $\psi$ : relative azimuth, commonly between incident and emission planes around the regional zenith.
+\\ $\omega, \Omega$ : element of solid angle
+\\ $\overline{\theta}$ : theta-bar, the mean slope of roughness
+\\ \qfo{---} : output file
+\\ @ : an address in a large case statement
+% \\ $\bigcap$ : optional complexity
 
 Subscripts: (not followed strictly)
-\\ i : Hour, as in KRC output
-\\ j : latitude,  as in KRC output
-\\ J (j) : within a set of roughness mean slopes
-\\ k : azimuth, as in KRC cases or tilt facets
-\\ K (k): index of a KRC full tilt-set run (hundreds of slope/azimuth cases)
-\\ m : slope (dip), as in KRC cases or tilt facets 
-\\ l : within a set of wavelengths
-\\ n : within a set of view directions 
+\\ i : index of Hour, as in KRC output
+\\ j : index of latitude,  as in KRC output
+\\ J : index within a set of roughness mean slopes
+\\ k : index of azimuth, as in KRC cases or tilt facets
+\\ K : index of a KRC full tilt-set run (hundreds of slope/azimuth cases)
+\\ m : index of slope (dip), as in KRC cases or tilt facets 
+\\ l : index within a set of wavelengths or wavenumbers
+\\ n : index within a set of view directions 
 
 \section{Representation}
 
@@ -94,34 +151,78 @@ If beaming increases radiation at small phase angles, there is still a problem
 of defining beaming at night; whatever model is used it should be continuous
 across the terminator!
 
-If there is beaming, the surface likely has composite TI, so that spectral
-assessments computed from temperature distributions along slopes are in a sense
-synthetic.
+If a surface shows beaming, the surface likely has composite TI, so that
+spectral assessments computed from temperature distributions along slopes are in
+a sense synthetic.
 
-For one surface point $q$, the radiance spectrum toward a viewer in direction  $\nu$ is: 
+For one surface location $q$ at hour=H and latitude=L, the radiance spectrum
+from a smooth (flat) surface toward a viewer in direction $v$ is, assuming
+Lambertian emission for each surface element:
 
-\qbn \mathcal{R}_q(\lambda,\nu) = \frac{\oint_\theta (\cos e' \geq 0) \ \epsilon_\lambda \mathcal{B}(\lambda,T_{S(s,a)}) p(s,a) \ d\theta} { \cos i} \ql{1p}
-where \qi $T_S$ is the surface kinetic temperature
-\qi $\lambda$ is the wavelength
-\qi $\epsilon_\lambda$ is the surface spectral emissivity 
-\qi $\mathcal{B}$ is the Planck function
-\qi $e$ is the angle between a surface element normal and the direction to the viewer
-\qi $\theta$ is an element of solid angle in the upper hemisphere above the regional horizontal defined by
-\qii  slope $0 \leq s \leq 90^\circ $ relative to the regional zenith
-\qii and azimuth  $0 \leq a \leq 360^\circ $ relative to some fixed direction; e.g.,'North'
+\qbn \mathcal{R}_q(\lambda,v) = \epsilon_\lambda \mathcal{B}(\lambda,T) \ql{1f}
+
+For a rough surface, at the same location, composed of many facets oriented at slope $s$ and azimuth $a$
+
+\qbn \mathcal{R}_q(\lambda,v) = \frac{\int_\Omega  \epsilon_\lambda \mathcal{B}(\lambda,U\cdot T(s,a)) p(s,a,r) S(i,e,r) \ d\Omega } {\int_\Omega  p(s,a,r) S(i,e,r)\ d\Omega}   \ql{1p}
+where 
+\qi $\Omega$ is the projected solid angle of a facet as seen by the viewer
+\qiii thus; proportional to $\mu' \equiv \cos e'$
 \qi $p(s,a)$ is the probability of a surface element having the orientation $(s,a)$
-\qi $i$ is the angle between the regional zenith and the direction to the viewer
+\qi $U(H,g)$ Temperature modification due to illumination history different 
+that assumed in KRC; 
+\qiii $g$ represents geometric conditions, such as possible shade during the day.
+\qi $S(i,e,r)$ Probability of a facet being visible (not hidden) by rough topography.
+\qii $i$ is the regional incidence angle, $e$ and $e'$ are regional and local emergence angles;
+\qiii these depend upon: hour, latitude, and view direction; and for $e'$, facet slope and azimuth, 
+\qi $\epsilon_\lambda $ Emission spectral-photometric factor at facet emergence angle $e'$ 
 
-\vspace{ 2.mm} 
+Impliment as 
+\qbn \mathcal{R}[w,v,h,l,r,m]= \sum_{s,a}  \epsilon_\lambda \mathcal{B}
+(\lambda, U \cdot T[h,l,s,a,m]) \cdot \underbrace{ p(s,a,r) S(i,e,r) 
+(\cos e' \geq 0 ) }_{W=\mathrm{Weight}} / \sum_{s,a} W  \ql{1s}
+where
+\qi $w$ : wavelength index
+\qi $v$ : index within a set of view directions 
+\qi $h$ : index of Hour, as in KRC output
+\qi $l$ : index of latitude,  as in KRC output
+\qi $s$ : index of facet slope (dip), as in KRC cases 
+\qi $a$ : index of facet azimuth, as in KRC cases
+\qi $r$ : index within a set of roughness mean slopes
+\qi $m$ : index of a KRC model run (hundreds of slope/azimuth cases)
+
+\subsubsection{Simplifying assumptions} %...........................
+
+1. The surface roughness characteristics are the same at all azimuths, and all
+facet azimuths are equally likely: $p(s,a) = \frac{1}{N_a}P(s) $, where P(s) is
+slope distribution determined by a roughness model.
+
+2.  $ \epsilon_\lambda$ is constant, i.e., Lambertian emission. Also, this
+constant is unity. Although $\epsilon \neq 1$ may be used in KRC runs, because
+most beaming analysis is relative to a smooth surface, this is a simplification
+with no loss of generality.
+
+3. $U$ is symbolic; normally $U=1$, but also have the option to replace $T(H)$
+with $T_\mathrm{min}$, the minimum diurnal temperature, for the fraction of the
+surface expected to be shaded at noon. This fraction is the same for all facets
+at one H,L location.
+
+4. Probability of a facet being shaded (or visibility blocked) by topography is a function only of roughness and regional geometry, not individual facet orientation.
+
+\subsubsection{Unresolved object} %.........................................
 
 For a distant view of the globe:
 
-\qbn \mathcal{R}(\lambda,\nu) = \frac{\oint_\phi \mathcal{R}_q(\lambda,\nu)\ \ d \phi } {2 \pi} \ql{glob}
-where \qi $\phi$ is an element of solid angle over the visible side of the (presumed spherical) body.
- 
-$T_B(\lambda) =  \mathcal{B}'(\mathcal{R}(\lambda))$ where $\mathcal{B}'$ is the inverse Planck function.
+\qbn \mathcal{R}(\lambda,v) = \frac{\oint_\omega \mathcal{R}_q(\lambda,v) 
+\ \ d \omega } {2 \pi} \mc{or} \mathcal{R}_q[w,v,r,m]=
+\sum_{h,l}\mathcal{R}[w,v,h,l,r,m] (\cos e \geq 0)  /  \sum_{h,l} (\cos e  \geq 0)  \ql{glob}
 
-Includes the assumption that the surface roughness characteristics are the same at all azimuths.
+where \qi $\omega$ is an element of solid angle over the visible side of the (presumed spherical) body.
+ 
+Brightness temperature $T_B(\lambda) =  \mathcal{B}'(\mathcal{R}(\lambda))$ where $\mathcal{B}'$ is the inverse Planck function.
+
+NEED definitive statement about the relative area of each facet.
+\qcite{Shepard95} p11715.3b \bq  Our synthetic
+surfaces are generated so that the projected surface area of each facet is a constant; \eq
 
 
 \subsection{Fundamental modeling approaches}
@@ -133,16 +234,17 @@ Two major ways to model:
   have used a homogeneous TI.
 
 \item \textbf{Weighted tilted models} Calculate a set of models over a range of
-  slopes and azimuths, and do a weighted sum of radiances. E.g.,
-  \qcite{Bandfield08}, \qcite{Bandfield09} Easy to run large set of models to
-  type52. Then need reformat to file of Tsurf only. 3rd step is weighted sum
-  based on roughness model and view direction. All this is similar to what was
-  done for the global mean surface temperature map.
+  slopes and azimuths, and do a weighted sum of radiances; e.g.,
+  \qcite{Bandfield08}, \qcite{Bandfield09}. Pragmatic approach is to do in steps: 
+\qi 1)  Run large set of KRC models to type 52. 
+\qi 2) Reformat to file of Tsurf only, then convert to radiance at a set of wavelengths
+\qi 3) Weighted sum over slope/azimuth facets based on roughness model and view direction. 
+\\ Approach is similar to what was done for the global mean surface temperature map.
 \end{enumerate}
 
 After either of the above, could considered \textbf{Post-processing}:
-Parameterize effects using angle away for Solar incidence and delta-Hour from
-solar incidence.
+Parameterize effects using angle in meridian away for Solar incidence and
+delta-Hour from solar incidence.
 
 \qcite{Vasavada99}: both flat and craters, 32x32 square grid of facets,
  include planet curvature. 
@@ -166,6 +268,9 @@ used the special property of spherical Lambertian craters for the radiosity and
 accurately considered the fractional sunlight and shadow for each facet, but a
 model run would hold for only the specified crater depth/diameter ratio.
 
+\xinput{joshtab} %=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-
+\clearpage
+
 \subsection{Bandfield model}
 
 \qcite{Bandfield08} used KRC for an set of slopes at 2\qd ~dip and 20\qd ~azimuth intervals; (p 143.9a)
@@ -182,7 +287,7 @@ facet. It is assumed that surfaces blocked from the view of the observing
 spacecraft by other surfaces are of a random nature and do not need to be
 explicitly accounted for (e.g. Hapke, 1984). \eq
 
-Done in IDL beaming.pro @45. \\ Use $\sigma$ of 6.288, 12.74 and 19.54 to get
+Done in IDL beaming.pro . \\ Use $\sigma$ of 6.288, 12.74 and 19.54 to get
 $\overline{\theta}$ of 5, 10, 15; see Fig. \ref{bandfieldFig2}; this does not
 match Bandfield08 Fig.2 .  Using $\sigma$ of 5, 10, 15 yields
 $\overline{\theta}$ of 3.98, 7.9 and 11.7
@@ -197,24 +302,166 @@ $\overline{\theta}$ of 3.98, 7.9 and 11.7
 %      1.25834      1.27410      1.30268      1.25648      1.30507      1.28221
 %      1.25835      1.27410      1.30266      1.25650      1.26609      1.28221
 
-
+\pagebreak
 \subsection{Treatment of roughness}  % ---------------------------------------
 
 The individual cases in KRC do not treat statistical roughness, only allowing
-the far field to be based on an RMS slope at opposing azimuth.
+the far field to be based on any prior model, typically a similar slope at
+opposing azimuth. The far field could be a mixture of prior models.
 
-In summing thermal radiance from unresolved roughness elements, the view can
-take into account the probabililty of facets being hidden as a function of
-regional and facet emergence angles, and their relative azimuth in severla ways:
-\qi Null: all facets not in title shadow are seen. 
-\qi $S$: tilts are uniform in elevation 
-\qi $S'$: tilt distibution is influenced by geology.
+In summing thermal radiance from unresolved roughness elements, must take into
+account the probabililty of facets being hidden as a function of regional and
+facet emergence angles and their relative azimuth.
 
-For the non-null treatment, evaluation of $S$ or $S'$ requires $\mu$, $\mu'$,
+ See \S \ref{geom} and \S \ref{nota} for definitions and notation.
+
+Basic shadow function: use \qcite{Smith67} for the fraction of surface NOT in 
+shadow (i.e., is in sunlight as viewed from the zenith); using his notation. % (terms reorganized)
+
+Paraphrazing: the probability $S$ that a point on a random rough (Gaussian height
+distribution) surface, will not lie in shadow when the surface is illuminated
+with a parallel beam of radiation at a fixed angle of incidence to the mean
+plane and nadir viewing:
+
+\qbn \underbrace{S(i,\overline{\theta})}_{\mathrm{here}} \Leftarrow  \underbrace{ S(\theta)}_{\mathrm{Smith67}} = \frac{ 1- \frac{1}{2} \erfc \left( \mu / \sqrt{2} w \right) } 
+{\left( \sqrt{2/\pi} \cdot \frac{w}{\mu}
+e^{-\mu^2 / 2w^2} -\erfc \left(  \mu / \sqrt{2} w \right) \right)/2  +1 } \qeq (\mathrm{Smith} \ 24 \ \mathrm{and} \ 21) \qen
+
+where $i$ is the incidence angle, $\mu = \cot i $ (just before Eq (12). BEWARE, not the conventional $\cos i$); $w^2$ is the mean-square
+surface slope, $w \equiv \overline{\theta}$ [just after Eq. (3) ].
+
+Note: Smith $q$ is the slope component in the incidence plane; + being surface
+getting higher toward the source. $\theta$ is the incidence angle from
+zenith. Hence the statement at p4060.4b \bq $S(0)$ will clearly be unity if
+$q_o$ is less than $\cot \theta$ \eq
+
+Smith section on optical shadowing (Eq. 26 to 38) assumes viewer is in the plane
+of illumination (relative to regional zenith), which is quite restrictive.
+
+  For off-nadir views,  \qcite{Bandfield15}, follows the approach of \qcite{Hapke84} with the approximation ``the shaded fraction observed'':
+\\ when $e_v>i$: $S_v(i,\overline{\theta},\psi)=S_n(i,\overline{\theta}) \left( 1-F(\psi) \right) $
+\\ when $e_v<i$: $S_v(i,\overline{\theta},\psi)=S_n(i,\overline{\theta}) -S(e,\overline{\theta})F(\psi) $
+\qi  where $\psi = \phi_i-\phi_e$  and $F(\psi) \equiv -e^{-2 \tan \psi/2} $
+
+[Note:  \qcite{Bandfield15} p359b around equations 3 and 4 refers to $S$ as ``the fraction of shadowing'' and refers back to his Eq. 1 rather than the proper 2. His use of $S$  for both sunlit and shadowed areas is confusing. ]
+
+Because $F$ is a \textbf{decreaseing} function of $\psi$  from 0 to $\pi$;
+ expressing these in terms of the sunlit fraction $H$ using the Smith definition of S:
+\\ when $e_v>i$: $H(i,\overline{\theta},\psi)= 1- \left( 1-S(i,\overline{\theta})  \right)\cdot \left( 1-F(\psi) \right) $
+\\ when $e_v<i$: $H_v(i,\overline{\theta},\psi)=S(i,\overline{\theta}) -\underbrace{\left( 1-S(e,\overline{\theta}) \right)}_{dark} \left( 1-F(\psi) \right) $
+
+
+These relations are implimented in \np{hiding.pro} and the production version
+\np{hide2.pro} as
+
+\qb S(i,\overline{\theta}) =  \frac{ 1- \frac{1}{2} \erfc \left( \mu / \sqrt{2} w \right) } 
+{1  - \frac{1}{2} \erfc \left(  \mu / \sqrt{2} w \right) 
++ \frac {1}{\sqrt{\pi}\sqrt{2}} \frac{e^{-\mu^2 / 2w^2}}{\mu/w} }
+= \frac{1-E}{f_1*f_2/c -E +1} \mc{Or} 
+\frac{B}{B+\frac{e^{-a^2}}{2\sqrt{\pi} \ a} }
+\qe
+where $c=\mu/w$, \ \ $a=c/\sqrt{2}$ , \ \ $E= \frac{1}{2} \erfc \left( a \right)$ or zero if $a>7$, \ \  $f_1= \sqrt{2/\pi}/2 $, \ \ $z=c^2/2$, \ \ $f_2= e^{-z}$ or zero if $z > 70$
+\\ Or $a=1/( \sqrt{2}w \tan i)$ and $B=1-\erfc(a)/2$
+
+
+$S$ for shadowing can be used to set the proportion of facets which are at their
+``cold'' state, However, $S$ for hiding is of little use, as it is independent
+of facet attitude. Facets are all weighted by their projected area, proportional
+to $\mu' \geq 0 $.
+
+Possible (realistic) complications difficult to include:
+\qi $S`$: tilt distribution varies with elevation; e.g., valleys are flatter than mountain tops. 
+\qi $S'$: tilt distribution is influenced by geology; e.g, aligned ridges.
+
+For the non-null treatment, evaluation of $S`$ or $S'$ requires $\mu_0$, $\mu$,
 and $\psi$
 
+\subsection{What is needed for thermal beaming   IN WORK}
+Assumptions: 
+
+
+--. Proportion of surfaces in shade when incidence angle is $i$ when viewed from emission angle $e$ at relative azimuth $A$, $S(r,i,e,A)$ is a smooth function of $A$  between the result for $e$ in the incident plane $(A=0)$ and the result for $e$ in the forward scattering plane $(A=\pi)$. 
+
+--. For $A=0$, two cases, based on \qcite{Smith67}, as given in \S \ref{vlo} and \ref{vhi}. For $A=\pi$, use SMit relation in \ref{vop}
+
+
+\subsection{Viewing shadows}
+ Smith develops the relations for viewing an illuminated rough surface in the
+ plane of illumination, called ``optical shadowing''. His $T(p,q,\theta,\phi)$
+ is the probability that a point with slopes $q$ and $p$ will not be shadowed
+ for either of the incident ray direction $\theta$ or the view direction $\phi$
+ when both are in the same plane that includes the regional zenith; $\phi$ is
+ positive if on the illumination side of zenith [4 lines before Eq 28].
+
+\subsubsection { $\phi > \theta$ \qlabel{vlo}} When viewer is on the sun side of zenith, i.e., azi=0, and below the Sun
+
+Sun is in the x=0 plane; slopes in this plane $q= \frac{\partial z}{\partial y}$
+
+[just before Eq. (3)]
+
+$h$ is the unit step function [before Eq. (10)]  
+
+\qbn T(p,q,\theta,\phi)= S(q,\phi)= h(\overline{\mu}-q)G(\overline{\mu}) \ \ (29) \qen
+where $\overline{\mu} = \cot \phi $ 
+and $ G(\overline{\mu}) =1 / \left[ \Lambda(\overline{\mu}) +1 \right] $
+ and $ \Lambda$ is defined by Eq.(21) 
+
+However, in this geometry, the viewer can see only sunlit surfaces, so expect $H=1$.
+
+\subsubsection { $ 0 < \phi < \theta $ \qlabel{vhi}}   When viewer is on the sun side of zenith, i.e., azi=0, and above the Sun.
+
+\qbn T(p,q,\theta,\phi)= S(q,\theta)=h(\mu-q)G(\mu) \ \ (30) \qen
+
+\subsubsection { $\phi <  0 $ \qlabel{vop}}  or, azimuth is 180\qd.
+
+\qbn T(p,q,\theta,\phi)= S(q,\theta) \cdot S(q,\phi) = h(\mu-q) h(\overline{\mu}-q)G(\mu) G(\overline{\mu}) \ \ (31) \qen
+
+\subsection{Azimuth relation \qlabel{azi} }  %.............................
+
+For rough surfaces, compute the probability of occurance for each facet slope,
+and hte projected area of each facet slope and azimuth. Apply the shadow and
+visibility functions for the illumination and viewing geometry to all facets.
+
+For relative azimuth dependence, assume a smooth azimuthal dependance between the $S$ function for viewing  from the same azimuth as illumination and from the opposite azimuth. I.e., 
+
+
+
+
+Allow the Hapke relation 
+$f_H(\Psi)=\exp \left( -2 \tan \frac{\Psi}{2} \right)$ 
+or the simple $f_C(\Psi)=\frac{1+ \cos  \psi}{2}$ or a new version developed here.
+ 
+The Hapke relation drops rapidly near zero and has discontinuous derivative there, 
+the second function has continuous derivatives everywhere, as does $f_e=f_c^e$, 
+which matches $f_H$ everywhere to $<.25$ and to $< .01$ beyond 92\qd.
+
+\subsubsection{Shadow and Hiding function requirements}  %
+
+ Define here: $S$ is  ``in sunlight'' function, depends only on incidence angle $i$ and roughness $r$
+
+$H$ is the ``visible in sunlight'' function, depends upon $i,r$ and emergence
+ angle $e$ and either phase angle $g$ or azimuth angle $A$, both limited to range $[0,\pi]$.
+
+Properties of $H$, from simple geometric considerations:
+\qi $H( e \geq i,A=0$)  $\equiv $ 1
+\qi $H (i, e=0) \equiv  S$ 
+\qi Must be no discontinuity as $e$ passes through $i$
+\qi Desireable to be expressed as function of $A$ rather than  $g$
+\qi $\frac{\partial H}{\partial A} \leq 0$, and $\equiv 0$ at $A$=0 or $=\pi$.
+
+% \qi $\frac{\partial H}{\partial g} \leq 0$ and =0 at $A$=180\qd
+% \qii and $\equiv 0$ at $A=0$ if $ i \neq e $
+% \qi $\frac{\partial H}{\partial g} $ should be a weak function of $A$ 
+
+Simple function that does this, except first derivative is discontinuous at $i=e$,: implimented as HHIDE: 
+\qi At $A=0$, if $e \leq i, \ \  H_0=S_i+(e/i)(1-S_i)$; else $H_0=1$, the shadows are hidden
+\qi At $A=\pi, \ H_p=S_iS_e$
+\\ $H=F(\psi)H_0 +  \left( 1-F(\psi) \right) H_p$
+\qi Could use either $i$ and $e$ or, being careful of signs, $\mu_0$ and $\mu$
+
 \subsection{Issues}  % ---------------------------------------------
-Importance of  flat far-ground? Requires KRC version 3.4+ to treat this.
+Importance of far-field thermal radiation, e.g., tilted surface viewing a flat
+field below the horizon? Requires KRC version 3.4+ to treat this.
 
  Roundoff:
 \qi sumQ= summing radiance only at innermost loop 
@@ -225,343 +472,120 @@ Importance of  flat far-ground? Requires KRC version 3.4+ to treat this.
 
 \subsubsection{Emery 2014}
 The Near-Earth Asteroid Thermal Model (NEATM) \qcite{Harris98} is unlikely to be
-adequate for Bennau, with an TI of about 300., but it is used by \qcite{Emery14}
+adequate for Bennu, with an TI of about 300., but it is used by \qcite{Emery14}
 for their Table 5.
+\qi p24.6a, beaming parameter derived from $D_{eff}$ and $T_{SS}$
+\qi p24.7b spherical section craters serve as macroscopic roughness elements 
+\qi $\eta$ is not used in this model. In this step, we continue to assume that the
+asteroid is spherical.
+\qi p32.6b re bedrock TI. CM meteorite Cold Bokkeveld has I=768. CK chondrite NWA 5515 has I=1450 
 
-p24.6a, beaming parameter derived from $D_{eff}$ and $T_{SS}$
-
-p 24.7b spherical section craters serve as macroscopic roughness elements 
-
-$\eta$ is not used in this model. In this step, we con-
-tinue to assume that the asteroid is spherical.
-
-p32.6b I=768 for  CM meteorite Cold Bokkeveld.NWA 5515 has I=1450 
-
-Gundlach, B., Blum, J., 2013. A new method to determine the grain size of planetary regolith. Icarus 223, 479–492.
-
+Gundlach, B., Blum, J., 2013. A new method to determine the grain size of
+planetary regolith. Icarus 223, 479–492.
 
 Emery, J.P., Sprague, A.L., Witteborn, F.C., Colwell, J.E., Kozlowski, R.W.H.,
 Wooden,D.H., 1998. Mercury: Thermal modeling and mid-infrared (5–12 lm)
 observations. Icarus 136, 104–123.
 
 
-\section{Implimentation using KRC}
-Use Bandfield approach; precompute data sets of tilts as cases in
-normal KRC runs; save as type 52. Azimuth at 20\qd~ intervals; slope at 2\qd~
-intervals up to 40\qd; each slope is one .t52 file. 361 cases per material.
+\qcite{Shepard95} For a fractal surface: \bq \qb P(s)=\frac{s}{s_0^2}e^{-(s^2 /
+  2s_0^2)} \qeq (13) \qe where $P$ is the slope histogram function, 
+where $s$ is the \eq surface dip, and $s_0$ is the unidirectional RMS slope.
 
-A basic simplification is to assume that all surface tilt azimuths equally probable.
- 
-Use equal-area zones from pole-to-poles, with one centered on the equator, so
-there is an odd number total; $N=2j+1$.  Normalized area of a zone is: $\sin
-\theta_2 - \sin \theta_1$ where $\theta$ is the zone boundary latitude. Thus
-$\delta \equiv \Delta \sin \theta = 2/N $.  Compute the model at the
-area-weighted center of the zones; $sin \theta= \delta/2+i \delta \ ; i=0:n-1$ .
+\bq Our synthetic surfaces are generated so that the projected surface area of
+each facet is a constant; we therefore utilize the modified Rea, Hetherington,
+and Mifflin probability density function, PRHM'(0) [Simpson and Tyler, 1982,
+  equation A5]. The normalization for this function is
+\qb  2 \pi \int_0^\frac{\pi}{2} p_\mathrm{RHM'}(\theta) \sin \theta \ d \theta \ = \ 1 \qeq (15) \qe 
 
- For example:
+Normalizing (13) to this form gives 
+\qb p_\mathrm{RHM}(\theta)=\frac{1}{2 \pi \tan^2 \theta_\mathrm{rms} } \sec^3 (\theta) \ e^{-\tan^2 \theta / 2 \tan^2 \theta_\mathrm{rms} }  \qeq (16) \qe
+
+The secant term rises in part from the conversion of (13) in
+terms of slope into degrees. Equation(16) is a Gaussian function with rms slope tan$(\theta_\mathrm{rms})$ [Simpson and Tyler, 1982]. \eq
+
+\subsection{Processing step C4; Integration \qlabel{s3}} 
+
+Loop over KRC model $K$  and over roughness $J$, for each view $n$ do 
+\qb \mathcal{R}(\lambda ,H,L)_n = \sum_{m=1}^\mathrm{nSlope}  
+\sum_{k=1}^\mathrm{nAzi} P(\theta_m,\overline{\theta}) \mu'_{ijn} 
+\ \left[ S(i,e_v,\psi,\overline{\theta}) \mathcal{R}(\lambda,k,m,H,L) 
++\left(1-S(i,e_v,\psi,\overline{\theta}) \right) \mathcal{R_S}(\lambda,k,m,H,L) \right] \qe
+
+\qbn  / \sum_{m=1}^\mathrm{nSlope} \sum_{k=1}^\mathrm{nAzi} P(\theta_m,\phi_k) \mu'_{ijn} \ql{igl}
+
+where the subscript $n$ runs over a set of viewer
+directions. $S(i,e_v,\psi,\overline{\theta)})$ is the shadow function being used
+and $\mathcal{R_S}$ is the radiance for the temperature in the shade.
+
+This hiding relation is used for shadowing of a facet from sunlight, where the
+shadowed fraction is assumed to be at a lower temperature.
+% , and for visibilty of a facet to the viewer (spacecraft), where the ``shadowed'' fraction is assumed to be hidden and does not enter the radiance sums.
+
+The looping could be made more efficient by putting the KRC models near the
+inner-most loop in @64 such that the geometry calculations are done once.
+
+From step 3, can make either unresolved object (4a) or global image  (4b)
+
+Step 4a; for unresolved object. For each roughness and model:
+Impliment \qr{glob} as, only where $\cos e'_n > 0 $:
+
+\qbn \mathcal{R}(\lambda)_n = \sum_{j=1}^\mathrm{nLat}
+  \sum_{i=1}^\mathrm{nHour} \mu_{ijn} \mathcal{R}(\lambda ,H=i,L=j) \ / 
+\  \sum_{j=1}^\mathrm{nLat}  \sum_{i=1}^\mathrm{nHour} \mu_{ijn}  \ql{rdot}
+
+
+Step 4b; for resolved object, map $\mathcal{R}(\lambda ,H,L) $ onto the visible
+hemisphere; for each roughness and model.
+
+\subsubsection{RMS dips and slopes}
+For a surface as defined by \qcite{Shepard95} Eq. 13
+\qb P(\tan \theta)=\frac{\tan \theta}{\tan^2 \theta_0} \cdot e^{-\frac{\tan^2 \theta}{2 \tan^2 \theta_0} } \leftrightarrow  P(s)=\frac{s}{s_0^2}e^{-(s^2 / 2s_0^2)} \qe
+
+$d \Omega = \sin \theta \ d \theta $
+
+Using $s\equiv \tan \theta$, the mean-square slope is 
+\qbn w^2= \int _0^{\pi/2}\frac{\tan \theta}{\tan^2 \theta_0} \cdot e^{-\frac{\tan^2 \theta}{2 \tan^2 \theta_0} }  \sin \theta \ d \theta \Rightarrow \frac{2}{a}\int _0^{\pi/2} \sin x \tan x e^{-\tan x^2/a} dx     \qen 
+where $a=2 \tan^2 \theta_0$.   No analytic solution found. Numerical integration yields a $w^2$ that peaks near 30\qd, clearly something is wrong.
+
 \begin{verbatim}
-j=9 & n=2*j+1
-dels=2./n
-sa=-1.+dels*(0.5+findgen(n))
-alat=!radeg*asin(sa)
- print,alat[0:n-1], format='(10f7.2)'
- -71.33 -57.36 -47.46 -39.17 -31.76 -24.90 -18.41 -12.15  -6.04   0.00
-   6.04  12.15  18.41  24.90  31.76  39.17  47.46  57.36  71.33  
-\end{verbatim}
-\subsection{Opposing slopes}
- To account for the tendency of a slope in rough terrain to be facing slopes of
- the opposite azimuth, e.g., a west-facing slope  is likely to view
- east-facing slopes in the far field, KRC can be run with each and every
- slope and azimuth of a tilt-run using a far-field file with a tilt near the RMS
- slope value and an azimuth different by 180\qd.
-
-This is done with the following steps: \begin{enumerate} % numbered items
-
-\item Edit an input file similar to \nf{beamP.int} that has all the input
-  parameters but ends with the last change card for the first case.
-
-\item Edit a new KRC change file starting with a file like \nf{krc/tes/beampop} to have proper file
-  names for the flat and tilt files; the slope (single input line) near the
-  intended RMS slope value; and the proper names for output file for each
-  azimuth.  \nf{beampop} will generate a flat file and also a type -1 for
-  each azimuth (20 degree spacing) for a single slope.
-
-\item Concatonate your \nf{.int} and \nf{beampop} files into an input file. E.g.
-  \\ cat BeamZz.int beampopZz $>$ BeamopZz.inp
-
-\item Run KRC on BeamopZz.inp, takes about 45 seconds.
-
-\item Edit a new KRC change file starting with a file like \nf{slop.inp} to have
-  proper file names for all .t52 output files (a single edit for Nslope lines,
-  in emacs use !). Edit the names for all the ``far field to read'' files, a
-  single edit for Nslope*Nazimuth lines; these lines must read the files
-  generated in the prior step.
-
-\np{beaming.pro} has an action @491 to generate a new \nf{slop.inp} file; first
-check @11 \nv{parf} items 0:3 and @12 \nv{pari} items 1:3 
-
-\item Concatonate your \nf{.int} and \nf{slopZz.inp} files into an input
-  file. E.g.  \\ cat BeamZz.int slopZz $>$ BeamZz.inp
-
-\item  Run  KRC on BeamZz.inp, takes about 40 minutes. This produces a .t52 file set that constitutes a ``tilt-run''  
-
-\end{enumerate} 
-
-\subsection{Thoughts not incorporated yet}
-
-For distant observations, if the body shape is not spherical one could weight
-each hour/latitude grid point with a form factor to reflect the relative size of
-each grid facet. This is an excellent approximation (exact) where the body is
-not concave
-
-Although in the KRC runs, non-Lambertian emission can be modeled, in the
-integration of rough surfaces, each facet is initially assumed to have
-Lambertian emission; this Lambertian assumption could be relaxed with additional
-code.
- 
-2016oct24 Post Banfield phone call: 
-\\ Probable temperature of the far field for rough surfaces will depend strongly
-on azimuth and time of day. E.g., west-facing slope in the afternoon will see
-east-facing, and hence hot, slopes.
- 
-% \pagebreak
-\section{User Guide to IDL beaming.pro}
-Must first have used KRC to generate at least one full tilt-set for the object
-of interest; output seasons must span one object year (IDL beaming.pro will wrap
-over a gap for the last season), have a uniformly spaced set of slopes and a
-complete uniformly spaced set of azimuths starting with 0 (do not include
-360). See a KRC input file that does this, such as \nf{BeamA.inp} .
-
-Notation:
-\qi The ``\textbf{grid}''  is the set of hours (uniformly spaced) and latitudes (uniformly spaced in area on a sphere) in the KRC model.
-\qi A ``\textbf{tilt}'' is a surface dip (uniformly spaced) and azimuth (uniformly spaced) of a surface element at a grid point.
-\qi A ``\textbf{KRC tilt-set}'' is a set of KRC output files for models that all have the same input parameters except for the surface slope and azimuth. Also called a KRC  ``\textbf{run}''.
-\qi A ``\textbf{view}'' specifies the direction to the viewer, initially in Hour-Latitude coordinates.
-
-\subsection{Auto-init}
-At start-up, \nf{beaming.pro} does:
-\vspace{-3.mm} 
-\begin{verbatim}
-880.. Decomposed=0
-851.. black background
-860.. set to 14 colors for black background
-40... View set by @15 parv
-42... Prepare the wave and view vectors
-45... Define the resolutions in tilt-set and theory 
-256.. DEFINEKRC for current precision
-\end{verbatim} 
-
-\subsection{Step 0: optional, Plot solar declination over date}
-
-KRC type -n files do not contain the sub-solar latitude for all seasons. 
-This is an estimate based on a quadratic fit of the noon down-going insolation versus latitude.
-
-@11, modify parts of file names: 0, 1, 2
-\qi @110, 123 which does:
-\vspace{-3.mm} 
-\begin{verbatim}
-207.. Set file names
-252.. Open/Read/Close type 52 file
-22... Get KRC front and hold
-253.. Estimate & plot Sdec, interpolate ttt to one date
-\end{verbatim}
-
-\subsection{Step 1: Make a date file}
-See \S \ref{s1} 
-\\ @16, modify items 
-\qi 7: Length of the target's year in Earth days. Must be same as KRC run
-\qi 8: Date desired. (will be rounded to nearest integer day.) 
-\qii Must be within the date range in the tilt-set files 
-\\ @12,  modify items
-\qi 1: Increment between slopes, degrees. Must be same as KRC run
-\qi 2: Number of slopes (not including horizontal). Must be no more than KRC run 
-\qi 3: Increment between azimuths, degrees. Must be same as KRC run
-\\ @11, Check parts of file names: 0, 1, 2, 10, 11, 12
-\\ For a \textbf{single} KRC run, do @25, then @28. Or do @111, 123
-\\ For \textbf{multiple} runs: @13 to edit run-unique names, then do @141 125 [128] 123
-\qii  Will prompt for file names (check and modify as needed) and float values (only item 8 is used)
-\qi Output: for each tilt-run: 
-\qii Date file for all slopes: parf[4]=dir +parf[5]+parf[6] e.g., BeamA5858.bin5
-\qiii Tsurf [hour, latitude, azimuth, slope]
-\qii Date file for flat with similar name: e.g., BeamA5858flat.bin5
-\qiii Tsurf [hour, latitude]
-\\ FLOW: @141
-\vspace{-3.mm} 
-\begin{verbatim}
-     11... Modify any of strings
-     16... Modify tests
-/--> 133.. Set run uniq for 2nd loop
-| /--> 133.. Set run uniq for 2nd loop
-| |    25... Read a slope model set, interpolate to one date.
-| |    28... BIN5 W t4=1season
-| \<-- 1256. +++   Inner-loop increment
-|     -5... Do nothing quickly
-\<--- 1258. +++++ Second-loop increment
-     -5... Do nothing quickly
+ Note:integration:  use http://www.wolframalpha.com/ Compute an improper integral
+ timed out
 \end{verbatim}  
+% Testing symbol sizes: \qb a / b] \ \ a \big/ b \big] \ \ a \Big/ b \Big] \ \  a \bigg/ b \bigg]  \ \  a \Bigg/ b \Bigg] \qe
 
-\subsection{Step 2: Convert to radiance}
-See \S \ref{s2}. Required input: A date file pair generated by Step 1
-\qi @14: check wavelength set
-\qi @11, modify parts of file names:  10,11,12,4,5
-\qi @29 to read a date file
-\qi @42 Prepare the wavelength array 
-\qi @43 Nested 4-loop to convert Temperature to radiance
-\qi @438 Write a radiance .bin5 file:
-\qii File name is: parf[10]+parf[11]+parf[12]+parf[4]+'w'+parf[5]. E.g., /work1/krc/beam/BeamA5858w1.bin5
-\\ For \textbf{multiple} runs: @13 to edit run-unique names, then do @142 125 [128] 123
+Numerous definitions are evaluated in \np{beaming.pro} @45 451 454
 
-Output:  Radiance file: [wave,azimuth,slope,hour,latitude]
-\\ FLOW:
-\vspace{-3.mm} 
-\begin{verbatim}
-     11... Modify any of strings
-     14... Modify waves
-/-/--> 133.. Set run uniq for 2nd loop
-| |    43... Convert t4 to rad  REQ 29 42
-| |    438.. Write radiance file REQ 43
-| \<-- 1256. +++   Inner-loop increment
-|     -5... Do nothing quickly
-\<--- 1258. +++++ Second-loop increment
-     -5... Do nothing quickly
-\end{verbatim} 
+\subsubsection{Modification for geologic bias} %.........................
 
-\subsection{Step 3: Integration}
-See \S \ref{s3}. Required input: one or more radiance files generated by Step 2.
-\qi Check file names @11 and @13
-\qi Check tilt values @12 items 1,2,3; must agree with KRC run
-\qi Check wavelengths @14, a negative value ends the list
-\qi If global, check views @15
-\qi If local point, check views @16 items 1:6 
-\\ If locale @143 \  OR \ if global @144.  Then:  @146, 125, [128,] 123
+Allow modification of shadowing and visibility to account for a geologic influence on the
+distribution of dip with elevation; see the section on ``Implication of
+geology'' in \nf{slopes.tex}. Note that facet distributions for composite surfaces only apply to scales greater that the diurnal skin depth. KRC     A simple approach is $
+S'(i,\overline{\theta},\delta) = S(i,\overline{\theta}) F(\delta)$ where
+$\delta$ is the dip angle of a facet, and require $\int_0^{\pi/2}
+F(\delta)p(\delta) =1$ where $p(\delta)$ is the population function of dips and
+$\int_0^{\pi/2} p(\delta) \ d\delta =1$.
 
-Also make an IDL save file [-.sav] with the same basic file name; these are
-largely redundant but may later be handy.
- 
-View directions can be specified to any precision. Local view targets are
-available only on grid points; interpolation of the results is probably
-reasonable.
-\textbf{Output}  4-D cube of radiance [waves+1,views,1+roughness, KRCrun]
-\qii Last of wave dimension is the weighting applied
-\qii first of roughness dimension is the smooth model
-\qi  name will be  parf[10]+parf[11]+parf[8]+parf[4]+parf[9]+'w'+parf[5]  + .cub
-\qiii e.g., /work1/krc/beam/BeamKLA5900H24L9w1.cub
-\qii Unique part, parf[8], will be constructed as concatonation of the tilt-set names set @13.
-\qii parf[4] is the date, will be the same as for the input files
-\qii parf[9] depends upon the style of integration and will be constructed
-\qiii  Global views output files will be 'G' 
-\qiii Local views will be  e.g., H25L9 =  H + the 0-based hour index + L + the 0-based latitude index.
-\\ FLOW:
-\vspace{-3.mm} 
-\begin{verbatim}
-..====================== beaming ===================..
-     11... Modify any of strings
-     130.. Make list of tilt-set names
-     45... Define the resolutions in tilt-set and theory 
-     6.... Calc Cartesian tilt normals in S system
-     207.. Set file names
-     252.. Open/Read/Close type 52 file REQ 207
-     62... Set to a single grid point and hour traverse
-     622.. Add N/S transect AFTER 403
-     42... Prepare the wave and view vectors
-     1461. Create storage
-/--> 133.. Set run uniq for 2nd loop
-|     439.. Read radiance file
-| /--> 134.. Increment theta-bar
-| |    46... Compute distribution for KRC slopes REQ 29 or 439, 45
-| |    64... Integrate roughness REQ 42 and  46 or 439 
-| |    1434. Save into n+2 D arrays
-| |    1161. +1 Optional stop after one set
-| \<-- 1256. +++   Inner-loop increment
-|     1162. +2 Optional stop after inner loop
-\<--- 1258. +++++ Second-loop increment
-     1164. +4 Optional stop after second loop
-     1435. SAVE (make and store 4-D cube)
-\end{verbatim}
+Define $F$ as a Chebyshev polynomial of the first kind of degree 2 in
+$x=2\delta/\delta_\mathrm{max} -1$ [which ranges over -1:1]; i.e.,
+$Y=1+c_1x+c_2(2x^2-1)$. Define $F=Y/\int_0^{\pi/2} Y(x)p(x)\ dx $ to accomplish
+the required normalization.
 
- Then can do @7 to read the cube, which will yield a plot for each tilt-set
-\qi and @71, which will plot traverses for all tilt-runs
-\subsection{Analysis}
-@7 Read a cube
-\qi @71  Plot for each tilt-set
-\qi @72 Traverse plot for all runs, for the roughest model
+However, this approach could cause $S'$ to fall outside the physical limits: $ 0
+\leq S' \leq 1$
 
+Physical requirements force some complication; i.e. that $F$, and hence $Y$,
+must not be negative anywhere, that $ 0 \leq S' \leq 1$, and that $S'
+\rightarrow 0$ as $i \rightarrow 90$\qd~ and $S' \rightarrow 1$ as $i
+\rightarrow 0$.
 
-% \pagebreak
-\section{Geometry notation \label{geom}}
+ The $S$ function has all attributes required of $S'$, which suggests adjusting
+ $\overline{\theta}$ as a function of $\delta$; i.e., \qbn
+ S'(i,\overline{\theta},\delta) = S(i,F(x)\overline{\theta},\delta) \qen Then,
+ $Y$ decreasing with $\delta$ would decrease the shadowing of the steeper
+ slopes; e.g., $|c_2| << |c_1| $ and $c_1 < 0$ .
 
- The notation system used here was developed so that variable names in code can
- follow closely the mathmatical representation.  [ Largely extracted from \nf{-/xtex/Geomath/matrix.tex} ]  
-\\ Briefly, in code names are [to][from][system][component] with component ``xx'' representing an X,Y,Z triple (``xxx'' indicates that this is an array of such triples)
-\qi A final ``u'' indicates this is a unit vector. 
-\qi In code, generally use lower-case version of the upper-case math symbol
-\qi E.g., vqdxu is $\qf{VQ_D}$ unit vector from $Q$ to $V$ expressed in the $D$ system.
-
-\vspace{2.mm}
-Locations (vector ends) used here:
-\\ N = Unit vector along the local surface normal.
-\\ P = center (of mass?) of the target body (Planet or satellite)
-\\ Q = surface intercept location (of the instrument optic axis)
-\\ V = Vehicle or spacecraft; e.g., viewer, imager, camera. Where one is looking FROM
-\\ W = local slope element of a KRC model
-\\ Z = generic, the +Z-axis direction of the given coordinate system or surface normal.
- 
-\vspace{2.mm}
-Orientation systems used here: all are X,Y,Z right-hand. 
-\\ A = Astronomic: Master reference inertial system (ICRF or J2000)
-\qi  +Z toward the Earth's north pole, +X toward the vernal equinox.
-\qii +Y is $Z \times  X $, the third axis is defined by a cross product in all systems. 
-\\ D = Day:        Target body spin axis and true solar midnight
-\qi +Z toward body's right-hand spin axis, +X in the true solar midnight meridian.
-\qii Hour increases in a right-hand sense
-\\ S = Surface:    Regional 'horizontal' surface parallel to the ellipsoid surface
-\qi  +Z toward the regional zenith, +Y toward north (degenerate at a pole).
-\qii  +X right-handed (East], = Y cross Z. X and Y are in the ``horizontal'' plane.
-
-\vspace{2.mm}
-Other symbols:
-\qi $\bullet$ is the dot-product 
-\qi $\times$ is the cross-product 
-\qi $\overline{QV}$ is the magnitude (distance) between $Q$ and $V$
-\qi $\star$ indicates conventional matrix rotation, implemented in IDL by the \#
- operator.
-\qi \trm{DA} is the rotation matrix taking vectors from the $A$ to the $D$ system
-\qii Last two letters in code are 'rm'. May to append a 9 if a 9-element 1-D array rather than a 3x3 array.
-\qi  $\qct{DA}$ is the coordinate transform that rotates the axes of the $A$ to 
-coincide with the axes of the $D$ system
-\qii  The last 2 letters in code are 'ct'
-\qi E.g., $\qf{ZQ_S}$ is out along the ellipsoid normal at (latitude,Hour) in the $S$ system;  components are by definition [0,0,1] 
-
-
-Note that $\qrm{AB}^\mathrm{T} = \qrm{BA}  = \qct{AB} $
-where $^\mathrm{T}$ means the transpose.
-
-BEWARE: It is a peculiarity of my IDL rotation package that vector rotations to
-S from D are done by the ROTVEC routine using the \tct{SD} matrix constructed by
-use of the ROTAX routine to rotate the axes of the D system onto the axes of the
-S system.
-
-
- % \pagebreak
-\subsection{Specifics \label{geos} }
-KRC azimuths are: Increasing east from N (clockwise) [but be aware of sign
-  error that had them West from North in versions 232 (and possibly earlier) to
-  342].
-
- Specify viewer directions and surface points in the $D$ system, but do inner
- loop calculations in the $S$ system for efficiency. Generate slope normals in
- the S system $\qf{ZQ_{j,k}}$ where $j$ is the azimuth index and $k$ is the
- slope index.
-\qi Get $\qf{VP}  $ direction in D system
-\qii Assume for now the target body is small relative to the observer distance so that $\qf{VQ} \equiv \qf{VP}$ 
-\qi Then the view factor for a tilt element is  $f_{jk}=\qf{VQ} \bullet \qf{ZQ_{j,k}} $ and must constrain  $f \geq 0$.
-\qi $\qf{VQ_S} = \qrm{SD} \star  \qf{VQ_D}$  
-
-Make \tct{SD} coordinate transform by rotating the D axes to coincide with S axes
-\qi 0) Start with identity matrix: 
-\qi 1) Rotate around the pole from midnight to Q hour \qt Rotate around Z by 15*Hour of S
-\qi 2) Rotate around Y from N pole to Q latitude \qt Rotate around Y by (90 - Lat. of S). X is now toward South
-\qi 3) Rotate around Z 90\qd~ to move +Y from east to north \qt . Or exchange axes
+Implimented, but generally not used.
 
 \section{Intermission on definition of mean value}
 
@@ -590,277 +614,96 @@ but doing the statistics along a scale of slope, then $w= \Delta_i (tan \theta)
 between the midpoints $(\theta_{i-1}+ \theta_i )/2 $ and $(\theta_i +
 \theta_{i+1} )/2 $. Note that scaling $w$ or/and $p$ makes no difference.
 
-\subsection{Just what is the mean slope}
-Options in beaming.pro @451
-\qi Can try either 2 or pi as divisor in exp
-\qi Can try either Hapke or RMS for a roughness index
-\qi ? can weight with $d \theta$ or  $d \tan \theta$
+\section{Geometry notation \qlabel{geom}}
 
+ The notation system used here was developed so that variable names in code can
+ follow closely the mathmatical representation.  [ Largely extracted from \nf{-/xtex/Geomath/matrix.tex} ]  
+\\ Briefly, in code names are [to][from][system][component] with component ``xx'' representing an X,Y,Z triple (``xxx'' indicates that this is an array of such triples)
+\qi A final ``u'' indicates this is a unit vector. 
+\qi In code, generally use lower-case version of the upper-case math symbol
+\qi E.g., vqdxu is $\qf{VQ_D}$ unit vector from $Q$ to $V$ expressed in the $D$ system.
 
-\section{Algorithm} 
-
-Initially, assume viewer is far away, so use orthographic
-projection. Perspective maps are geometrically much more complex and are not
-needed unless a spacecraft is within about 20 body radii.
-
-.
-\\ All processing is done by IDL \np{beaming.pro}. The ``@'' symbol is an address in a large case statement.
-
-\subsection{Processing step 1; one date \label{s1}} 
-Interpolate a KRC tilt-set to a single season: reformat to file of
-Tsurf[hour,lat,season,azimuth,slope].  Output 1.3Mb +7.8 kB (flat)
-.
-\\ Make a date file:
-\qi Specify the KRC tilt-set
-\qi Specify the date
-\qii Loop on files (slopes) in the model set  @25
-\qii Read the .t52 file, one slope of [hour,item,latitude,season,case=azimuth]
-\qiii Interpolate Tsurf in date;
-\qiii Store in $T_S$ array with same order: [hour,latitude,azimuth,slope] 
-\qii Write as .bin5 named with the date  @28
-
-
-\vspace{3mm}
-Read all the KRC files and combine at one surface location
-\qii First file, single flat case: extract latitude, dates and set some sizes 
-\qii Second file, with many cases: extract azimuths and set that size 
-\qi Linear iterpolation in date, make  t4= Tsur[hour,lat,case=azi, slope] 
-\qi  and: tflat =Tsur[hour,latitude]
-\qiii If also using Tatm, will need another dimension (but do not call it t5)
-\qi Save as two bin5 files named to include date, 
-\qii header contains: latitudes, azimuths, slopes and the single date
-
-\subsection{Processing step 2; convert to radiance \label{s2}} 
-Integration must be done in radiance, so convert Brightness-temperatures to radiances
-\\ Specify the effective wavelengths [firm code, or revise @14]
-\\ Read the date file: @43
-\qii If appropriate, reduce hour density to: number of hours $\sim$ 2* Number-latitudes 
-\qi Convert to Tsurf to radiances and reorder: [wave, azimuth, slope, hour, latitude] 
-
-% \pagebreak
-
-\subsection{Processing step 3; Integration \label{s3}} 
-\vspace{3.mm} Impliment \qr{glob} as, only where $\cos e'_n > 0 $: 
-\qb \mathcal{R}(\lambda)_n = \left[ \sum_{j=1}^\mathrm{nLat}
-  \sum_{i=1}^\mathrm{nHour} \ \sum_{m=1}^\mathrm{nSlope}
-  \sum_{k=1}^\mathrm{nAzi} p(\theta_m,\phi_k)\cos e_n' \ \epsilon_\lambda \left[
-    \left(1-S(i,e,\psi,\theta) \right) \mathcal{R}(\lambda,k,m,i,j)
-    +S(i,e,\psi,\theta) \mathcal{R_S}(\lambda,k,m,i,j) \right] \right] \qe
-
-\qbn / \ \left[  \sum_{j=1}^\mathrm{nLat} \sum_{i=1}^\mathrm{nHour} \sum_{m=1}^\mathrm{nSlope} \sum_{k=1}^\mathrm{nAzi} p(\theta_m,\phi_k) \cos e'_n \right] \ql{igl}
-
-where the subscript $n$ runs over a set of viewer
-directions. $S(i,e,\psi,\theta))$ is the shadow function being used and
-$\mathcal{R_S}$ is the radiance for the temperature in the shade.
-
-Basic shadow function: use \qcite{Smith67} for the fraction of surface NOT in shadow; using his notation. % (terms reorganized)
-
-Paraphrazing: the probability that a point on a random rough (Gaussian height
-distribution) surface, will not lie in shadow when the surface is illuminated
-with a parallel beam of radiation at a fixed angle of incidence to the mean
-plane.
-
-\qbn \underbrace{S(i,\overline{\theta})}_{\mathrm{here}} \Leftarrow  \underbrace{ S(\theta)}_{\mathrm{Smith67}} = \frac{  1- \frac{1}{2} \erfc \left(   \mu / \sqrt{2} w \right) } 
-{\left( \sqrt{2/\pi} \cdot \frac{w}{\mu}
-e^{-\mu^2 / 2w^2} -\erfc \left(  \mu / \sqrt{2} w \right) \right)/2  +1 } \qeq (24 \ \mathrm{and} \ 21) \qen
-
-where $i$ is the incidence angle,  $\mu = \cot i $, $w^2$, is the mean square surface slope, $w \equiv \overline{\theta} $
-
-
-\subsubsection{RMS dips and slopes}
-For a surface with 
-\qb P(\tan \theta)=\frac{\tan \theta}{\tan^2 \theta_0} \cdot e^{-\frac{\tan^2 \theta}{2 \tan^2 \theta_0} } \leftrightarrow  P(s)=\frac{s}{s_0^2}e^{-(s^2 / 2s_0^2)} \qe ;
-from \qcite{Shepard95} Eq. 1
-
-Using $s\equiv \tan \theta$, the mean-square slope is  
-\qbn w^2= \int _0^\infty P^2(s) \ ds \Rightarrow
-  \int _0^\infty \left( (\frac{s}{s_0^2} \ e^{-\frac{s^2}{2 s_0^2} } \right) ^2 \ ds
- =\frac{1}{s_0^4} \int_0^\infty  s^2 e^{-s^4/a} \ ds 
- \Rightarrow \frac{1}{s_0^4}  \bigg[_0^\infty  - \frac{x^3 \Gamma \left( \frac{3}{4},\frac{x^4}{a} \right) }{ 4 \left( \frac{x^4}{a} \right) ^{3/4} }   \qen
-where $\Gamma(a,x) $ is the incomplete Gamma function
-
-
-
-\vspace{-3.mm} 
-\begin{verbatim}
- Note: use http://www.wolframalpha.com/ for integral
-\end{verbatim}  
-% Testing symbol sizes: \qb a / b] \ \ a \big/ b \big] \ \ a \Big/ b \Big] \ \  a \bigg/ b \bigg]  \ \  a \Bigg/ b \Bigg] \qe
-
-\subsubsection{Modification for dip} %.........................................
-
-Allow modification of shadowing to account for a geologic influence on the
-distribution of dip with elevation; see the section on ``Implication of
-geology'' in \nf{slopes.tex}. A simple approach is $
-S'(i,\overline{\theta},\delta) = S(i,\overline{\theta}) F(\delta)$ where
-$\delta$ is the dip angle of a facet, and require $\int_0^{\pi/2}
-F(\delta)p(\delta) =1$ where $p(\delta)$ is the population function of dips and
-$\int_0^{\pi/2} p(\delta) \ d\delta =1$.
-
-Define $F$ as a Chebyshev polynomial of the first kind of degree 2 in
-$x=2\delta/\delta_\mathrm{max} -1$ [which ranges over -1:1]; i.e.,
-$Y=1+c_1x+c_2(2x^2-1)$. Define $F=Y/\int_0^{\pi/2} Y(x)p(x)\ dx $ to accomplish
-the required normalization.
-
-However, this approach could cause $S'$ to fall outside the physical limits: $ 0
-\leq S' \leq 1$
-
-Physical requirements force some complication; i.e. that $F$, and hence $Y$,
-must not be negative anywhere, that $ 0 \leq S' \leq 1$, and that $S'
-\rightarrow 0$ as $i \rightarrow 90$\qd~ and $S' \rightarrow 1$ as $i
-\rightarrow 0$.
-
- The $S$ function has all attributes required of $S'$, which suggests adjusting
- $\overline{\theta}$ as a function of $\delta$; i.e., \qbn
- S'(i,\overline{\theta},\delta) = S(i,F(x)\overline{\theta},\delta) \qen Then,
- $Y$ decreasing with $\delta$ would decrease the shadowing of the steeper
- slopes; e.g., $|c_2| << |c_1| $ and $c_1 < 0$ .
-
-MORE?
-
-\subsubsection{Azimuth relation}  %.......................................
-
-For relative azimuth dependence, allow either the Hapke relation $f(\Psi)=\exp
-  \left( -2 \tan \frac{\Psi}{2} \right)$ or the simple  $f(\Psi)=\frac{1+ \cos \psi}{2}$.
-
-Temperatures in shade are set to the minimum diurnal temperature for each facet, which is an extreme.
-
- See \S \ref{geom} and \S \ref{nota} for definitions and notation
-
- \pagebreak 
-\subsubsection{Actions and loops}  %..............................
-.
-\\ 130.. Make list of tilt-set names
-\\ 45... Define the resolutions in tilt-set and theory
-\\ 6.... Calc Cartesian tilt facet normals in S system
-\qii Compute normals for each tilt (slope, azimuth) in the S coordinate system: $\qf{NW_S}$
-\\ 207.. Set file names
-\\ 252.. Open/Read/Close type a 52 file to define the hour/lat grid
-\qii  Define the surface latitude and hour grid (based on KRC file)
-\\ ------ For a local target 
-\qii Specify sub-viewer directions as hour and latitude; i.e, in the D system
-\\ 403.. View is symmetric scan in hours
-\\ 404.. Add N/S transect AFTER 403
-\\ 42... Prepare the wave and view vectors
-\qii Compute vectors to viewer in D coordinates: $\qf{VQ_D}$
-\\ 62... Set to a single hour and lat grid point
-\\ ------------------ local \ / \ global
-\\ ??
-\\ 63... Set to global hour and lat grid
-\\ ------------------ end global
-\\ 1461. Create storage
-\\ $>>$ Top of Loop for each KRC run
-\qi  133.. Set run uniq for 2nd loop
-\qi 439.. Read date-radiance file
-\qi $>>$ Top of Loop for each $\overline{\theta}$
-\qii 134.. Increment $\overline{\theta}$
-\qii  46... Compute the fractional abundance of KRC slope interval
-\qii  64... Integrate roughness REQ 42 rrr 46 
-\qiii \ddag Set any shadow or azimuth flags
-\qiii \ddag Compute shadow slope factors
-\qiii \ddag Find the minimum temperature for each case, convert to radiances 
-\\ .  \hrulefill 5-deep Loops within @64 \hrulefill \hspace{3.in}
-\\ For each grid point: latitude, then hour 
-\qi Compute zenith for grid-point in the D coordinate system: $\qf{ZQ_D}$
-\qi Ensure it is visible in at least one view, if so: for each view
-\qii View factor is $ \cos i =\qf{VQ_D} \bullet \qf{ZQ_D}$ . Require at least one $> \epsilon = $ 1.\xEm6
-\qi Compute rotation matrix to S from D, \trm{SD}.; see \S \ref{geos}  
-\qii \ddag  $\bigcap$ Compute relative azimuth
-\qii \ddag $\bigcap$ Compute shadow probability, possibly for each dip
-\qi Extract radiances for all azimuths and slopes for this grid point
-\qiii Compute probability $H(i, \overline{\theta}, d)$ of projected shade; Set radiance as $\mathcal{R}' = (1-H)\mathcal{R} + H \mathcal{R_\mathrm{min}}$ for each $\lambda $
-\qi Rotate viewer positions into S system, $\qf{VQ_S} = \qrm{SD} \star  \qf{VQ_D}$
-\qi Compute the view-factor for horizontal (flat) surface and sum the smooth radiance
-\qi For each tilt: slope, then azimuth
-\qii For each view position
-\qiii Compute the view-factor (cosine of emergence angle) $\qf{VQ_S} \bullet \qf{NW_S}$. 
-\qiiii \ddag $\bigcap$ $H(e,\overline{\theta}, d) =1-S' $ of projected obscuration; apply/replace ??  this factor to view factor .
-\qiii Add the radiance vector (a set of wavelengths) weighted by view-factor $ \geq 0$
-\qiii Sum the view factors
-\\ Convert average radiance (radiance sum / view-factor sum) for each view to Tb. Save as [wavelength, view, smooth\&rough]
-\\ .  \hrulefill end of @64 \hrulefill \hspace{3.in}
-\qii 1434. Save into n+2 D arrays
-\qii . [1161. Optional stop after one set]
-\qi $<<$ 1256. Increment $\overline{\theta}$ until done
-\qi . [1162. Optional stop after inner loop]
-\\ $<<$ 1258. Increment KRC run until done
-\\ . [1164. Optional stop after second loop]
-\\ 1435. SAVE. Store 4-D augmented cube file; [waves+1, views, 1+roughness, krcRun]
-
-\vspace{3mm} Projected obscuration; The dip factor addresses the geologic bias on 
-the probability of emergence obscuration, but no basis has been developed for assigning a temperature to the surface causing the hiding; a neutral approach is to simple not count the contribution of that surface to radiance or area summation.
-
-\vspace{3mm} NOT YET: Makes sense to use a single atm temperature. Use the Tatm
-of all models weighted with the surface abundance based on slope distribution,
-not the view factors.
-
-
-\subsection{Analysis}
-
- if local do @62, if global do @63, then 7,... 71
-
-\subsubsection{Narrowing of data size, and file naming}
-A typical set of KRC type 52 files generated for beaming is 774 Mb [Ts
-  only]. Constructing a set of Tsurf files for one date, @25, yields
-t4=[hour,[Ts/Ta],lat,case=azimuth, slope] and a file for the flat case, total
-1.32Mb. 
+\vspace{2.mm}
+Locations (\textbf{vector ends}) used here:
+\\ N = Unit vector along the local surface normal.
+\\ P = center (of mass?) of the target body (Planet or satellite)
+\\ Q = surface intercept location (of the instrument optic axis)
+\\ V = Vehicle or spacecraft; e.g., viewer, imager, camera. Where one is looking FROM
+\\ W = local slope element of a KRC model
+\\ Z = generic, the +Z-axis direction of the given coordinate system or surface normal.
  
-\begin{verbatim}
-OBSOLETE ??
+\vspace{2.mm}
+\textbf{Orientation systems} used here: all are X,Y,Z right-hand. 
+\\ A = Astronomic: Master reference inertial system (ICRF or J2000) 
+\qi  +Z toward the Earth's north pole, +X toward the vernal equinox.
+\qii +Y is $Z \times  X $, the third axis is defined by a cross product in all systems. 
+\\ D = Day: Target body spin axis and true solar midnight. Rotates annually
+\qi +Z toward body's right-hand spin axis, +X in the true solar midnight meridian.
+\qii Hour increases in a right-hand sense
+\\ S = Surface: Regional 'horizontal' surface parallel to the ellipsoid surface. Rotates daily
+\qi  +Z toward the regional zenith, +Y toward ``north'' Right-hand spin axis (degenerate at a pole).
+\qii  +X right-handed (``East''), = Y cross Z. X and Y are in the ``horizontal'' plane.
+\\ U = view: so that +Y=Up will be toward North and  +X=right will be eastish in a view of the globe
+\qi +Z from body center to the viewer, +Y toward ``north'' Right-hand spin axis
+\qi +X right-handed (``East-ish''), = Y cross Z.
 
-first run of 4 views without cos i test Elapsed time1=        2.4648681
-  with  1.28600
-
-at !dbug=2 can see that model temperatures have some irregularity.
-QLAT=-6.04000 QHOUR=4.50000  mostly about 0.3K , at max slope, max of 1 k
-\end{verbatim}
-
-.
-\\ BeamXii.t52 \ Tilt runs: where X is a run letter and ii is the slope in degrees
-\qi Contains a case for each azimuth
-\\ BeamXnnnn.bin5 \ Date files: where nnnn is the modified julian day
-\qi 48 19 18 20  [hour,latitude,case=azimuth,file=slope]  Real*4
-\\ BeamXnnnnflat.bin5  \ Date file for horizontal surface:
-\qi 48 19 Ts[hour,latitude]   Real*8
-\\ BeamXnnnnQii .bin5  \ Ts for a single point (latitude and Hour) at a specific date.
-\qi 18 21 Ts[azimuth,[flat,slope]]
-\\ BeamK5858w1.bin5 radiance file specific run=K, specific date=5858 wavelength set 1
-\qi 11 18 21 48 19 [wavelength,hour,latitude,case=azimuth,file=slope]
-
-\vspace{2mm} .
-\\ KLA5858H25P9w1.cub   4-D radiance cube
-\qi 12 21 4 3  [waves+1,views,1+roughness, krcRun]
-\qiii Header contains wavelengths and views
-\qii Last waves is the weighting divisor
-\qii First roughness is the smooth (all flat) model
-\\ KLA5858H25P9w1.sav  /  same as above .cub:  @1325
-\qi saving:  avrr4,weir4,avrs4,weis4,vuin,sro,wavet
-\\ KLA5858w1.cub   Early radiance cube
-\qi 12 4 4 3
-\\ KLA5858w1.sav 
-\qi same as above, saving:  avrr4,weir4,avrs4,weis4,vuin,sro,wavet
+\vspace{2.mm}
+Other symbols:
+\qi $\bullet$ is the dot-product 
+\qi $\times$ is the cross-product 
+\qi $\overline{QV}$ is the magnitude (distance) between $Q$ and $V$
+\qi $\star$ indicates conventional matrix rotation, implemented in IDL by the \#
+ operator.
+\qi \trm{DA} is the rotation matrix taking vectors from the $A$ to the $D$ system
+\qii Last two letters in code are 'rm'. May to append a 9 if a 9-element 1-D array rather than a 3x3 array.
+\qi  $\qct{DA}$ is the coordinate transform that rotates the axes of the $A$ to 
+coincide with the axes of the $D$ system
+\qii  The last 2 letters in code are 'ct'
+\qi E.g., $\qf{ZQ_S}$ is out along the ellipsoid normal at (latitude,Hour) in the $S$ system;  components are by definition [0,0,1] 
 
 
+Note that $\qrm{AB}^\mathrm{T} = \qrm{BA}  = \qct{AB} $
+where $^\mathrm{T}$ means the transpose.
 
-\subsubsection{Sdec}
-Solar declination is not in the type 52 file. Can estimate it for each season by
-fitting the down-going Visible radiation at noon as a function of latitude, and
-finding the maximum. Typical result is shown in Figure \ref{beam251}
-\begin{figure}[!ht] \igq{beam251}
-\caption[Estimated sub-Solar Latitude]{Sub-solar latitude derived from the
-  down-going visible radiation as a function of latitude.
-\label{beam251}  beam251.png }
-\end{figure} 
-% how made: beaming @251
+BEWARE: It is a peculiarity of my IDL rotation package that vector rotations to
+S from D are done by the ROTVEC routine using the \tct{SD} matrix constructed by
+use of the ROTAX routine to rotate the axes of the D system onto the axes of the
+S system.
 
 
-\subsection{Thoughts}
+ % \pagebreak
+\subsection{Specifics \qlabel{geos} }
+KRC azimuths are: Increasing east from N (clockwise) [but be aware of sign
+  error that had them West from North in versions 232 (and possibly earlier) to
+  342].
 
- Small-scale effects (less than about 5 times the diurnal skin depth) can only
- dimish the thermal differences with slope and hence the beaming effect.
+S system azimuths are mathematical; from +X (east-like) toward +Y (north)
+Thus $\phi_S= 90-\phi_\mathrm{KRC}$ in degrees.
 
-Surface hiding at large emission angles must attenuate the shallow slopes. 
-Shadowing at large incidence angles must attenuate the shallow slopes.
+ Specify viewer directions and surface points in the $D$ system, but do inner
+ loop calculations in the $S$ system for efficiency. Generate slope normals in
+ the S system $\qf{ZQ_{j,k}}$ where $j$ is the azimuth index and $k$ is the
+ slope index.
+\qi Get $\qf{VP}  $ direction in D system
+\qii Assume for now the target body is small relative to the observer distance so that $\qf{VQ} \equiv \qf{VP}$ 
+\qi Then the view factor for a tilt element is  $f_{jk}=\qf{VQ} \bullet \qf{ZQ_{j,k}} $ and must constrain  $f \geq 0$.
+\qi $\qf{VQ_S} = \qrm{SD} \star  \qf{VQ_D}$  
+
+Make \tct{SD} coordinate transform by rotating the D axes to coincide with S axes
+\qi 0) Start with identity matrix: 
+\qi 1) Rotate around the pole from midnight to Q hour \qt Rotate around Z by 15*Hour of S
+\qi 2) Rotate around Y from N pole to Q latitude \qt Rotate around Y by (90 - Lat. of S). X is now toward South
+\qi 3) Rotate around Z 90\qd~ to move +Y from east to north \qt . Or exchange axes
+
+\subsubsection{Day to viewer transform}
+Z axis of viewer-to-body, U, system is in the viewer-to-body direction. 
+Y-Z plane of U system to include the spin axis with positive Y value, so Xu in D system, which is normal to YZ plane, must be along Zu x Zd (both in D). Then Yu in D is Zu x Xu (both in D)
+
+If at virtually infinite distance, can use oblique orthographic projection, which involves only a rotation.  Construct the rotation matrix from D to ORTH by 
+\qi Create identity matrix. rotate around Z by hourLon, then rotate around Y by latitude to get ODrm
+\qi Rotate all hourLon, lat points by ODrm, points with positive X are on the backside 
+\qi Treat Y as to the right and Z as up, so a viewer above the equator at noon would get a conventional hemisphere view.
+
 
 \section{Bennu and OSIRIS-Rex}  % ---------------------------------------------
 
@@ -877,8 +720,8 @@ Shadowing at large incidence angles must attenuate the shallow slopes.
 \\ \qcite{Chesley14}
 \qi bulk density at 1260 $\pm$ 70 kg/m$^3$ and macroporosity 40 $\pm$ 10\%.
 
-Bennu year is 436.42 days.  Beam runs are 41 seasons spaced by 10.9106 days,
-5764.2720 to 6200.6960; 
+Bennu year is 436.648 days.  Beam runs are 41 seasons (40/year) spaced by
+10.9106 days, 5764.2720 to 6200.6960;
 
 \vspace{2.mm} OSIRIS-Rex: Arrival is 2018 august, [aug03 is MJD 6789, handy],
 Survey begins 2018Oct, Return window opens 2021march, Earth landing is
@@ -895,9 +738,11 @@ Ls=180:  index=24, djmm=6026.1, sdec= -2.79
      S:  index=30, djmm=6091.6, sdec=-33.07    runset 6092
 \end{verbatim} 
 
-2016oct12, Looked through \qcite{} and used orbital and rotatioinal parmeters to
+2016oct12, Looked through \qcite{} and used orbital and rotational parmeters to
 make an additional entry in NEO.tab; also found Bond Albedo = 0.0173 +/-.0027
 (1-sigma).
+
+Photometric function; ? See my writeup in V34UG.pdf, \S 5 and 13
 
 \subsubsection{Pole}
 
@@ -920,52 +765,240 @@ merid   0.         Obliq=176 +/- 2
 
 % after lon/lat switch correction, equatorial pole values agree with conversion using NED: NASA/IPAC EXTRAGALACTIC DATABASE, to $,.0001$ degree.
 
-\subsection{Production Runs}  % ----------
+\subsection{Retrograde rotation}  % ----------
+On Bennu, the Sun rises in the celestial west. PORB does everything in J2000 (equatorial).  All of the time-independent terms are in the geometry matrix computed by the PORB system, see \nf{hporb.pdf} . 
+KRC is indifferent to this, treating ``North'' as the direction of the spin axis.
 
-\begin{table} [!h]
-\caption{KRC tilt-set runs. All have: EMISS=1., RLAY=1.15, FLAY=.12, N1=37.; for which the bottom is at  D=121.7 or 1.5048m }
-\label{runt}
-\begin{center}
-\begin{tabular}{| c  r  r  c | c | r | } \hline \hline
-Label & Albedo & Inertia & Photom. & Other conditions & run time\\
-       &       &        & Function &  & seconds\\  \hline
-K & .03 & 100 & Kheim & & 2474 \\ 
-L & .03 & 100 & Lambert & & 2386 \\   % 1592+794
-A & .10 & 100 & Kheim & &  2373 \\ 
-I & .03 & 200 & Kheim & &  2490 \\ 
-J & .03 & 400 & Kheim & & 2480 \\ 
-D & .03 & 100 & Kheim & I=600 below D=.3 \\
-P & .03 & 100 & Kheim & far-field is slope=30 at azimuth+180 & 2458\\ 
- \hline
-\end{tabular} \end{center}
-\end{table}
+Summary of KRC geometry:
 
- Start with basic model representative of asteroids using a nominal orbit and
- spin axis (e.g., Bennu). Offset individually various model parameters to
- generate partial derivatives.
+The right-hand spin-axis direction is: 
+\qi ZBAA ! 10 Body pole: declination, radian in J2000 eq.
+\qi ZBAB ! 11 " ": Right Ascension, radian in J2000 eq.
+\qi WDOT ! 12 Siderial rotation rate, degrees/day
 
- All runs have a flat model used for the far field and a set of slopes spaced a
- 2 degress up to 60 \qd, with 18 azimuths spaced by 20\qd. Runs have 40 seasons
- witha 3-yr spinup and use 19 latitudes centered in equal-area zones. Runs use
- N1= 37 layers with the first physical layer having a thickness of FLAY= 0.12
- the diurnal skin depth (D) and the thickness ratio of successive layers being
- RLAY= 1.15 , Using number of output hours N24= 48 and number of latitudes N4=
- 19 yields an hour density 1.26 that of latitude, so areas in the hour-latitude
- grid are close to equant.  Input parameters are largely Version 3.3 default
- values except as listed in Table \ref{runt}. Output 30 files of 38.6Mb each and
- one flat of 2.1Mb for a total of 1.16GB for one tilt-set. One run takes about
- 40 minutes (0.77GB and 27 minutes if go only to 40 \qd~ slope).
+Position along the orbit is based on:
+\qi OPERIOD ! 14 Period of the orbit (days)
+\qi TJP ! 15 J2000 Date of perihelion
 
-Tilt-set runs to date have files for each slope labeled BeamXNN.t52 where X is
-are run Label (see Table \ref{runt}) and XX is the slope, XX=00 is the flat
-file.
+The BFRM(9) ! 22 Rotation matrix from orbital to seasonal:
+\qi F is the Focal=orbital-plane system.
+\qii Z axis of the F system is the right-hand normal to the orbital plane
+\qii X axis is from the central body to the orbit periapsis
+\qi B is Body=seasonal system
+\qii Z axis of the B system is the right-hand spin axis of the body e.g., planet
+\qii X axis is the body’s Vernal equinox: 
+
+TSEAS calls PORBIT with the date to get:
+\qi SUBS, season longitude (not used)
+\qi SDEC, sub-solar latitude, degree
+\qi DAU, distance from Sun in Astronomic Units. 
+
+TLATS works in the ``Day'' coordinate system: 
+\qii Z axis toward planet north pole
+\qii X axis in equitorial plane toward midnight 
+\qi DIP is the slope angle, radian
+\qi SAZ is the azimuth of the dip (down-slope), measured East-ward from North, radian
+\\ In this system, several vectors are fixed:
+\qi MXX is the vector to the Sun at midnight, so the Y element is always 0.
+\qi FXX is the vector to the regional zenith at noon,  Y element is always 0.
+\qi TXX is the vector toward the tilted surface normal at noon.
+
+At each time step, the vector to the Sun HXX is computed by a single rotation of
+MXX around Z by -J*RANG where J is the time step and RANG is $2 \pi / N_2$ where
+$N_2$ is the number of time-steps in a day. The cosine of the incidence angle
+onto the flat and tilted surfaces are just dot products; HXX $\bullet$ FXX and 
+ HXX $\bullet$ TXX respectively. 
+
+An example of the azimuth dependence of Tsurf is shown in Fig. 
+\ref{azex}
+\begin{figure}[!ht] \igq{azex}
+\caption[Example of azimuth set]{Surface kinetic temperatures at all azimuths (legend) for the L set for slope 30\qd~ at the equator for MJD=6200.7, $L_s$=189 
+\label{azex}  azex.png  }
+\end{figure} 
+% how made: Read  file: /work1/krc/beam/BenL30L00.t52  tes=reform(ttt[*,0,9,40,*])
+% jj=string(20*indgen(18), form='(i3)')
+%  CLOT,tes,jj, tsiz=2., titl=['hour index','Surface temperature','L30 , lat 9, seas 40'],locc=[.1,.93,-.03,.03]
+
+
+\section{OSIRIS-Rex geometry}
+Phil via Chris Haberle provided  ``image table from JAsteroid.`` file for 
+ days of OTES approach observations; these had entries every 2 seconds so were huge and fantastically redundant. The simple linux command  
+\\  grep '00:00.' OTES_WOY45_Approach_DOY309.txt $>$ OTES309hour.txt  \ reduced the tables to one entry per hour
+% \\ grep '?0:00.'  OTES_WOY45_Approach_DOY309.txt $>$ OTES309tm.txt
+\\  grep '00:01.' for DOY307, which had odd seconds
+\qi then: \ \  cat OTES307hour.txt  OTES309hour.txt OTES313hour.txt $>$ ApGeom.tab
+\qii and edit in the column headers with no internal white-space.
+
+\section{Production sequence overview  \qlabel{pseq}} %_________________________
+Overall concept is to generate KRC models at many slopes and azimuths,
+progressing toward models in which slopes view a far field of similar
+steepness. Convert these individual models to radiance, then combine them to
+make surfaces of specific roughness (slope distribution) as seen from specific
+view directions or viewing traverses. A combination of FORTRAN and IDL routines
+is used.
+
+A motivation for this scheme is to do the tedious computations, generation of
+the KRC models, once, and then be able to combine them relatively quickly to
+make up any surface model desired.
+
+A sub-directory is generated for each set of physical parameters; typically will
+contain many hundred files.
+
+Notation:
+\qi The ``\textbf{grid}''  is the set of hours (uniformly spaced) and latitudes (uniformly spaced in area on a sphere) in the KRC model.
+\qi A ``\textbf{tilt}'' is a surface dip (uniformly spaced) and azimuth (uniformly spaced) of a surface element at a grid point.
+\qi A ``\textbf{KRC tilt-set}'' is a set of KRC output files for global-grid models that all have the same input parameters except for the surface slope and azimuth. Also called a KRC  ``\textbf{run}''.
+\qi A ``\textbf{view}'' specifies the direction to the viewer, initially in Hour-Latitude coordinates.
+
+Start with basic model representative of asteroids using a nominal orbit and
+spin axis (e.g., Bennu). Offset individually various model parameters to
+generate partial derivatives. Top part of KRC input file is
+\nf{-/krc/beam/Bentop}
+
+All runs have a flat model used for the far field and a set of slopes spaced a 2
+degrees up to 60 \qd, with 18 azimuths spaced by 20\qd. Runs have 40 seasons
+with a 3-yr spinup and use 19 latitudes centered in equal-area zones. Runs use
+N1= 37 layers with the first physical layer having a thickness of FLAY= 0.12 the
+diurnal skin depth (D) and the thickness ratio of successive layers being RLAY=
+1.15 , Using number of output hours N24= 48 and number of latitudes N4= 19
+yields an hour density 1.26 that of latitude, so areas in the hour-latitude grid
+are close to equant.  Input parameters are largely Version 3.3 default values
+except as listed in Table \ref{runt}. Output 30 type 52 slope files of 38.6Mb
+each and one flat of 2.1Mb for a total of 1.16GB for one tilt-set.  Output flat
++31*18 .tmi file of 1193472 byte each for 0.667 GB.  One run takes about 40
+minutes with total of 1.83 GB output.
+
+See \S \ref{fame} for file naming.
+
+BEAMING @111 123 will read all the slope .t52 file for a run, convert them to a
+single save file of 81MB containing the surface temperature and one KRC common,
+reducing the size by a factor of 14. 
+
+Sample file names below are examples, file names are structured, as described in
+\S \ref{fame} and Table \ref{tame}.
+
+
+\begin{description}  % labeled items   
+\item [A: Define the slope set, pick physical parameters] \hspace{1.mm} 
+\begin{enumerate}    % numbered items  
+\item Generate the basic KRC input parameter file.  \qfo{-/krc/beam/BEntop}
+\item Generate KRC input files for increasingly complex runs
+ \qfo{-/krc/beam/ED2.inp, ED3.inp, ED4.inp}
+\end{enumerate}
+ 
+\item [B: Generate 'slope sets'] \hspace{1.mm} \\ A sequence of large KRC
+  runs. Cases to be used for later far-field files must output direct-acess type
+  -n files [-1, extension .tm1]. All files are in \nf{/work1/krc/beam/ = -/} . 
+IDL routine BEAMLIST can read specific files from
+  each run to maintain a list of physical properties used.
+
+\begin{enumerate}    % numbered items 
+\item Run flat: \nf{ED2.inp}  
+  \qi \qfo{-/BEnD/BEnDflat.t52}  [ packed 5-dimensions ]
+  \qi \qfo{-/BEnD/Dflat.tm1} [ Ts: fixed size, 2 dimensions ] 
+\item Run set of azimuths for median slope, \qd30; same input file
+ \qi Each azimuth \qfo{D30d00a00.tm1}
+   \qi Single \qfo{BEnE30E00.t52} 
+\item Run all slope and all azimuths facing the median slope:  \nf{ED3.inp}  
+\qi  Each azimuth \qfo{E02e30a04.tm1}
+ \qi For each slope \qfo{BEnE02E00.t52}
+\item Run all slope and all azimuths facing equivalent slopes: \nf{ED4.inp}  
+ \qi For each slope \qfo{BEnE02Eeq.t52}
+\item Maintain a guide to runs: BEAMLIST @41
+\end{enumerate}
+
+
+\item [C: Convert to radiance and do roughness integrations] \hspace{1.mm}
+All done in IDL program \np{beaming.pro}=BEAMING, See \S \ref{ibeam}
+\begin{enumerate}    % numbered items 
+\item   Compact all slopes to a single surface temperature file.
+  \qi @257 \qfo{/work2/beam/BenAssAeq.savAz} 80.8 MB    
+   \qiii Optional: \qfo{/work2/beam/BenAssA00.savAz}
+  \qii \nv{y3} is Tsurf [hour,lat,season,azimuth,slope] as R*4
+\qii Also \np{SLOF} slopes and \np{SAZF} azimuths, \ and \np{KCOM1} structure of \nv{KRCCOM}
+\qi Corresponding level surface model is \nf{BenA/BenAflat.t52},ttt[*,0,*,*,0]
+\item Extract surface temperatures for a specific date.
+  \qi  @28 \qfo{BenA5906Aeqflat.bin5} Ts[hour,latitude]
+ \qi  and  \nf{BenA5906Aeqslop.bin5}  Ts[hour,latitude,1,case=azimuth,file=slope]
+\item Convert to radiance.
+  \qi  @438 \qfo{BenJ5906w1w.bin5} [wave,azimuth,slope,hour,lat] 
+\item Integration] Loops over roughness and model.
+  \qi One surface point \qfo{BenABJKL5906H25L9w1.sav}  [wave,view,Hour,Lat,rough,run-set] 
+  \qi or global  \qfo{BenABJKL5906Gw1.sav}  ```
+\qi 
+\end{enumerate}
+
+\item [D: Analysis and display] \hspace{1.mm}
+\end{description}
+
+\section{Implimentation using KRC}
+Use Bandfield approach; precompute data sets of tilts as cases in
+normal KRC runs; save as type 52. Azimuth at 20\qd~ intervals; slope at 2\qd~
+intervals up to 40\qd; each slope is one .t52 file. 361 cases per material
+
+Or up to 60\qd, 541 cases per material..
+
+A basic simplification is to assume that all surface tilt azimuths equally probable.
+ 
+Use equal-area zones from pole-to-poles, with one centered on the equator, so
+there is an odd number total; $N=2j+1$.  Normalized area of a zone is: $\sin
+\theta_2 - \sin \theta_1$ where $\theta$ is the zone boundary latitude. Thus
+$\delta \equiv \Delta \sin \theta = 2/N $.  Compute the model at the
+area-weighted center of the zones; $\sin \theta= \delta/2+i \delta \ ; i=0:n-1$ .
+
+ For example:
+\begin{verbatim}
+j=9 & n=2*j+1
+dels=2./n
+sa=-1.+dels*(0.5+findgen(n))
+alat=!radeg*asin(sa)
+ print,alat[0:n-1], format='(10f7.2)'
+ -71.33 -57.36 -47.46 -39.17 -31.76 -24.90 -18.41 -12.15  -6.04   0.00
+   6.04  12.15  18.41  24.90  31.76  39.17  47.46  57.36  71.33  
+\end{verbatim}
+\subsection{Opposing slopes}
+ To account for the tendency of a slope in rough terrain to be facing slopes of
+ the opposite azimuth, e.g., a west-facing slope  is likely to view
+ east-facing slopes in the far field, KRC can be run with each and every
+ slope and azimuth of a tilt-run using a far-field file with a tilt near the RMS
+ slope value and an azimuth different by 180\qd.
+
+This is done with the following steps, generally using the routine
+\np{krcinpgen.pro} which can be called by BEAMING @51. KRCINPGEN is firm coded
+to do 20\qd~ azimuth spacins and 2\qd~ slope spacing to 60\qd.
+\begin{enumerate} % numbered items
+
+\item Edit an input file similar to \nf{beamP.int} or \nf{Bentop} that has all
+  the input parameters but ends with the last change card for the first case.
+
+\item Run KRCINPGEN for style 2, and follow the prompt to concatonate to
+  generate an input file like \nf{Z2.inp} which will generate a flat file and
+  also a type -1 for each azimuth (20 degree spacing) for a single slope.
+
+\item Run KRC on Z2.inp, takes about 45 seconds.
+
+\item Run KRCINPGEN for style 3, and follow the prompt to concatonate to
+  generate an input file like \nf{Z3.inp} which will generate a full set of azimuths and slopes using the opposing azimuths from style 2, each with output of .tm1 .
+
+\item Run KRC on Z3.inp, takes about  40 minutes.
+
+\item Run KRCINPGEN for style 4, and follow the prompt to concatonate to
+  generate an input file like \nf{Z4.inp} which will generate a full set of azimuths and slopes using the opposing azimuths and slopes from style 3.
+
+\item Run KRC on Z4.inp, takes about 30 minutes. This produces a .t52 file set that constitutes a  'eq'  ``tilt-run'' 
+
+\end{enumerate} 
+
+
+\subsection{Two pole sets}
 
 Through an error in the direction of the spin axis, the computed sub-solar
 latitude ranged over $\pm 33$\qd, a factor of 6.72 larger than for Bennu, for
 which on KRC seasonal dates the range is $\pm 4.93$\qd; See
 Fig. \ref{BenSdec}. This error was discovered after 5 tilt-set runs, and
-retained for the rest of the runs as potentialy allowing more informative
-analysis.
+retained for more of the runs as potentialy allowing more informative
+analysis; this artifically large obliquity is usefull for checking reasonableness of view geometry. 
+
 \begin{figure}[!ht] \igq{BenSdec}
 \caption[Sub-solar latitude]{Subsolar latiitude (solar declination) for Bennu as
   a function of date; the values are derived from a quadratic fit to the
@@ -976,98 +1009,346 @@ analysis.
 \end{figure} 
 % how made: 
 
-% \pagebreak
-\bibliography{heat,moon,mars}   %>>>> bibliography data
-\bibliographystyle{plain}   % alpha  abbrev 
-
-\appendix %====================================================================
-
-\section{Parameters}
-Leading '-' indicates value that must agree with a KRC model set. A leading '+' indicates a value that is required for the minimum full run.
+Below are the wrong and Hergenrother 2014 PORB outputs
 \vspace{-3.mm} 
 \begin{verbatim}
-@11 parf: File names
-+  0 DIR for krc file                    = /work1/krc/
-+  1  stem " "                           = BeamK
-  2  " slope part [.t52]                 = 00
-  3 stem for 2nd set                     = BeamBen
-  4 Output dir                           = /work1/krc/beam/
-  5 " stem                               = BeamK
-  6 mjd [auto][.bin5]                    = 5858
-  7 waveset number                       = 1
-  8 Surface site name, start with letter = Q1
-  9 CubUniq                              = KLA
- 10 Surface point                        = H25L9
+    
+ 2013 Aug 23 08:11:19=RUNTIME.  IPLAN AND TC= 405.0 0.00000 Bennu   WRONG   
+   405.0000       0.000000      0.3564448E-01  0.1053292       1.156605    
+  0.2037319       1.126004      0.4090926       0.000000      -1.504474    
+  -1.185079       0.000000       0.000000       436.4232       4767.211    
+  0.1790608       0.000000       2.001070       0.000000       0.000000    
+   0.000000     -0.4171197      0.7619694     -0.4953924      0.9088515    
+  0.3497078     -0.2273616       0.000000     -0.5450751     -0.8383872  
 
-@12 pari: Integer values
-       0       0  set komit
- -     1       2  slope increment, degrees
- -     2      20  Number of slopes
- -     3      20  Azimuth increment, degrees
- -     4      48  Number of hours output
-       5       6  STOP after: +1=seq +2=loop1 +4=loop2
-       6       7  KRCCOMLAB:+1=real +2=int +4=log
-       7     -77  spare
-       8     -77  spare
-       9     -77  spare
-      10      25  Hour index ->ihour, set to ihot
-      11       9  single Lat index ->jlat, set to jeq
-      12      31  Index of season near Ls=0
+PORB:2014jun10 2016 Oct 13 20:58:06 IPLAN,TC= 406.0 0.00000 Bennu
+   406.0000       0.000000      0.3596894E-01  0.1053296       1.155811    
+  0.2037451       1.126391      0.4090926       0.000000      -1.136384    
+   1.512153       0.000000       0.000000       436.6481       3894.142    
+  0.1790609       0.000000       2.289608       3.056127       0.000000    
+   0.000000     -0.6584910      0.7498416     -0.6424240E-01  0.7525886    
+  0.6560875     -0.5621005E-01   0.000000     -0.8536191E-01 -0.9963500
+\end{verbatim} 
 
-@13 Tilt sets        Number adjustable
-   0   K
-   1   L
-   2   A
+ 2018 Sep 12 21:53:27 first use of the proper Bennu pole and updated orbit.
+ Files distinguished by the e in Ben now uppercase: BEn
+MJD of first output should be 6900.00, DJUL=10.9162
 
-@14 wavin: Wavelengths          Number adjustable
-+      0      3.00000  \  Wavelengths
-       1      5.00000   | in micrometers.
-       2      8.00000   | First non-positive
-       3      11.0000   | value terminates
-       4      15.0000   | the list.
-       5      20.0000   |
-       6      25.0000   |
-       7      50.0000   |
-       8      100.000   |
-       9     -1.00000  /
 
-@15 parv: Views                  
-+      0      12.0000  Hour  1\  Sub-viewer
-+      1      0.00000   Lat. 1 | Latitude
-       2      3.00000  Hour  2 | and hour
-       3      0.00000   Lat. 2 | in pairs.
-       4      5.00000  Hour  3 | First negative
-       5      89.0000   Lat. 3 | Hour terminates
-       6      13.0000  Hour  4 | the list.
-       7      90.0000   Lat. 4 | 
-       8     -1.00000  Hour  5 | 
-       9      0.00000   Lat. 5 | 
-      10     -1.00000  Hour  6 | 
-      11      0.00000   Lat. 6/
+\subsubsection{Dates}
+Beginning in 2016, the DJU5 run dates have been kept the same, and generate
+output files with DJU5 coverage of 5764.2720 to 6200.6960; Bennu encounter is
+2018dec03=6911 So, subtract 2*year=2*436.4232=872.846 from real MJD up to
+7073.54=2019may14, then subtract 1309.27 . Encounter day in KRC runs is 6038.
 
-@16 parr: Float values 
-       0     0.100000  del Degree in model @45
-       1      13.0000  View E/W central hour
-       2      15.0000   " " del deg @401
-       3      0.00000   " " Number to each side  INT
-       4      5.00000   "  N/S central lat
-       5      15.0000   " " del deg @402
-       6      5.00000   " " Number to each side  INT
--      7      436.423  Length of a year
-+      8      5858.00  Target MJD
-+      9      5.00000  theta-bar, deg
-+     10      10.0000   " " delta
-+     11      33.0000   " " maximum
-\end{verbatim}  
+In the BEn runs, MJD dates cover the first year of actual mission. Encounter day is 6911.
 
+However, for testing, want large sub-solar latitude,   so use the Ben set near 5500.
+
+
+\subsection{Thoughts not incorporated yet}
+
+For distant observations, if the body shape is not spherical one could weight
+each hour/latitude grid point with a form factor to reflect the relative size of
+each grid facet. This is an excellent approximation (exact) where the body is
+not concave
+
+Although in the KRC runs, non-Lambertian emission can be modeled, in the
+integration of rough surfaces, each facet is initially assumed to have
+Lambertian emission; this Lambertian assumption could be relaxed with additional
+code.
+ 
+2016oct24 Post Banfield phone call: 
+\\ Probable temperature of the far field for rough surfaces will depend strongly
+on azimuth and time of day. E.g., west-facing slope in the afternoon will see
+east-facing, and hence hot, slopes.
+ 
+
+\subsection{Thoughts}
+
+ Small-scale effects (less than about 5 times the diurnal skin depth) can only
+ dimish the thermal differences with slope and hence the beaming effect.
+
+Surface hiding at large emission angles must attenuate the shallow slopes. 
+Shadowing at large incidence angles must attenuate the shallow slopes.
+
+
+% \pagebreak
+\section{File naming and KRC run sequence \qlabel{fame}}
+
+ KRC runs will commonly involve hundreds of files that must be named
+ consistently and be traceable to KRC parameters; consistent file naming is
+ critical.  Must trace to conditions of the run and to the far-field set that
+ may have been used.
+
+Ensure that the extension specifies the file type, e.g., '.t52' or '.tm1'
+
+KRC input files are all in  \nf{/work1/krc/beam/}. The general scheme is in Table \ref{tame}.
+ 
+\begin{table} \caption[File naming]{KRC output file naming. 'parf' is paramater array and 'pars' is the array used in krcinpgen.pro.  Parts 1 and 2 are normally used in derivative files.}  \qlabel{tame}
+
+\hrulefill 
+\begin{tabbing} 
+WW \= WWWWWW \= WWWW \= WWWW \=WWWW \= WWWWWWWW \=   \kill 
+i \> what \> symbol \> parf \> pars \> example \> discussion \\
+i \> ---- \> ------ \> ---- \> ---- \> ------- \> --------------- \\
+0  \> top Dir \> AAA \> 0 \> 0 \> /work1/krc/beam/  \>   \\
+1 \> object  \> W \> 1 \>   \> BEn \> 3 char: Geom Matrix, period, seasons, lats, ...  \\
+2 \> material\> X\> 2 \>   \>  D \> 1 char: inertia, photoFunc, ...  \\
+ \>    \>  \>  \>  \>  \> 1+2 used for sub-dir and/or lead part of some file names \\
+3 \> slope   \> ss \> 3/auto \> \>  20  \> 2-digit, slope in degrees  \\
+4 \> Far material \> F \> 4 \>  \> d  \> 1 char: prior set must exist. Normally lowercase of item 2  \\
+5 \> far slope in \> ff \>  5 \>   \> 30 \> 2-digit, prior set must exist  \\
+6 \> seperator  \> a \> fixed \> auto  \> a \> always exactly this  \\
+7 \> azimuth    \> zz \> auto \> auto  \> 20  \> 2-digit, azimuth in degrees/10  \\
+8 \> extension  \> .ext \> auto  \> auto \> .tm1 \> fixed by KRC conventions  \\
+\end{tabbing}
+\hrulefill \end{table} 
+
+
+ Will assume for now that a sloped model using a farField views the opposite
+ azimuth.  In order of generation, these are [ see \S \ref{krcseq}:
+\begin{itemize}
+\item \textbf{KRC input and print} 
+\begin{description}  % labeled items
+\item [KRC input] Normally named  \nf{-/krc/tes/}YXn\nf{.inp}
+\\ Y is null for the high-obliquity set and 'E' for the true spin axis set.
+\qi X is the Model identifier
+\qi n is the Run number
+ 
+\item [KRC print] Normally named same as the input file, with extension \nf{.prt} 
+ \end{description} 
+\item \textbf{KRC output}
+\begin{description}  % labeled items
+\item [far-field files: flat] AAAWX\nf{flat.tm1} \ As for sloped below, without slope and azimuth
+\item [farField files: sloped] AAAWXssFff\nf{a}zz\nf{.tm1}  Name traceable to
+ their input file, also must contain both slope and azimuth and additional 
+parts for the farFiles that may have been used in their generation.  
+Typically 540 of these   
+\item [t52 multi-azimuth] AAAWXssFff\nf{.t52} \ Need all of the above except azimuth. Only ss vary through a set.
+ \end{description} 
+\item \textbf{IDL output}
+\begin{description}  % labeled items
+\item [date files] parf 10+11+12 +14 = AAAWX 1234slop.bin5 and --flat.bin5 where 1234 is KRC date.  
+\qi @280 make reading parf[0]+parf[1]+parf[2]+sti2[j]+parf[4]+'.t52'
+\qi  @28 Writes two file: .  @29 read
+\item [radiance]   @43 make parf 10+11+12+14 +'w'+parf[5]'+'w' .    @438 Write, @439 read
+\item [integrated]  make @64 avrr=average radiance, @1435 into 4D cube, @1435 write cube =  parf 10+11+8+14+9+'w'+parf[5]+.cub 
+ \end{description} 
+\end{itemize}
+
+NOTE: 2018dec19 1030 All \nf{/work1.krc.beam/B*n*/ --00.t52} files from
+production runs, which are from step 3, renamed to --30.t52, using \nf{fistX}
+script file generated by RENAMEF @23. Needed special care for BEnF/ which has
+real \nf{--00.t52} files.
+
+\section{KRC Production Runs}  % ----------
+Two different geometry matrices have been used, differing primarily in obliquity; values can be see by Linux command in -/krc/beam/,   grep -n 0.179 *.in , which displays the 4th line of the matrix; next-to-last column is item 19, the obliquity. 
+\qi listed as 3.056127 has obl = 5 deg: .inp files: Benew  krcB  E*
+\qi listed as 0. has obl = 33 deg, all others
+
+\begin{table} [!h]
+\caption[KRC tilt-set runs]{KRC tilt-set runs. All have: EMISS=1., RLAY=1.15, FLAY=.12, N1=37.; for which the bottom is at  D=121.7 or 1.5048m . WhenRun is DAYTIM from the file; Obl=Obliquity derived from Sdec curves; n.tm1 and n.t52 are the number of files of those types. }
+\qlabel{runt}
+\begin{center}
+\begin{tabular}{| l l   r  r  r r | r r | c | } \hline \hline
+WhenRun & Label & Albedo & Inertia & PhoFun. & Obl. & n.tm1 & n.t52 & Other conditions  \\  \hline
+2018 Nov  9 16:26 & BEn361K & 0.03 &   200. & 0.25 &  5.3 &   13 &   0 & \\
+2018 Sep 28 06:39 &    BEnA & 0.10 &   100. & 0.25 &  5.3 &  559 &  61 & EA.prt \\
+2018 Sep 26 11:19 &    BEnB & 0.03 &    50. & 0.00 &  5.2 &  559 &  61 & EB \\
+2018 Sep 27 05:32 &    BEnC & 0.03 &   400. & 0.25 &  6.4 &  559 &  61 & EC \\
+2018 Sep 29 06:21 &    BEnD & 0.03 &    50. & 0.25 &  5.0 &  559 &  61 & I=1600 below 5 mm \\
+2018 Nov 14 08:41 &    BEnE & 0.05 &   310. & 0.00 &  6.3 &  559 &  61 & \\
+
+2018 Nov 11 16:50 & BEnD361 & 0.03 &    50. & 0.25 &  5.2 &   13 &   0 & \\
+2016 Oct 26 10:51 &   BeamP & 0.03 &   100. & 0.00 & 36.5 &   19 &  31 & deleted \\
+2018 Sep 10 05:59 &    BenA & 0.10 &   100. & 0.25 & 36.5 &  559 &  61 & \\
+2018 Sep  4 16:46 &    BenB & 0.03 &    50. & 0.00 & 34.9 &  559 &  31 & \\
+2018 Sep 12 13:02 &    BenJ & 0.03 &    50. & 0.25 & 34.9 &  559 &  31 & \\
+2018 Sep  9 21:18 &    BenK & 0.03 &   100. & 0.25 & 36.5 &  559 &  31 & \\
+ \hline
+\end{tabular} \end{center}
+\end{table}
+% made by beamlist@41 REQ 20
+
+\begin{table} [!h]
+\caption[Type 52 sizes]{Type 52 sizes. \  Dim: number of dimensions; \ hr: of hours;  \ tp: number of types, always 7, first is Tsurf; \ lat: of latitudes; \ seas: of seasons; \ case: of cases; \ word: word type; \ /run: number of files per run-set}
+\begin{center}
+\begin{tabular}{| r l c |  l r c r | l | } \hline \hline
+%\begin{tabbing} 
+%WWWWWWW   \= WWWWW  \= WWW \= WWWWWWWWW    \= WWW \= WWW   \= WW   \= WWWWWWW \kill 
+size     & Typical Name & Dim & hr lat sea & case & word & /run & comment \\ \hline
+27885824 & BEn361K & 5   & 48 19 42    & 13 & dbl &  1  & 12 test cases \\
+ & .bin5 &  & D1 D2 D3 & Dlast & null& \\ \hline
+3940352 & BenA5906Aeqslop & 5 & 48 19 1 18 & 30 & dbl & & hour,latitude,null,azimuth,slope \\
+18321280 & BenK5906w1w  &  5 &  9 18 31 48 & 19 & flt & & wave,azimuth,1+slope,hour,lat \\ \hline
+\end{tabular} \end{center} \end{table}
+-- w1w.bin5 before 2018NOv11 have misleading comment in file, array is actually [wave,azimuth,slope,hour,lat].
+
+ 
+Left-over notes on runs
+\vspace{-3.mm} 
+\begin{verbatim}
+Directories, all have 559 .tm1 1.2MB each, unless otherwise indicated 
+each has 1 flat.t52 file,  0.21MB
+most have 30 .t52 slope files containing 18 azimuths, 38.610944 MB each 
+     48 7 19 42 18  dbl
+\qi flat, 18 of -30-00a--, 30*18 of -ssc30a--.tm1
+ beam]$ du --max-depth=1 -m | sort   Then hand-sort short sizes 
+15      ./BEn361K
+15      ./BEnD361
+1745    ./BenB
+1745    ./BenJ
+1745    ./BenK
+2850    ./BenA
+2850    ./BEnA
+2850    ./BEnB
+2850    ./BEnC
+2850    ./BEnD
+2850    ./BEnE
+
+OLD LISTING AND COMMENTS
+I & .03 & 200 & 0.25 & H & &  2490 \\ 
+D & .03 & 100 & 0.25 & H & I=600 below D=.3 & \\
+D & .03 & 100 & 0.25 & L & I=1600 below 5 mm & 1721 \\
+P & .03 & 100 & 0.25 & H & far-field is slope=30 at azimuth+180 & 2458 \\ 
+2018 Sep  4 16:46:00  A=.03  I= 50.  PhoF=0.  BenB2.prt
+2018 Sep  5 23:37:18  A=.03  I= 50.  PhoF=0.  B3.prt
+2018 Sep  5 23:53:09  A=.03  I= 50.  PhoF=0.  B3b.prt
+2018 Sep  6 12:21:30  A=.03  I= 50.  PhoF=0.  B3c.prt
+2018 Sep  6 17:33:13  A=.03  I= 50.  PhoF=0.  BenB1.prt
+2018 Sep  9 13:27:21  A=.03  I= 50.  PhoF=0.  BenL2.prt
+2018 Sep  9 17:52:55  A=.03  I= 50.  PhoF=0.  L2.prt far=30=L3.prt DELETED    
+2018 Sep  9 18:01:45  A=.03  I= 50.  PhoF=0. 
+2018 Sep  9 21:18:08  A=.03  I=100   PF=0.25  K2.prt far=30=K3
+2018 Sep  9 21:18:08  A=.03  I= 50   PF=0.25  J2.prt far=30=J3
+                      A=.03  I=100   PF=0.25  A2.prt A3 A4
+
+
+du1 2018dec12, Reordered
+
+15188   ./BEnD361   all .tm1: Dflat, EW1:6 NS1:6   Nov 11 16:50 beam/D361.inp
+15188   ./BEn361K  ditto  Nov  9 16:22 361K.inp
+
+high obliquity  2018 sep 6:12
+2917508 ./BenA  .tm1: flat and slo/azi set, BenA02:60A00.t52 and BenA02:60Aeq.t52
+1786268 ./BenB  .tm1: flat and slo/azi set, BenB02:60A00.t52
+1786272 ./BenJ  ditto
+1786272 ./BenK  ditto
+
+True pole  2018 Sep 26 :  Nov 14
+2917508 ./BEnA .tm1: flat and slo.azi set, BenA02:60A00.t52 and BenA02:60Aeq.t52
+2917508 ./BEnD  ditto
+2917508 ./BEnB  ditto
+2917508 ./BEnC  ditto
+2917508 ./BEnE  ditto
+\end{verbatim}   
+
+\subsection{After look at Bennu images} %----------------------------------
+After viewing rotation movie of Bennu, all at: / / https://www.nasa.gov/
+\qi image-feature/goddard/2018/bennu-from-all-sides \  Approach rot.
+\qii = sites/default/files/thumbnails/image/bennu_rotation_20181104.gif
+\qi image-feature/goddard/2018/osiris-rex-debuts-new-bennu-images \ Hi-res, blocks on limb
+\qiii and rotating 3D model
+\qii = sites/default/files/thumbnails/image/twelve-image_polycam_mosaic_12-2-18.png
+\qi feature/goddard/2018/osiris-rex-approach  \   Close rot.  
+
+Which show Bennu to be covered with blocks larger than a diurnal skin depth:
+ augment earlier KRC runs with two sets of slopes covering up to 90\qd.
+\qi Far-field is slope=30\qd at opposing azimuth. This is extension of Run 3
+\qii Alter pari[0:2] to 62 90 2.
+\qi Slopes 10 to 90 by 10's, far-field is flat. New run 5  = extension of Run 2
+\qii Alter 30 30 2  to 10 90 10, delete flat and slope 30 (already done), save EF9.inp
+
+\section{IDL post-processing} %_____________________________________
+
+\subsection{new IDL routines}
+See Table \ref{idlrou}
+ 
+\begin{table} \caption[IDL routines]{New IDL routines}  \qlabel{idlrou}
+\hrulefill 
+\begin{tabbing} 
+  WWWWWWWW \= WWWWW \= \kill  \\
+  BEAMCK  \> status\>  Check evolution of beaming files for flaws \\
+  BEAMING  \> main \>  Thermal beaming integration for remote viewer. \\
+  BEAMLIST  \> status\>  Status of Thermal beaming runs, and displays \\
+  BEAMTEST \> test \>   Test beam geometry and shadow hiding functions \\
+  BEAMVU  \> analy \>  Make image of beaming globe viewed from any direction \\
+  BENNUGEOM \> util \>  Read image table from JAsteroid file \\
+  KRC35  \> analy\>  Debugging KRC version 35 and 36 using many optional files \\
+  KRCINPGEN  \> util \>  Generate .inp input script for KRC beaming run \\
+  VIEWGEN  \> util \>  Convert specification list into view hour and latitude \\
+\end{tabbing}
+\hrulefill \end{table} 
+
+
+\section{Analysis}
+
+Initially, assume viewer is far away, so can use orthographic
+projection. Perspective maps are geometrically much more complex and are not
+needed unless a spacecraft is within about 20 body-radii.
+\\ Done in IDL BEAMVU. @7 Read a cube
+\qi @71  Plot for each tilt-set
+\qi @72 Traverse plot for all runs, for the roughest model
+
+
+\subsection{2018sep20 redesign concept (not coded)}
+
+ Could increase the Nhours to 96 with little penalty. Increase nlat to 37 would double the KRC run times.
+
+If stay with 48,19, then remove use of .t52 for airless bodies. Compile version of KRC with the fixed sizes tailored for large asteroid runs. Everthing after the date file remains the same.
+
+\subsubsection{Narrowing of data size, and file naming}
+A typical set of KRC type 52 files generated for beaming is 774 Mb [Ts only].
+Constructing a set of Tsurf files for one date, @280, yields
+t4=[hour,[Ts/Ta],lat,case=azimuth,slope] and a file for the flat case, total
+1.32 Mb.
+ 
+\begin{verbatim}
+OBSOLETE ??
+
+first run of 4 views without cos i test Elapsed time1=        2.4648681
+  with  1.28600
+
+at !dbug=2 can see that model temperatures have some irregularity.
+QLAT=-6.04000 QHOUR=4.50000  mostly about 0.3K , at max slope, max of 1 k
+\end{verbatim}
+
+
+\vspace{-3.mm} 
+\begin{verbatim}
+parf: File names
+  0 DIR for krc beam set            = /work1/krc/beam/
+  1  stem " "                       = Ben
+  2   run unique                    = A
+  3  " slope part                   = 30
+  4  " far part [.t52]              = Aeq
+  5 waveset number                  = 1
+  6 Surface site, start with letter = Q1
+  7 Comparison stem + uniq          = BeamBen
+  8 CubUniq [constructed]           = ABCDE
+  9 Surface point [constructed]     = G
+ 10 Output dir    \ any "=" will    = =
+ 11  "    stem    | be reset        = = 
+ 12  " run unique / to item 0 to 2  = = 
+ 13 spare                           = ---
+ 14 mjd [auto][.bin5]               = 5906
+
+t4             parf[10]+parf[11]+parf[12]+parf[14]+parf[4]
+radiance cube  parf[10]+parf[11]+parf[12]+parf[14]+'w'+parf[5]+'w'
+Beaming save   parf[10]+parf[1]+parf[8]+parf[14]+parf[9]+'w'+parf[5]+'.sav'
+\end{verbatim} 
+  
 \section{Sequences for Steps}
+ Done in BEAMING.pro
 \vspace{-3.mm} 
 \begin{verbatim}
 At start:.
-850, 850, 861    Set colors
-42... Prepare the wave and view vectors
-45... Prepare for slope distrib.
-256.. DEFINEKRC for current precision REQ 22 
+850, 850, 860    Set colors
+40... View set by @15 parv
+42... Prepare the wave and view vectors REQ 40 or 62+622
+45... Define the resolutions in tilt-set and theory 
+256.. DEFINEKRC for current precision 
 
 @111 is
 207.. set file names
@@ -1092,64 +1373,1017 @@ Step 2: Process date files to fluxes
 43... Convert t4 to rad  REQ 29 42
 438.. Write radiance file REQ 43
 
-View Traverses for one point
-     11... Modify any of strings
-     130.. Make list of tilt-set  names
-local
-     45... Define the resolutions in tilt-set and theory
-     6.... Calc Cartesian tilt normals in S system
-     207.. set file names
-     252.. Open/Read/Close type 52 file
-     403.. view from pari[7] hours to each side
-     404.. add N/S transect AFTER 403
-     42... Prepare the wave and view vectors
-     62... set to a single hour and lat grid point
-Global
-     401.. View set by @15 parv
-     42... Prepare the wave and view vectors
-     45... Define the resolutions in tilt-set and theory 
-     6.... Calc Cartesian tilt normals in S system
-     207.. Set file names
-     252.. Open/Read/Close type 52 file REQ 207
-     63... Set to global hour and lat grid
-both
-     1461. Create storage
-/--> 1313. Start of each inner loop
-|     439.. Read radiance file
-| /--> 1323. increment theta-bar
-| |    46... Compute distribution for KRC slopes REQ 29 or 439, 45
-| |    64... Integrate roughness REQ 42 rrr 46 
-| |    1324. save into n+2 D arrays
-| |    1161. +1 Optional stop after one set
-| \<-- 1256. +++   Inner-loop increment
-|     1162. +2 Optional stop after inner loop
-\<--- 1258. +++++ Second-loop increment
-     1164. +4 Optional stop after second loop
-     1325. SAVE (make and store 4-D cube)
-
- Global view:
-     130.. Make list of tilt-set names
-     45... Prepare tilt distribution
-     6.... Calc Cartesian tilt normals in S system
-     207.. Set file names
-     252.. Open/Read/Close type 52 file
-     62... Set to a single hour and lat grid point
-     63... Set to global hour and lat grid
-     1341. Create storage
-/--> 1313. Start of each inner loop
-|     439.. Read radiance file
-| /--> 1323. Increment theta-bar
-| |    46... Compute distribution for KRC slopes REQ 29 or 439, 45
-| |    64... Integrate roughness REQ 42 rrr 46 
-| |    1324. Save into n+2 D arrays
-| |    1161. +1 Optional stop after one set
-| \<-- 1256. +++   Inner-loop increment
-|     1162. +2 Optional stop after inner loop
-\<--- 1258. +++++ Second-loop increment
-     1164. +4 Optional stop after second loop
-     1325. SAVE (make and store 4-D cube)
 \end{verbatim}
+ Step 3; see \S \ref{s3}
+
+\section{Compare 361 to Sep/Oct beaming runs}
+D361.inp has same properties as 2018 Sep 29 BEnD run. 
+\\ Use krc35.pro to compare Sep 'flat' and 'slop' .bin5 files  with D361-.t52
+\qi set parf 11:13 to the convergence test file: /work1/krc/ beam/ BEnD361 [.t52]
+\qi @252 to return to kv3 to get the file
+
+\section{Mysteries}
+\subsection{2018 Nov 19 11:41:53}
 \vspace{-3.mm} 
+\begin{verbatim}
+Now coded as BEAMVU @47
+ restore /work1/krc/beam/BEnABCDE5906Gw1.sav  with ivu=4, noon, equator, 
+tvfast,reform(fff[0,*,*]),mag=5  afternoon for 3 equatorial lats cooler then others.
+ wei=reform(weir4[ivu,*,*]) & TVFAST,wei,mag=5   THese look good
+ sumf=reform(avrr4[*,ivu,*,*,pari[5],pari[6]])
+q3=transpose(sumf,[1,2,0])
+q4=quilt3(q3,['hour','lat','wave'],grid=222,mag=5)  Afternoon flaws in all
+
+hlr=reform(avrr4[0,4,*,*,0,*])  
+ym=hlr[*,6:13,4]       
+yms=avalg(ym,ym[*,4],'-')
+clot,yms,slat[6:13]    
+Shows that problem is mostly -18 to 0 lat, , OK in the north
+Problem similar for run A and E 
+
+vhl=reform(avrr4[0,*,*,*,0,4])  [view,hour,lat]
+hlv=transpose(vhl,[1,2,0])
+qh=quilt3(hlv,['hour','lat','view'],grid=222,mag=5)
+hour traverse, exists at all hours, becomes more north at late H
+lat traverse, less distinct, on both sides of equator
+\end{verbatim} 
+
+
+\subsection{midday glitch in rough radiance}
+BEAMCK @ 78:  midday low is in all rough, model and view
+\qi @73  bad hour index is 23 for lat index 0:9   lat 15:16 are negative!
+\\ file= /BenABJKL5906Gw1.sav
+\qi histfast of avrr4: about 40\%negative!
+\qi avrs4 all positive
+
+Found that BEAMING @64 was using shortest wavelength to assess coldest time, which  do poorly for cool targets. FIxed 
+
+
+New test: @12 13=31, 9=1 ??,  @13 1=q,    @16 9=30 
+\\ 130 42  143  125 123 no changes
+
+
+2018 Oct 2 15:53:58  HIDING with item2 =-3, at stop, sss and hhh are different, 
+\qi delta HIDE2=     0.128426    0.0102457   Some HIDE2 negative!
+\\ However, BEAMING @485 run twice shows HIDING and HIDE2  identical results
+
+store fsun,
+\qi  histfast,fsu3
+\qi  out=quilt3(fsu3>(-.5),['hour','lat','view'],grid=153,prt=3,/mod3,mag=5)
+\qi  see midday glitch, average is near zero!, should be bunch near 1.
+
+stereograph,hqsxxu,'HQS' 
+
+stereograph,vqsxxu,'v'+stid,/oplot  Shows V17 close to Sun
+
+\subsection{Step 3 and 4 KRC run times}
+Run 30\% faster Sept 16 and later, perhaps due to low obliquity
+\begin{verbatim}
+ 441944 Sep  6 12:59 B3c.prt  2233.757
+ 441944 Sep  9 18:39 L3.prt   2237.317 
+ 441944 Sep  9 22:05 K3.prt   2311.958
+ 448926 Sep 12 13:48 J3.prt   2321.201
+ 448980 Sep 12 17:54 A3.prt   2315.919
+ 441998 Sep 16 06:02 EA3.prt  1925.268
+ 442052 Sep 26 12:09 EB3.prt  1902.696
+\end{verbatim}  
+
+% \pagebreak
+\bibliography{heat,moon,mars}   %>>>> bibliography data
+\bibliographystyle{plain}   % alpha  abbrev 
+
+ %=============================================================================
+\appendix %====================================================================
+ %=============================================================================
+
+
+\section{Generate a KRC run set: KRCINPGEN}
+
+Must first construct a beaming master input file such as \nf{Bentop}, which must
+have a trailing blank line. Then for each production run, modify the change
+lines that define the albedo, inertia, photometric function (PhotFunc), etc for
+a specific Lettered run.
+
+KRCINPGEN is designed to construct large Beaming run change lines, however, all
+the ``fixed'' parts of these lines are in a array that could be modified. Also,
+there is some flexability of the things which change between cases. It has 3
+control arguments, all are input and output and will be created with default
+values if short:
+\qi 1: \nv{park} \ intarr(6) \ Slope and azimuth ranges. 
+\qi 2: \nv{pars} \  strarr(29) \ Parts of the script construction, and flags
+\qi 3: \nv{ii} \    intarr(?) \  Indices in \nv{pars} of allowed changes.
+
+The last 2 items in \nv{pars} control access to the ``fixed'' parts.
+\qi [last-1]: set 'y' or 'Y' to access the ``fixed'' strings 
+\qi [last]: set 'y' or 'Y' to modify the spacing or number of azimuths and slopes.
+
+\begin{verbatim}
+The way output lines are constructed (ignoring trailing comments):
+
+              AAA          W X   W  X  ss F ff  ext
+ 8  5 0  /work1/krc/beam/ BEnA/ BEn A  36 A 30 .t52   .t52 out, example
+\------/ \--------------/ \---/ \-/ |  \/ \--/ \--/
+    6           0         15    7  16   2   8    9      pars in krcinpgen
+\-----------------------------------/  \/ \-------/
+                 t1                  ssi2[j]  t3        fixed parts
+
+8 21 0  /work1/krc/beam/ BEnF/ F   10   f30  a   00   .tm1    Far out example
+\-----/ \--------------/ \---/ |   \/   \-/  |   \/   \--/   
+  22          0           23  24  islo   25 19  iazi   26     pars in krcinpgen
+\------------------------------/   \/   \-/  |   \/   \--/ 
+           f1                   ssi2[j]  f3 g8 sz10[k] f5     fixed parts
+\end{verbatim} 
+
+KRCINPGEN is a single-pass routine, there are no action addresses or redo options. It runs quickly, so simple run again to make corrections
+
+Run krcinpgen for style 2 for the specific Letter, here shown as X, this will generate cases for both Run 1 and Run 2
+\qi cat Bentop  inpgen.inp > X2.inp
+\qi the run KRC with X2.inp . Takes about 70 sec
+
+Run krcinpgen for style 3 for the specific Letter and concatonate:
+\qi cat Bentop  inpgen.inp > X3.inp
+\qi then run KRC with X3.inp  Takes about 2800 sec
+
+Run krcinpgen for style 4 for the specific Letter, modifying some fields
+\qii 2: X4
+\qii 8: Aeq
+\qii 17: = 
+\qii 18: a30
+\qii 21: no
+\qi  cat Bentop  inpgen.inp > X4.inp
+\qi then run KRC with X4.inp  Takes about 2400 sec
+ 
+
+\subsection{Parameters} %---------------------------------------
+\vspace{-3.mm} 
+\begin{verbatim}
+pars: Gener. parts                   
+ _i ____hint________ ______ example__________  X= fixed part  o=optional
+  0 DIR: files  AAA = /work1/krc/beam/         | Top directory for DA files
+  1  " .inp         = ~/krc/tes/               | KRC input file directory
+  2 name [.inp]     = B3                       | input file name [.inp]
+  3 Slope cmd       =  1 23                    X start of slope line
+  4  " mid          = . 'SLOPE' /              X last part of slope line
+  5  " note         = -------------            o optional comment
+  6 t52 cmd         =  8  5 0 '                X start of T52 output line
+  7 t52 X           = BenB                     | run name
+  8 t52 x           = B00                      | far-field indicator
+  9  " .ext         = .t52' / t52 out all azim X T52 extension
+ 10 Azimu cmd       =  1 24                    X start of azimuth line
+ 11  " mid          = . 'SLOAZI' /             | last part of azimuth line
+ 12  " note         = ---                      o optional comment
+ 13 In flag y/n     = y                        | controls input of far-field
+ 14 FarIn cmd       =  8  3 0 '                | start of FF input line
+ 15  fin X          = BenB/                    | FF input sub-directory
+ 16  fin x          = B                        | FF input model
+ 17  fin ss         = 30                       | FF input slope
+ 18  fin Fff        = B00                      | series used for FF input files
+ 19  " sep          = a                        X prefix to azimuth
+ 20  " .ext         = .tm1' / farIn            X extension for FF output files
+ 21 Out flag y/n    = y                        | controls output of far-field
+ 22 FarOut cmd      =  8 21 0 '                | start of FF output line
+ 23  fout X         = BenB/                    | FF output sub-directory
+ 24  fout x         = B                        | FF output model
+ 25  fout Fff       = UUU                      | FF output??
+ 26  " .ext         = .tm1' / farOut ala K4OUT X extension for FF output files
+ 27 ModRange y/n    = y                        | set to slope/azimuth angles
+ 28 Mod All y/n     = y                        | 
+
+if 28 [13] is n, will see only the following:
+pars: Gener. parts
+  2 run [#.inp]     = F
+  7 t52 X-plus      = BEn
+  8 t52 x           = F00
+ 13 In flag y/n     = n
+ 15  fin X          = BEnF/
+ 16  fin x          = F
+ 17  fin ss         = 30
+ 18  fin Fff        = F00
+ 21 Out flag y/n    = y
+ 23  fout X         = BEnF/
+ 24  fout x         = F
+ 25  fout Fff       = F00
+ 27 ModRange y/n    = n
+ 28 Mod All y/n     = n
+
+
+if 27 [12] is n, will not see the following:
+park:  .inp set Ints
+  Limits=       0     360
+       0       2  Slope: first
+       1      60   " last
+       2       2   " delta
+       3       0  Azimu: first
+       4     340   " last
+       5      20   " delta
+\end{verbatim}
+
+
+\section{Common KRC run sequence \qlabel{krcseq}}
+ Sequence of KRC runs
+\\ 1: Flat, \qfo{-/beam/BEnZ/Zflat.tm1} \ \qfo{-/beam/BEnZ00_00.t52} 
+\qi  Normally runs as first part of step 2
+\\ 2: Slope=30 with flat farIn: \qfo{-/beam/BEnZ30Z00.t52}
+\qi  and for each azi \qfo{-/beam/BEnZ/Z30Z00a02.tm1}
+\\ 3: Set of slopes with farIn of slope=30. at opposite azimuth
+\qi   \qfo{-/beam/BEnZssZ00.t52} \ \ ss $\equiv$ slope
+\qi If planning step 4: \qfo{-/beam/BEnZ/Z02z30a02.tm1} etc for each azimuth
+\\ 4: Set of slopes with farIn of same slope at opposite azimuth (from Step3)
+\qi   \qfo{-/beam/BEnZ02Zeq.t52}
+
+number represents parf[n]
+
+KRC steps: (number in a name represents parf[n])
+
+1. Generate Top part of beaming master input file by hand;
+\qi  Edit it for specific inertia, albedo, etc
+
+2. Use KRCINPGEN to generate step2 cases. This example for the proper pole
+\qi 7,15,23 should start ZE [for proper pole], where Z is the current model
+\qi 2,16,24,should start Z 
+\qi 18:  Z00 
+\\ Concatonate onto BEntop, check initial change lines,  and run KRC.  70 sec.
+
+3. Use KRCINPGEN to generate step3 cases. Concatonate onto top, and run KRC. 40 minutes 
+
+4. Option:  Use KRCINPGEN to generate step4 cases, edited for equal-slope farFieldIn. 
+\qi 2 [E]X4,  8 Aeq, 17 =, 18 a30, 21 n . Concatonate onto top, and run KRC. 40 minutes 
+
+\vspace{-3.mm} 
+\begin{verbatim}
+1) first case is flat;                   Out: BenX00_00a00 == BenXflat.tm1
+2) All azi slope=30, using flat as far.  Out: BenX30X00a00.tm1 and .t52
+3) All azi all slope, oppos 30 as far    Out: BenXssX30azz.tm1 and .t52
+4) All azi all slope, oppos = as far     Out:             BenXssXss.t52
+\end{verbatim}
+  
+\subsection{Run stages} %---------------------------------------
+All KRC files go into a directory -/BEnX/.  \nf{---.t52} [except \nf{flat}] contain all azimuths.
+\begin{description}  % labeled items  
+ \item [Run 1] is a flat case with no farIn
+\\ Outputs: \qfo{BenX00_00.t52} and  \qfo{Xflat.tm1}
+ \item [Run 2] uses X\nf{flat.tm1} from Run1 as farIn, runs for slope=30 and all azimuths. \\  \qfo{X02a30a00.tm1} etc for each azimuth  and  \qfo{BEnX30A00.t52} for each slope
+
+ \item [Run 3] Runs all slopes and azimuths. Uses the 30\qd~ slope at opposite
+   azimuth for the farIn. 
+\\ \qfo{02a30a02.tm1} etc for each azimuth and slope and \qfo{BenX02A00.t52} etc for each slope.
+
+ \item [Run 4] Runs all slopes and azimuths. Uses the same slope at opposite
+   azimuth for the farIn. 
+\\ \qfo{BenA02Aeq.t52} etc for each slope.
+ \end{description}
+
+Default values are shown below. User must be careful to change enough names so
+that prior run files are not duplicated, because KRC does not check and will
+overwrite existing files with no warning or record!
+
+If unsure of state after prior runs, do:
+\qii park=0 \& pars='c' \& ii=0
+\qi before krcinpgen
+\\ This will set all values to default
+
+Routine prints sample for approval before generating the entire file; examples below:
+
+\vspace{-3.mm} 
+\begin{verbatim}
+
+Style 3
+ 1 23 02. 'SLOPE' / -------------
+ 8  5 0 '/work1/krc/beam/BEnF/BEnF02F00.t52' / t52 out all azim
+ 1 24    0. 'SLOAZI' / ---
+ 8  3 0 '/work1/krc/beam/BEnF/F30F00a18.tm1' / farIn
+ 8 21 0 '/work1/krc/beam/BEnF/F02f30a00.tm1' / farOut ala K4OUT
+ Enter 19 if above is correct, 0=stop else exit > 
+
+
+Style 4
+ 1 23 02. 'SLOPE' / -------------
+ 8  5 0 '/work1/krc/beam/BEnF/BEnF02Feq.t52' / t52 out all azim
+ 1 24    0. 'SLOAZI' / ---
+ 8  3 0 '/work1/krc/beam/BEnF/F02f30a18.tm1' / farIn
+ Enter 19 if above is correct, 0=stop else exit > 
+\end{verbatim}
+
+
+\section{Main program: User Guide and details for IDL BEAMING \qlabel{ibeam} }
+
+%\section{User Guide to IDL beaming.pro \qlabel{ugu} }
+Must first have used KRC to generate at least one full tilt-set for the object
+of interest; output seasons must span one object year (IDL beaming.pro will wrap
+over a gap for the last season), have a uniformly spaced set of slopes and a
+complete uniformly spaced set of azimuths starting with 0 (do not include
+360).
+
+
+\subsection{Auto-init}
+At start-up, \nf{beaming.pro} does:
+\vspace{-3.mm} 
+\begin{verbatim}
+880.. Decomposed=0
+851.. black background
+860.. set to 14 colors for black background
+15... Modify views 
+42... Prepare the wave and view vectors
+45... Define the resolutions in tilt-set and theory 
+256.. DEFINEKRC for current precision
+\end{verbatim} 
+
+\subsection{Ingest new KRC run, convert to Tsurface file}
+
+@111,123 does the following:
+\vspace{-3.mm} 
+\begin{verbatim}
+10... Set strings for one run
+11... Modify strings
+1112. Set to flat file
+252.. Open/Read/Close type 52 file REQ 207 or 1112
+253.. Estimate Sdec at each season and one date REQ 252
+254.. Plot annual sdec and interpolate ttt to date REQ 253
+257.. Convert slope set .t52 to one Tsurf.savAz  REQ 252flat
+
+\end{verbatim}  
+
+@10 should set all the strings, so that @11 is just a check
+\\ @12,  modify items
+\qi 1: Increment between slopes, degrees. Must be same as KRC run
+\qi 2: Number of slopes (not including horizontal). Must be no more than KRC run 
+\qi 3: Increment between azimuths, degrees. Must be same as KRC run
+
+Interpolate a KRC tilt-set to a single date : reformat to file of
+\qi Tsurf[hour,lat,season,azimuth,slope].  Output 1.3Mb +7.8 kB (flat)
+
+@257 takes about 1 min
+\subsubsection{Optional, Plot solar declination over date}
+
+Neither KRC Type -n nor Type 52 files contain the sub-solar latitude for all
+seasons.  This can be estimated based on a quadratic fit of the noon down-going
+insolation versus latitude. After @10, can do:
+\qi @110, 123 which does:
+\vspace{-3.mm} 
+\begin{verbatim}
+10... Set strings for one run
+11... Modify strings
+280.. Set t52 to flat
+252.. Open/Read/Close type 52 file REQ 207 or 280
+253.. Estimate Sdec at each season and one date REQ 252
+254.. Plot annual sdec and interpolate ttt to date REQ 253
+257.. Convert slope set .t52 to one Tsurf.savAz  REQ 252flat
+
+207.. Set file names
+252.. Open/Read/Close type 52 file
+22... Get KRC front and hold
+253.. Estimate Sdec at each season and one date
+254.. Plot annual sdec and interpolate ttt to date
+\end{verbatim}
+Typical result is shown in Figure \ref{beam251}
+\begin{figure}[!ht] \igq{beam251}
+\caption[Estimated sub-Solar Latitude]{Sub-solar latitude derived from the
+  down-going visible radiation as a function of latitude.
+\label{beam251}  beam251.png }
+\end{figure} 
+% how made: beaming @251
+
+\subsection{Generate new date and radiance files for 1:many models}
+Integration must be done in radiance, so convert Brightness temperatures to radiances
+\\ .
+\\ Presumes that ingest to step C2 has been done for each model.
+\\ Specify the effective wavelengths [firm code, or revise @14]
+\\ Specify the date
+\\ Read the date file: @43
+\qii If appropriate, reduce hour density to: number of hours $\sim$ 2* Number-latitudes 
+\qi Convert to Tsurf to radiances and reorder: [wave, azimuth, slope, hour, latitude] 
+
+
+@11 items 0,1,2,5,14 ; 
+
+Setup:
+\qi [ @14: check wavelength set]
+\qii The flat temperatures become the first slope and  are replicated for all azimuths
+\\ @16, modify items 
+\qi 7: Length of the target's year in Earth days. Must be same as KRC run
+\qi \textbf{8: Date desired.} (will be rounded to nearest integer day.) 
+\qii Must be within the date range in the tilt-set files 
+
+Output: for each tilt-run: 
+\qii Date file for all slopes: \qfo{BeamA5906Aeqslop.bin5}
+\qiii Tsurf [hour, latitude, azimuth, slope]
+\qii Date file for flat with similar name: e.g., \qfo{BeamA5906Aeqflat.bin5}
+\qiii Tsurf [hour, latitude]]
+\qii Radiance file with similar name: e.g., \qfo{BeamA5906w1w.bin5}
+\qiii radiance [9=wave, 18=azimuth, 31=1=flat+slope, 48=hour, 19=lat]
+
+%2019jan 02 
+From KRC output to ready for integration; @130 to parse run-unique
+names, then do @141. Can use single character @11 item 8 for one model.
+
+@141,125,128 yields
+\begin{verbatim}
+      ..... start clock4
+     11... GET parf: File names: parf  Modify strings
+     16... GET parr: Float values: parr  Modify tests
+     42... Prepare the wave and view vectors REQ 15 or 62+622
+/--> -5... Do nothing quickly
+| /--> 1431. Update model names
+| |    280.. Set t52 to flat
+| |    252.. Open/Read/Close type 52 file REQ 207 or 280
+| |    253.. Estimate Sdec at each season and one date REQ 252
+| |    28... Interpolate to one date, write file  REQ 280 252 253
+| |    29... Read date file
+| |    43... Convert t4 to rad  REQ 29 42
+| |    438.. Write radiance file REQ 43
+| \<-- 1256. +++++ Inner-loop increment: clock1
+|     -5... Do nothing quickly
+\<--- 1258. ++++++ 2nd-loop increment: clock2
+     -5... Do nothing quickly
+\end{verbatim}
+
+\qln % v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v-v
+\nv{rrr} is 5D radiance cube, one date, one model.  Make @43,438  Read @439  Reform @433
+\qi BEWARE, @61 makes test version of all same temperature
+
+\nv{rr6} is 6D radiance cube, multiple models. Make @1433, use @64
+
+\qnl % ^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^-^
+
+
+\subsection{Step C4, Integration} %IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+.
+\qi @15, then @40  ; define the views and transfer
+\qi @16, 9:11, define the set of roughnesses
+
+Designed to do multiple model-sets, as specified by \nv{parq}, generated @130.
+Pre-checks existancce of radaince files; if any not found, will halt.
+\\ 130
+\\ 42
+\\ @143, sets up double loop
+\qi 125 ; build loops
+\qi 128; display loops
+\qi 123 run
+
+Target can be either one point or the sub-viewer hemisphere. Specifed by 3 values:
+pari[9:11] 
+\qi 9: flag; 0=spot, 1=hemisphere, -1=spot with nadir view
+\qi 10: sub-viewer hour index
+\qi 11: sub-viewer latitude index
+
+If pari[7] $\geq 2$ the shadow function $S$ is computed by the HHIDE routine,
+which allows any of the azimuth functions $f(\Psi)$ described in \S
+\ref{azi}. The computed sunlit fraction for a rough surface is applied to all
+facets.  Radiances for the fraction in shade are set to the minimum diurnal
+radiance (temperature) for each facet, which is an extreme.
+
+Radiances at night can optionally (pari[7]=3) be adjusted in a similar fashion
+but the ``sunlit'' fraction is set by the computed shadow function for the rough
+surface at noon, independent of the view direction, typically a small
+change. This is mostly a check on possible effects and generally not invoked; as
+a rough surface will absorb at least as much sunlight as a flat smooth surface
+(of the same properties) and thus emit MORE radiance at night than a smooth
+surface.
+
+If a hemisphere, view must be a list; not grid.
+
+View directions can be specified in several ways: 
+\begin{description}    % numbered items 
+ \item [List] Pairs of hour,latitude sub-viewer points
+ \item [Cardinal traverses] Specify the center hour and latitude, the step size in each direction, and the number to each side in both directions
+ \item [Diagonal traverse]  specify the center hour and latitude, the step size in each direction, and the number to each side.
+ \item [Grid] Specify same as cardinal traverse.
+\end{description}
+These are all defined by the array \nv{parv}; a consistent algorithm will convert this into a view-pair list is \np{viewgen.pro}
+
+See \S \ref{s3}. Required input: one or more radiance files generated by Step 2.
+\qi Check file names @11; [0:3 must be a valid set. e.g., Ben A 30 A00]
+\qi Check file names @13; each up to first short must be a valid .t52 set
+\qii  In form l*t where full set lsst.t52 must exist in the @11 [0] directory.
+\qi Check tilt values @12 items 1,2,3; must agree with KRC run
+\qii item 5 sets sets stops at loop ends: \nv{lobt} +1=inner loop +2=mid +4=outer
+\qi Check wavelengths @14
+\qi If global, check views @15
+\qi If local point, check views @16 items 1:6 
+\\ Do  @130 and @42 
+\\ If locale @143 \  OR \ if global @144.  Then:  @146, 125, [128,] 123
+
+Make an IDL save file [-.sav] 
+ 
+View directions can be specified to any precision. Local view targets are
+available only on grid points; interpolation of the results is probably
+reasonable.
+\\ \textbf{Output}  IDL save file [-.sav] 
+%  4-D cube of radiance [waves+1,views,1+roughness, KRCrun]
+\qi  name will be  parf[10]+parf[11]+parf[8]+parf[14]+parf[9]+'w'+parf[5]  + .cub
+\qiii e.g., /work1/krc/beam/BeamKLA5900H24L9w1.cub
+\qii Unique part, parf[8], will be constructed as concatonation of the tilt-set names set @13.
+\qii parf[14] is the date, will be the same as for the input files
+\qii parf[9] depends upon the style of integration and will be constructed
+\qiii  Global views output files will be 'G' 
+\qiii Local views will be  e.g., H25L9 =  H + the 0-based hour index + L + the 0-based latitude index.
+\\ FLOW:
+
+ @46 defines fpp and rescales parh[5:7] but retains their proportions
+
+\vspace{-3.mm}  % 2018 Nov 17 12:31:13
+\begin{verbatim}
+
+startup does:
+880,851,860   set graphics and colors
+15... Modify views 
+42... Prepare the wave and view vectors REQ 15 or 62+622
+45... Define the resolutions in tilt-set and theory 
+256.. DEFINEKRC for current precision 
+
+130  Pre-check files for integration
+42: begin  ; Prepare the wave and view vectors 
+
+@143,125,125,123 does:
+      ..... start clock4
+     11... GET parf: File names: parf  Modify strings
+     12... GET pari: Integer values: pari  Modify ints
+     439.. Read radiance cube p 10+11+12+14+w+5+w.bin5
+     442.. Set systems sizes from radiance cube REQ 439
+     45... Define the resolutions in tilt-set and theory 
+     6.... Calc Cartesian tilt facet normals in S system  REQ 45  442
+     62... Set target loop limits and create view list REQ 1 of 25 252 29 439
+     42... Prepare the wave and view vectors REQ 15 or 62+622
+     48... HIDING  B.G. Smith 1967
+     1232. ..... Start clock 2   mid loop
+     46... Compute distribution for KRC slopes REQ 45
+/--> 1231. ..... Start clock 1   inner loop
+| /--> 1431. Update run-set names
+| |    439.. Read radiance cube p 10+11+12+14+w+5+w.bin5
+| |    441.. Ensure sizes the same REQ 252 or 442, 439
+| |    1433. Create storage  Either 1 hour/lat or global
+| \<-- 1256. +++++ Inner-loop increment: clock1
+|     -5... Do nothing quickly
+\<--- 1258. ++++++ 2nd-loop increment: clock2
+     64... Integrate roughness REQ  6, 46 or 439, 483, 62
+     1435. SAVE integrations to file
+\end{verbatim}
+
+Notes on actions: 
+\\ 43: to get sizes  and define \nv{slop3}
+\\ 6: Compute normals for each tilt (slope, azimuth) in the S coordinate system: $\qf{NW_S}$. 
+\qi Specify sub-viewer directions as hour and latitude; i.e, in the D system
+\\ 42: Compute vectors to viewer in D coordinates: $\qf{VQ_D}$
+\\ 48: HIDING, Insurance that \nv{parh} fully defined  NOT NEEDED ?
+\\ 441: Necessary because of the complex sequence of defining all the geometry; the radiance file must agree in size.
+
+
+\vspace{3mm} Projected obscuration; The dip factor addresses the geologic bias
+on the probability of emergence obscuration, but no basis has been developed for
+assigning a temperature to the surface causing the hiding; a neutral approach is
+to simply not count the contribution of that surface to radiance or area
+summation.
+
+\vspace{3mm} NOT YET: Makes sense to use a single atm temperature. Use the Tatm
+of all models weighted with the surface abundance based on slope distribution,
+not the view factors.
+
+\subsection{integration}
+symbols and indices:
+\qi wave: W l, usually wavenumber.
+\qi azimuth: a k 
+\qi slope: s m
+\qi view:  V n
+\qi KRC model: M koop
+\qi roughness: B (theta-Bar) koop
+\qi hour: H
+\qi latitude: L
+\\ Construct radiance array (W,V,H,L,B,M) 
+\qi For point target, H and L are 1
+\qi For global target H=nhour(48) and L=nlat(19)
+\qii Then can do summation for an unresolved object
+
+Sum $\mu$ R for each view to get spectrum of unresolved body
+
+\pagebreak
+\subsubsection{Actions and loops  OBSOLETE}  %..............................
+Use the same actions for all view-sets and targets; single target will have same lower and upper limits for lat and hour loops. 
+
+. \\ $\Longrightarrow$ 1432.. Increment theta-bar $\overline{\theta}$  LOOP  koop2
+\qi 46... Compute distribution for KRC slopes 
+\qi 486.. Normalize the dip function 
+\qii  Normalized so that $\int_{\theta=0}^\pi F(\theta)p(\theta) \equiv 1 $
+\qi $\longrightarrow$  
+133.. Set run uniq  LOOP koop1
+\qii 439.. Read date-radiance file
+\qii  441.. Ensure sizes the same
+\qii  64... Integrate roughness REQ 42 rrr 46 
+\qiii Set any shadow or azimuth flags  %\qiii \ddag Compute shadow slope factors
+\\ .  \hrulefill Deeper loops within @64 \hrulefill \hspace{3.in}
+\qh{0} For each latitude $j$
+\qh{3} For every slope and azimuth, find hour index of the minimum temperature % icold[azi,slop]
+\qH{3} Store minimum radiance [wave,azi,slope] AND set the nighttime ``shadow'' value 
+\qh{1} 
+\qh{1} For every hour $i$
+\qh{2} Compute zenith for the grid-point in the D coordinate system: $\qf{ZQ_D}$
+\qh{3} For each view $n$, compute the emergence cosine $\mu =\qf{VQ_D} \bullet \qf{ZQ_D}$ for flat surface % cvv[n]
+\qH{3} Store store view factors for one grid point for all views % mu4
+\qh{2} Check point is visible in at least one view, if so: THEN
+\qH{2} Compute rotation matrix to S from D, \trm{SD}.; see \S \ref{geos}   % SDct
+\qH{2} and calc unit vector and azimuth to Sun in S system  
+\qH{2} Extract radiances for all waves, azimuths and slopes for this grid point % rri=
+\qH{2} LOOP for each view $n$ % for n=0,nvu-1 
+\qh{3} Rotate viewer positions into S system, $\qf{VQ_S} = \qrm{SD} \star  \qf{VQ_D}$
+\qh{4} Compute view azimuth in S system  and $\mu$  and $e$ % aziv[n] & cose & pahr[2]
+\qH{4} Compute the weight (projected area,$ \equiv \mu$) and radiance for level surface % cose sws[n] & srs[*,n]
+\qH{4} Compute probability $S( \overline{\theta},i,e,\psi)$ of being in sunlight
+\qH{4} Zero slope radiance  and weight sums
+\qh{3} LOOP for each slope $m$  % for m=0,nslot
+\qh{4} If fractional abundance of this slope above test minimum, THEN 
+\qH{3} Zero azimuth radiance and weight sums 
+\qH{4} LOOP for each azimuth $k$ % for k=0,nazi-1 do
+\qh{5} Get the facet normal and azimuth in the S system. Get radiances[wave] % rrz
+\qH{5} LOOP for each view $n$
+\qh{6} If facet is visible ($\mu'>0$), THEN  
+\qH{6} Set radiance as $\mathcal{R}' = S \mathcal{R} + (1-S) \mathcal{R_\mathrm{min}}$ for each $\lambda $
+\qH{6} Add to radiance and weight azimuth sum %
+\qh{3} Add azimuth sums times slope abundance to slope sums  %
+\qh{2} Store slope sums for roughness:  weight and radiance %
+\\ . \hrulefill end of @64 \hrulefill \hspace{3.in}
+\qi $\longleftarrow$ 1258. \ end of koop1 : Model
+\\ $\Longleftarrow$    end of koop2 : roughness
+\\ 1435. SAVE  integrations parf[10+[1+8+14+9]+'w'+[5]+'.sav'
+
+\subsubsection{2018nov20 fix}
+Discovered backside values were being added. Revise the loops @64 in a major way
+\\ @439 read radiance cube rrr[wave,azi,1+slope,hour,lat]
+\\ @1433 make radiance     rr6[wave,azi,1+slope,hour,lat,model]
+\\ @64 rad_flat rf_ [wave,hour,lat,model] directly from rr6
+\qii     wei_flat wd_ [view,hour,lat] = cos e
+\qi Integrate to: radiance*weight [wave,view,hour,lat,rough,model]
+\qii  and weight [view,hour,lat,rough]
+
+See \S \ref{lo64}
+
+\subsubsection{Treatment of areas in shadow} %
+
+\input{loop}
+
+\subsubsection{Step output files} %.........................................
+
+Either global \qfo{BenABJKL5906Gw1.sav}   [wave,view,Hour,Lat,rough,run-set]
+\qi  or one surface point \qfo{BenABJKL5906H25L9w1.sav} 
+\qi Target location indices are in file name: hour[25]=13. lat[9]=0.
+
+For globe. 2 rough * 5 models = 10 loops takes 1.1 minutes. 
+Saved items are shown in Table \ref{rsave}
+
+\begin{table} \caption[Roughness integration output]{File saved after integration ovr facets for roughness. Shown here for global runs; single targets are missing the Hour and Lat dimensions.  $\sum$ is over azimuths and slopes. }  \qlabel{rsave}
+\hrulefill
+\begin{tabbing} 
+WWWWWWW \= WWWW \=WWWWWWWWW \=   \kill 
+     \>     \> typical \>  \\
+name \> type \> dimension \> \hspace{2.cm} Description \\
+NPQ   \>  LONG   \>  5       \>  Number of KRC run-sets (models) \\
+HARR \>   FLOAT  \> [12] \> \nv{parr}  control parameters  \\
+HARQ \>   STRING \> [5] \>  \nv{parq} full names of source radiance files \\
+HARV \>   FLOAT  \> [12] \> \nv{parv}  view pairs or control parameters \\ 
+SRO  \>   STRING \> [2] \> roughness $\overline{\theta } $ \\ 
+WAVET  \> FLOAT  \> [9] \> Wavenumbers \\
+WF_VHL    \> FLOAT \> [18, 48, 19]   \> weight ($=\mu \equiv \cos e$) flat [view,hour,lat] \ Negative on backside \\
+RF_WHLM   \> FLOAT \> [9, 48, 19, 2] \> radiance $\mathcal{R}$ flat [wave,hour,lat,model] \ All+ \\
+W_VHLR    \> FLOAT \> [ \hspace{5.0mm} 18, 48, 19, 3  \ ] \> $\sum P(s,\overline{\theta}) \mu$ \hspace{1.9mm} [ \hspace{6.4mm} view,hour,lat,roug \hspace{5.0mm} ] \ No -\\
+RW_WVHLRM \> FLOAT \> [9, 18, 48, 19, 3, 2] \> $\sum P(s,\overline{\theta}) \mu \mathcal{R}$ [wave,view,hour,lat,roug,mod]  \ No - \\
+ \>  \>  before 2018nov20   \>  OBSOLETE \\
+AVRS4  \> FLOAT \>  [9,48,19,5] \> Radiance  $\mathcal{R}$ for smooth surface [wave, hour, lat, model] \\
+\> \> \> direct from date-radiance cube \\
+WEIS4 \>  FLOAT \>  [18,48,19,5] \> weight $=\mu $ [view, hour, lat, model:redundant]  \\
+AVRR4 \>  FLOAT  \> [9,18,48,19,2,5] \> $\sum P(s,\overline{\theta}) \mu \mathcal{R}$ [wave, view, hour, lat, roughness, model] \\
+WEIR4 \>  FLOAT  \> [18,48,19,2,5] \> $\sum P(s,\overline{\theta}) \mu$ [view, hour, lat, roughness, model:redundant]  \\
+\end{tabbing}
+\vspace{-5.mm}
+\hrulefill \end{table} 
+
+\subsection{All actions}
+Produced 2018 nov 16 9 am
+\qi \at 110.. kons=[207,252,22,253,254] Make Solar declination plot
+\qi \at 111.. kons=[11,1112,252,257] Convert .t52 slope set to .savAz
+\qi \at 1112. Set to flat file
+\qi \at 112.. kons=[11,28,29,42,43,438] Step 1\&2: Generate date \& radiance file
+\qi \at 113.. kons=[11,29,42,43,438] Step 12: Generate radiance file
+\qi \at 117.. kons=[11,207,252,22,23,26,132,252,233] Find difference between two runs
+\qi \at 130.. Parse list of tilt-set names
+\qi \at 132.. Set stem to 2nd file
+\qi \at 133.. Set run uniq for 2nd loop
+\qi \at 134.. Increment theta-bar
+\qi \at 141.. Step 1: date files for multiple runs REQ 130
+\qi \at 1411. set parf[4] flat
+\qi \at 142.. kons=[29,43,438] Step 2: Radiance files for multiple runs REQ 130
+\qi \at 1430. kons=[130,42] set for test run
+\qi \at 143.. kons=[1433,439,441,64, 1434] Integration loops for 1 or globe
+\qi \at 1431. Create storage  Either 1 hor.lat or globe
+\qi \at 1432. Increment theta-bar
+\qi \at 1433. Set run uniq
+\qi \at 1434. Save into n+2 D arrays
+\qi \at 1435. SAVE integrations
+\qi \at 145.. kons=[64] integration, version 2  REQ 130 42
+\qi \at 147.. kons=[11,439,442,62,7,72] Read an integration file
+\qi \at 11... Modify strings
+\qi \at 12... Modify ints
+\qi \at 13... Modify tilt-sets
+\qi \at 14... Modify waves
+\qi \at 150.. restart views
+\qi \at 15... Modify views 
+\qi \at 151.. use view list
+\qi \at 16... Modify tests
+\qi \at 17... Modify view list
+\qi \at 18... Guides and help
+\qi \at 188.. Contents
+\qi \at 201.. KRC input dates
+\qi \at 202.. Find files that match mask for .t52
+\qi \at 203.. Check dates on runs  REQ 202
+\qi \at 204.. Find files that match mask for .tm1
+\qi \at 205.. Check .tm1 OK  REQ 204
+\qi \at 207.. Set file names
+\qi \at 211.. Change KRCCOM List=kist
+\qi \at 212.. Get KRCCOM names for kist
+\qi \at 213.. Get KRCCOM values for kist
+\qi \at 22... Get KRC front and hold
+\qi \at 23... Print krccom
+\qi \at 233.. KRCINDIFF changes REQ 26 
+\qi \at 252.. Open/Read/Close type 52 file REQ 207
+\qi \at 253.. Estimate Sdec at each season and one date REQ 252
+\qi \at 254.. Plot annual sdec and interpolate ttt to date REQ 253
+\qi \at 255.. Visible smooth hemisphere Tb spec.
+\qi \at 256.. DEFINEKRC for current precision 
+\qi \at 257.. Convert slope set .t52 to one Tsurf.savAz  REQ 252flat
+\qi \at 26... Hold current set. tth=ttt etc. 
+\qi \at 262.. KRCCOMDEL  REQ 26
+\qi \at 270.. Tsur for case 1 [hour,lat,season]
+\qi \at 271.. CLOT REQ 270
+\qi \at 27... Clot [hour,lat] season 20, solazi=0
+\qi \at 272.. Clot [hour,case] season 20, lat=0
+\qi \at 28... Read KRC-set, interpolate to one date. Write date file REQ 253
+\qi \at 29... BIN5 R t4=1season
+\qi \at 41... Define a type 52 file
+\qi \at 42... Prepare the wave and view vectors REQ 15 or 62+622
+\qi \at 43... Convert t4 to rad  REQ 29 42
+\qi \at 438.. Write radiance file REQ 43
+\qi \at 439.. Read radiance cube
+\qi \at 441.. Ensure sizes the same REQ 252 or 442, 439
+\qi \at 442.. Set systems sizes from radiance cube REQ 439
+\qi \at 443.. check T to R to T conversions REQ 442
+\qi \at 45... Define the resolutions in tilt-set and theory 
+\qi \at 46... Compute distribution for KRC slopes REQ 29 or 439, 45
+\qi \at 47... Relative contribution of each model as viewed REQ 46 53
+\qi \at 480.. Force reset of parh to edit 
+\qi \at 48... HIDING  B.G. Smith 1967
+\qi \at 483.. Normalize the dip function REQ 46 48
+\qi \at 49... Concatonate meas slope .tm1 files
+\qi \at 499.. Color plot of results  REMOVE?
+\qi \at 50... Rest inpgen control
+\qi \at 51... KRCINPGEN generate KRC run .inp
+\qi \at 52... BEAMLIST
+\qi \at 53... BEAMTEST
+\qi \at 54... Tests, check azimuth  REQ 29
+\qi \at 56... BEAMVU
+\qi \at 6.... Calc Cartesian tilt facet normals in S system  REQ 45  442
+\qi \at 61... Put same T at all model points
+\qi \at 62... Set target loop limits and creat view list REQ 1 of 25 252 29 439
+\qi \at 64... Integrate roughness REQ  6, 46 or 439, 483, 62
+
+\subsection{ BEAMING Parameters}
+Leading '-' indicates value that must agree with a KRC model set. A leading '+' indicates a value that is required for the minimum full run.
+\vspace{-3.mm} 
+\begin{verbatim}
+
+@11 parf: File names
++ 0 DIR for krc beam set            = /work1/krc/beam/
++ 1  stem " "                       = Ben
+  2   run unique                    = B
+  3  " slope part                   = 30
+  4  " far part [.t52]              = B00
+  5 waveset number                  = 1
+  6 Surface site, start with letter = Q1
+  7 Comparison stem + uniq          = BeamBen
+  8 CubUniq [constructed]           = KLA
+  9 Surface point [constructed]     = G
+ 10 Output dir    \ "=" will be     = /work1/krc/beam/
+ 11  " stem 4char / reset to 0:1+2  = BEnA
+ 12  " xtra unique                  = 
+ 13 spare                           = ---
+ 14 mjd [auto][.bin5]               = 6038
+
+@12 pari: Integer values
+       0       0  set komit
+ -     1       2  slope increment, degrees
+ -     2      30  Number of slopes
+ -     3      20  Azimuth increment, degrees
+ -     4      48  Number of hours output
+       5       6  STOP after: +1=seq +2=loop1 +4=loop2
+       6       7  KRCCOMLAB:+1=real +2=int +4=log
+       7       2  +1=night effect +2=include hiding
+       8       2  bit encoded loop elapsed time print
+       9       1    CRITICAL  target:+=globe else=spot
+      10      25  Hour index ->ihour, set to ihot
+      11       9  single Lat index ->jlat, set to jeq
+      12      31  Index of season near Ls=0
+      13       0  jbug: bit encoded
+
+
+@14 wavin: Waves (inver cm)         Number adjustable
+   0         100.
+   1         300.
+   2         500.
+   3         700.
+   4         900.
+   5     1.10e+03
+   6     1.30e+03
+   7     1.50e+03
+   8     1.70e+03
+
+@15 parv: Views      See Section on VIEWGEN 
+
+@16 parr: Float values
+       0      0.00000  del Degree in model @45
+       1      0.00000  NOPE View flag: -= use target REQ 62
+       2     -7.00000  spare
+       3     -7.00000  spare
+       4     -7.00000  spare
+       5     -7.00000  spare
+       6     -7.00000  spare
+-      7      436.648  Length of a year
++      8      5906.00  Target MJD
++      9      5.00000  theta-bar, deg
++     10      10.0000   " " delta
++     11      33.0000   " " maximum
+\end{verbatim} 
+\section{Shadow hiding: HIDING, HIDE2 and HHIDE}
+
+HIDING and HIDE2 use parh 1:9 in BEAMING.  HHIDE is a later version with less code and slightly faster and has individual arguments
+
+HIDING: parr[2] determines action:
+ \qi 0+: computes single value for function
+\qi -1: plot S(theta) of mu/w
+\qi -2:  plot Phi
+\qi else: Reproduce Smith 67 Fig 2. 
+
+\vspace{-3.mm} 
+\begin{verbatim}
+HIDING parr                                           Reset in beaming
+       0      1.00000  edit this
+       1      33.0000  RMS slope, degree
+       2      20.0000  incidence angle, degree -=Figs   @64
+       3      45.0000  emergence ang. deg.              @64
+       4      22.0000  Facet dip, deg -=ignore
+       5      1.00000  dip c0 \ Normalized so that
+       6     0.100000  dip c1 | Integral F(dip)p(dip)
+       7     0.100000  dip c2 / over 0:pi/2 is unity
+       8      90.0000  relative azimuth, deg.           @64
+       9      0.00000  Azimuth type: 0=Hapke 1=cos
+      10      35.0000  Num I angles   INT
+      11      2.00000  delta incidence
+      12      10.0000  Num dip angles   INT
+      13      4.00000  delta dip angle
+\end{verbatim}
+
+\section{Status of beaming processing: BEAMLIST \qlabel{sbeam}}
+Checks the existance and progress of beaming processing.
+\\ Call with no arguments:  beaming
+
+Normal use is @111 @123, which will do:
+\vspace{-3.mm} 
+\begin{verbatim}
+11... Modify strings
+20... Find all valid run directories
+12... Modify ints
+21... Build set for 3-letter stem of low or high obliq REQ 20
+22... Get Ts  for specific season from flat.t52 REQ 20
+23... Look for compacted Tsurf .sav  REQ 22
+24... Look for Date cubes.   REQ 22
+26... Radiance cubes. REQ 22
+40... Print Tnoon/eq flat  REQ 23 24 26
+7.... List all global and local   .sav
+\end{verbatim}
+Other actions 
+\qi \at 51... read 1 Date file   P 10+11+12+14+4  +flat:slop.t52 
+\qi \at 52... CLOT flat
+\qi \at 53... CLOT slop v azi
+\qi \at 54... QUILT
+\qi \at 55... CLOT v hour  
+\qi \at 56... TVFAST
+\qi \at 61... Read 1 Radiance cube
+\qi \at 62... QUILT
+\qi \at 63... CLOT
+\qi \at 64... TVFAST
+\qi \at 71... Read Beaming save file  REQ 21
+\qi \at 72... Extract noon equator temp  REQ 71, 22
+\qi \at 73... CLOT T[hour,lat] for each model REQ 72
+\qi \at 74... report on Integration  INCOMPLETE REQ 7
+\qi \at 75... QUILT 4 hlmw
+\qi \at 76... QUILT 4 hlrmv
+\qi \at 77... QUILT 4 hlrm
+\qi \at 78... CLOT hl
+\qi \at 79... CLOT rad vrs lat
+
+This process produces a lot of output to the screen; summary tables @41 and @40 contain virtually all the real information.  
+\\ @41 produces a list that becomes Table \ref{runt}. 
+\\ @40 produces temperatures at the equator at noon for the flat case.
+\qii mod: Directory name of the model run set. BEnx are true obliquity
+\qii Alb: input albedo
+\qii Iner: surface thermal inertia
+\qii PhoFun: Photometric function parameter, 0=Lambertian
+\qi In the following columns, a  zero means file does not exist.
+\qii tf2: Interpolation to date of the bounding \nf{---tflat.t52} files
+\qii 00: \nf{---00.savAz} file exists
+\qii eq:  \nf{---eq.savAz} file exists
+\qii 00flat:  T from  \nf{---00flat.bin5}
+\qii 00slop: T from  \nf{---00slop.bin5}, first slope, average over azimuth
+\qii eqflat:  T from  \nf{---eqflat.bin5}
+\qii eqslop: T from  \nf{---eqslop.bin5}, first slope, average over azimuth
+\qii R2toT: average of temperatures derived from the radiance of the flat in \nf{---w1w.bin5}
+
+\vspace{-3.mm} 
+\begin{verbatim}
+Doing -------------->      40
+ i  mod  Alb Iner PhoFuc    tf2  00  eq 00flat 00slop eqflat eqslop  R2toT
+ 0 BEnA  0.10 100. 0.25  315.89   0   1   0.00   0.00 315.89 315.84 315.89
+ 1 BEnB  0.03  50. 0.00  330.93   0   1   0.00   0.00 330.93 330.90 330.93
+ 2 BEnC  0.03 400. 0.25  291.97   0   1   0.00   0.00 291.97 291.92 291.97
+ 3 BEnD  0.03  50. 0.25  329.79   0   1   0.00   0.00 329.79 329.82 329.79
+ 4 BEnE  0.05 310. 0.00  297.28   0   1   0.00   0.00 297.28 297.23 297.28
+ 5 BenA  0.10 100. 0.25  299.61   0   0   0.00   0.00   0.00   0.00   0.00
+ 6 BenB  0.03  50. 0.00  316.16   0   0   0.00   0.00   0.00   0.00   0.00
+ 7 BenJ  0.03  50. 0.25  315.80   0   0   0.00   0.00   0.00   0.00   0.00
+ 8 BenK  0.03 100. 0.25  307.43   0   0   0.00   0.00   0.00   0.00   0.00
+\end{verbatim}  
+
+\section{Generate list of view directions: VIEWGEN \qlabel{vieg}}
+ Three viewer-related arrays: 
+\qi \nv{paru} [10] up to 5 specific hour/latitude pairs. Modified @17
+\qi \nv{parv} [12] Points, traverse, or grid specification  Modified @15 via VIEWGEN
+\qii [0]: Type of view set: 
+\qiii 1= List of up to five pairs, first negative hour terminates list
+\qiii 2= Two cardinal traverses
+\qiii 3= Diagonal traverse
+\qiii 4= Grid as 2 axes. Function size big enough for longer; shorter filled with -99
+\qiii 5= Grid as Nx*Ny list
+\qii [1]  Flag: +=modify / -=debug / 0=nochange
+\qi\nv{vuin} [2,n] hour and latitude of the full set of viewer points. Generated by VIEWGEN
+ 
+VIEWGEN is called in BEAMING @15 (user modify) and @62 (generate set)
+
+\vspace{-3.mm} 
+\begin{verbatim}
+@15 paru: Views                  
++      0      12.0000  Hour  1\  Sub-viewer
++      1      0.00000   Lat. 1 | Latitude
+       2      3.00000  Hour  2 | and hour
+       3      0.00000   Lat. 2 | in pairs.
+       4      5.00000  Hour  3 | First negative
+       5      89.0000   Lat. 3 | Hour terminates
+       6      13.0000  Hour  4 | the list.
+       7      90.0000   Lat. 4 | 
+       8     -1.00000  Hour  5 | 
+       9      0.00000   Lat. 5 | 
+      10     -1.00000  Hour  6 | 
+      11      0.00000   Lat. 6/
+\end{verbatim}  
+ 
+ 
+\section{Analysis: BEAMVU \qlabel{bvu}} 
+ Called from BEAMING @56. Gets most of its data from an integration save file, such as \nf{BEnABCDE5906Gw1.sav}; see Table \ref{rsave} for contents.  @123 does startup 
+\vspace{-3.mm} 
+\begin{verbatim}
+11... Modify strings
+252.. Read flat type 52                    || parf 0+1+2
+27... Interpolate flat Tsurf to cube date  || date set by parf 14
+4.... Restore *w-.sav   REQ 252            || parf 0+1+2+8+14+9
+182.. Print views
+12... Modify integers
+40... Construct one view REQ 4             || @12 [2]
+42... flux[hour,lat] specific wave REQ 40  || @12 [1]
+6.... MAPROJ                               || Only for Global set. @12 [0] 
+60... Delaunay Triangulation  REQ 6
+61... GRIDDATA  REQ 6
+
+@12 Integer values
+       0      10  projec code
+       1       0  wave index
+       2       0  view index
+       3       0  hour index
+       4       0  lat index
+       5       0  roughness index
+       6       0  modelRun index
+       7      25  image GRID out nX
+       8      25   " " nY
+\end{verbatim} 
+Inportant parameters:
+\qi @11:  1: Obj+orb 3char, 8: CubUniq, 9: G=global, else local,  14: date 
+\qii Global means integration done for every visible hour and lat
+
+ if local do @62, if global do @63, then 7,... 71
+
+For unresolved observations, the flux specturm is simply \np{AVRR4/WEIR4}
+
+ Then can do @7 to read the cube, which will yield a plot for each tilt-set
+\qi and @71, which will plot traverses for all tilt-runs
+
+\subsection{Bug tests}
+@11, 9=G
+\\ After init, @12, set PM equator by: 3 33 and 4 9 
+
+@47, stop 2; As roughness increases, see more of body. WRONG
 
 %\clearpage %__________________________________________________________
 
@@ -1178,20 +2412,19 @@ run with theta=2, fpp=  0.129009     0.558479     0.271261    0.0392474   0.0019
 after scaling: Fig.
 \ref{beamK2}
 \begin{figure}[!ht] \igq{beamK2}
-\caption[nill slope]{Tb spectra after scaling; $\theta=2^\circ$
+\caption[Nill slope]{Tb spectra after scaling; $\theta=2^\circ$
 \label{beamK2}  beamK2.png  }
 \end{figure} 
 % how made: 
 
 hemi flat.  11 207 252 
 
-
 16 9=10 46 
 
 theta-bar=       7.8983530
-High slopes not covered=  0.000200987
-@64 651 66
-\ref{beamKp}
+\\ High slopes not covered=  0.000200987
+\\ @64 651 66
+\\ Fig. \ref{beamKp}
 \begin{figure}[!ht] \igq{beamKp}
 \caption[Two slopes]{Tb spectra for two roughnesses, $\theta = 10^\circ$ and 15\qd. KRC model set BeamK, four view directions as indicted in the legend.
 \label{beamKp}  beamKp.png  }
@@ -1231,25 +2464,22 @@ Check Fig. \ref{beam5q},
   -0.000000   0.000000   1.000000  1 4 7  y-- of new    |  |  | of old
   -0.965926  -0.258819  -0.000000  2 5 8  z-- in old    |  |  | in new
 
-
 Expect      
  .2   -.9   0    
    0    0   1 
  -.9  -.2   0
-
 \end{verbatim} 
 
 %\clearpage %__________________________________________________________
 
-\section{Testing sep 22}
+\section{Testing 2016 sep 22}
  Indices in @64 loops i=hour, j=latitude, k=azimuth, m=slope, n=view.
  Use l=wavelength
 
-
-
-theta-bar=       3.9793773 High slopes not covered= -1.19209e-07
-theta-bar=       11.698571 High slopes not covered=    0.0216545
-theta-bar=       18.716082 High slopes not covered=     0.236797
+.
+\qi theta-bar=       3.9793773 High slopes not covered= -1.19209e-07
+\qi theta-bar=       11.698571 High slopes not covered=    0.0216545
+\qi theta-bar=       18.716082 High slopes not covered=     0.236797
 
 write  file: /work1/krc/beam/KLA5858H24L9w1.cub Size=  4 12 4 4 3 4 576
 
@@ -1292,7 +2522,7 @@ With date 6090, near equinox, hour profile even weaker compared to N/S,
 Check on Solar dec is in Fig \ref{slope20noon}, when the sdec plot @253 would indicate it was near minimum
 
 \begin{figure}[!ht] \igq{slope20noon}
-\caption[slope20noon]{Temperatures at all latitudes and azimuths at noon for
+\caption[Slope 20 at noon]{Temperatures at all latitudes and azimuths at noon for
   slope 20\qd; using t4 for date=6090 and slope index 10. Sub-solar declination
   must be near the crossing point, as sun near zenith would minimize effect of
   azimuth.
@@ -1302,7 +2532,7 @@ Check on Solar dec is in Fig \ref{slope20noon}, when the sdec plot @253 would in
 
 %\clearpage %__________________________________________________________
 
- \section{Testing Oct3+}
+ \section{Testing 2016 Oct3+}
 After fixing sun motion, erase all prior beam runs and do run for A alone, then
 K and L at the same time; elapsed clock time about 26 min for one and 27 min for
 two.
@@ -1326,7 +2556,6 @@ input   \> computed \> 40\qd  \> 60\qd \\
 \end{tabbing}
 
  Wrote file /work1/krc/beam/BeamKLA5900H24L9w1.cub
-
 
 Add source file to plot title. Result for sun 30N are in Figure 
 \ref{30N72}
@@ -1354,18 +2583,44 @@ Add source file to plot title. Result for sun 30N are in Figure
 \end{figure} 
 % how made: beaming 7,73
 
+ \section{2018 sept resume}
+
+Rerun several KRC sets. 
+
+Make one KRC set with proper pole for comparison.
+
+
 \end{document} %===============================================================
 
+\vspace{3.mm} Impliment \qr{glob} as, only where $\cos e'_n > 0 $: 
+\qb \mathcal{R}(\lambda)_n = \left[ \sum_{j=1}^\mathrm{nLat}
+  \sum_{i=1}^\mathrm{nHour} \ \sum_{m=1}^\mathrm{nSlope}
+  \sum_{k=1}^\mathrm{nAzi} p(\theta_m,\phi_k)\cos e_n' \ \epsilon_\lambda \left[
+    \left(1-S(i,e,\psi,\theta) \right) \mathcal{R}(\lambda,k,m,i,j)
+    +S(i,e,\psi,\theta) \mathcal{R_S}(\lambda,k,m,i,j) \right] \right] \qe
+
+\qbn / \ \left[  \sum_{j=1}^\mathrm{nLat} \sum_{i=1}^\mathrm{nHour} \sum_{m=1}^\mathrm{nSlope} \sum_{k=1}^\mathrm{nAzi} p(\theta_m,\phi_k) \cos e'_n \right] \ql{igl}
+
+=========================================== above are extracts ===============
 \ref{}
 \begin{figure}[!ht] \igq{}
 \caption[]{
-\label{}  .png  }
+\label{} \ \  .png  }
 \end{figure} 
 % how made: 
 
-\begin{table} \caption[]{}  \label{}
+\begin{table} \caption[]{}  \qlabel{}
 \begin{verbatim}
 ---
 \end{verbatim}
 \vspace{-3.0mm}
 \hrulefill \end{table}  
+
+\begin{tabbing} 
+WWWWW \= WWWWWWWW \=   \kill 
+Band \>  MAR dist \> $\Delta$ time \\
+Pan  \>   8.76251 \>   \\
+Blue  \> 7.15168  \>    28.67 \\
+SWIR1  \>  \> todo  \\
+Cirrus \>     30.7446   \>  ? 21.05 \\
+\end{tabbing}

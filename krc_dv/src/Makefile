@@ -15,17 +15,21 @@
 # 2017mar15 HK include eclipse routines
 # 2017apr29 HK Add krcdb as target with for debug options
 # 2017sep30 HK Include  nowhite.f  to clean-up errorlog filename
-# 2018feb01 HK include orlin1.r
-# 2018jul03 HK include epred8 in testrou
+# 2018feb01 HK include orlint.f
+# 2018oct14 HK Include wraper.f
+# 2019dec04 HK Change from wraper.f to  wraper8.f
 ####################################################
 
 SHELL=/bin/csh
 
 FC=gfortran
 
-# Use 2nd version below to allow debugger
-FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-comments -Wall # -g -fbounds-check   #  -O
-#FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-comments -g -fbounds-check # -Wall   #  -O
+# Use 2nd version below to allow debugger and enable most IDBG actions
+FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-comments -Wall
+#FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-code  -fbounds-check # -Wall   #  -O
+
+# next line for fortrancallgraph-master
+#FFLAGS= -fno-automatic -fno-second-underscore -fd-lines-as-comments -Wall -S -g -O0
 
 LD=gfortran
 #------------- Libraries -------------------------
@@ -56,9 +60,10 @@ OBJ8 = krc8.o tseas8.o tlats8.o tday8.o tcard8.o tprint8.o tdisk8.o tun8.o \
  epred8.o tint8.o albvar8.o vlpres.o porb08.o porbit.o orbit8.o eccanom8.o \
  alsubs.o deding28.o seasalb.o seastau.o readtxt360.o finterp.o evmono38.o \
  climtau.o binf5.o bigend.o rotmdp8.o vadddp8.o cocodp8.o readzone.o \
- catime.o white1.o ksubs8.o tfar8.o cubuterp8.o sigma8.o fillmv.o nowhite.o \
+ catime.o white1.o ksubs8.o tfar8.o cubuterp8.o sigma8.o fillmv.o \
  eclipse.o tfine8.o dspline.o dsplint.o evmono3d.o strumi.o strumr8.o gaspt8.o \
- orlint8.o
+ orlint8.o wraper8.o
+# replace  nowhite  with code in krc
 
 # PORB double precision
 OBJP3 = porbmn.o porbio.o ephemr.o ymd2j2.o porbig.o porbit.o porbel.o \
@@ -69,16 +74,27 @@ OBJP3 = porbmn.o porbio.o ephemr.o ymd2j2.o porbig.o porbit.o porbel.o \
 OBJT = testrou.o alsubs.o averag.o aveyear.o bigend.o binf5.o \
  catime.o climtau.o cubuterp8.o datime.o dpythag.o dspline.o dsplint.o \
  dsvbksb.o dsvdcmp.o eclipse.o evmono38.o evmono3d.o evrf4.o \
- fillmv.o getpi4.o getpr8.o hratlsq.o  kratlsq.o m2eul.o  qtlats.o \
- randomn.o ratval.o rotmdp8.o sigma.o sigma8.o  spline.o splint.o \
+ fillmv.o getpi4.o getpr8.o hratlsq.o kratlsq.o m2eul.o qtlats.o \
+ randomn.o ratval.o rotmdp8.o sigma.o sigma8.o spline.o splint.o \
  strumi.o strumr8.o tdif3.o tfar8.o epred8.o \
- vadddp8.o white1.o gaspt8.o nowhite.o orlint8.o
+ vadddp8.o white1.o gaspt8.o nowhite.o orlint8.o wraper8.o
+
+OBBB = krt8.o fillmv.o 
+
+
+# global maps
+OBJECTG = glot.o binf5.o  st2real6.o readkrcm1.o averag.o \
+ catime.o white0.o fillmv.o minvr4.o bigend.o white1.o
 
 # r2r.o d2d.o d2md.o 
 
 OBJT1 = test8.o deding2.o deding28.o
 
 # normal link
+
+krt: $(OBBB) 
+	$(FC) $(LIBDIRS_PROD) -o $@ $(OBBB) \
+	$(CLIB) $(SYSLIBS)
 
 krc: $(OBJ8) 
 	$(FC) $(LIBDIRS_PROD) -o $@ $(OBJ8) \
@@ -87,6 +103,10 @@ krc: $(OBJ8)
 porbmn: $(OBJP3)
 	$(FC)  $(LIBDIRS_PROD) -o $@ $(OBJP3) \
 	$(SYSLIBS)
+
+glot: $(OBJECTG) 
+	$(FC) $(LIBDIRS_PROD) -o $@ $(OBJECTG) \
+	$(CLIB) $(SYSLIBS)
 
 # testing and development
 
@@ -112,6 +132,7 @@ test1: $(OBJT1)   # -
 
 # make routines for program dependencies 
 #
+krt8.o:       krt8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f hatc8m.f
 krc8.o:       krc8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f hatc8m.f
 tseas8.o:   tseas8.f krcc8m.f latc8m.f          unic8m.f          hatc8m.f porbc8m.f
 tlats8.o:   tlats8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f hatc8m.f porbc8m.f
@@ -121,6 +142,7 @@ tcard8.o:   tcard8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f hatc8m.f
 tprint8.o: tprint8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f 
 tdisk8.o:   tdisk8.f krcc8m.f latc8m.f dayc8m.f unic8m.f filc8m.f hatc8m.f
 tfar8.o:     tfar8.f krcc8m.f                   unic8m.f filc8m.f 
+# above containss TFAREAD
 tun8.o:       tun8.f krcc8m.f          dayc8m.f                   hatc8m.f
 readzone.o: readzone.f krcc8m.f                 unic8m.f filc8m.f
 tdif3.o:     tdif3.f krcc8m.f                   unic8m.f filc8m.f
@@ -137,13 +159,17 @@ porbio.o:   porbio.f           porbc8m.f
 porbit.o:   porbit.f           porbc8m.f  # this is DP   porbit4 is SP
 prtpcom.o: prtpcom.f           porbc8m.f
 testrou.o: testrou.f krcc8m.f                   unic8m.f filc8m.f    # test main program
-
+wraper8.o: wraper8.f                            unic8m.f  # only if D lines
+glot.o: glot.f glotcom.f
+readkrcm1.o: readkrcm1.f glotcom.f 
 #------------------  do not have includes
 alsubs.o: alsubs.f 
 averag.o: averag.f  # test for function should be defined and called
 aveyear.o: aveyear.f
 bigend.o: bigend.f
 binf5.o: binf5.F  # uses  B2B  BIGEND  CATIME WHITE1  PIO_system
+cocodp8.o: cocodp8.f  # Contains: COCOCM  COCOMC  COCOSC  COCOCS  
+#                       COCOSM  COCEMC  COCECM 
 cubuterp8.o: cubuterp8.f
 deding28.o: deding28.f
 eccanom8.o: eccanom8.f
@@ -156,6 +182,7 @@ getpi4.o: getpi4.f
 getpr8.o: getpr8.f
 jdate.o:  jdate.f  
 julday.o:  julday.f 
+minvr4.o: minvr4.f
 orbit8.o: orbit8.f
 porbel.o: porbel.f 
 #porb1.o: porb1.f unic8m.f porbcom8.f
@@ -163,20 +190,19 @@ readaie.o: readaie.f
 readtxt360.o: readtxt360.f
 randomn.o: randomn.f # used to test sigma8 
 #r2i2s.o: r2i2s.f
+rotmdp8.o: rotmdp8.f  # Contains:  MEQUAL  MPROD3  ROTAX  ROTCOL  ROTDIA 
+#                      ROTEST  ROTEXM  ROTEXV  ROTMAT  ROTORB  ROTRIP  
+#                      ROTROW  ROTSHO  ROTV  ROTVEC  ROTZXM  TRANS3  VROTV
 sigma.o: sigma.f  
 sigma8.o: sigma8.f   # used for debug of cubuterp
 spcrev.o: spcrev.f 
+st2real6.o: st2real6.f
 strumi.o: strumi.f
 strumr8.o: strumr8.f
 tridag8.o: tridah8.f   # uses prior partial solution
 vlpres.o: vlpres.f
-cocodp8.o: cocodp8.f  # Contains: COCOCM  COCOMC  COCOSC  COCOCS  
-#                       COCOSM  COCEMC  COCECM 
-rotmdp8.o: rotmdp8.f  # Contains:  MEQUAL  MPROD3  ROTAX  ROTCOL  ROTDIA 
-#                      ROTEST  ROTEXM  ROTEXV  ROTMAT  ROTORB  ROTRIP  
-#                      ROTROW  ROTSHO  ROTV  ROTVEC  ROTZXM  TRANS3  VROTV
 vadddp8.o: vadddp8.f  # Contains:  VADD  VCROSS  VDOT  VEQUAL  VMAG  VNEG 
- #                       VNORM  VPRF  VPRINT  VSCALE  VSHOW  VSUB  VUNIT 
+ #                       VNORM  VPRF  VPRINT  VSCALE  VSHOW  VSUB  VUNIT
 ymd2j2.o: ymd2j2.f
 
 #----------------------- added after remove use of all but C library

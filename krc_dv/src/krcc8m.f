@@ -1,43 +1,45 @@
 C_Titl  krcc8m.f = KRCCOM common for input and transfer variables
 C_Limitations 
       IMPLICIT NONE             ! none-the-less, try to code with usage
-      INTEGER*4 MAXN1,MAXN2,MAXN3,MAXN4,MAXN5,MAXN6,MAXNH,MAXBOT
-     &,MAXN1P,NUMFD,NUMID,NUMLD,N4KRC,NWKRC,KOMMON,MAXN4E,MAXFF
+      INTEGER*4 MAXN1,MAXN2,MAXN3,MAXN4,MAXN6,MAXNH,MAXBOT,MAXFF
+     &,MAXN1P,NUMFD,NUMH4,NUMID,NUMLD,N4KRC,NWKRC,KOMMON,MAXN4E
 C Here are all the dimension-defining parameters for items in any common
       PARAMETER (MAXN1 =1000)     ! dimension of layers
-      PARAMETER (MAXN2 =384*4*256)  ! dimension of times of day
+      PARAMETER (MAXN2 =384*4*256)  ! dimension of times of day  =393216
       PARAMETER (MAXN3 =16)     ! dimension of iteration days
       PARAMETER (MAXN4 =37)     ! dimension of latitudes
       PARAMETER (MAXN4E =38)    ! " "  Even needed for LATCOM NDJ4
-      PARAMETER (MAXFF=384*4*4) ! dimension of far-field times of day
-      PARAMETER (MAXN5 =2161)    ! dimension of saved seasons
+      PARAMETER (MAXFF=384*4*4) ! dimension of far-field times of day  =6144
+C      PARAMETER (MAXN5 =2161)    ! dimension of saved seasons
       PARAMETER (MAXN6 =6)      ! dimension of saved years
-      PARAMETER (MAXNH =86400)     ! dimension of saved times of day, multiple of 24
+      PARAMETER (MAXNH = 86400)     ! dimension of saved times of day, multiple of 24
       PARAMETER (MAXBOT=14)      ! dimension of time doublings  MUST  BE  EVEN
       PARAMETER (MAXN1P=MAXN1+1) ! dimension layer temperature points
+      PARAMETER (NUMH4=MAXNH*MAXN4) ! Number of words in direct access record
       PARAMETER (NUMFD=96, NUMID=40, NUMLD=20) ! number of each type
-      PARAMETER (N4KRC=NUMFD*2+NUMID+NUMLD+2*MAXN4*2+104/4) ! # of 4-byte words
+      PARAMETER (N4KRC=NUMFD*2+NUMID+NUMLD+2*MAXN4*2+2+104/4) ! # of 4-byte words
               ! above is size of common in 32-bit words. it  MUST  BE  EVEN
       PARAMETER (NWKRC=N4KRC/2) ! number of 8-byte words in krccom. Used by tdisk
-      PARAMETER (KOMMON=512000000) ! Storage used by tdisk
+      PARAMETER (KOMMON=512000000) ! 80 MB,  Storage used by tdisk
 
-      INTEGER*4 N1,N2,N3,N4,N5,  N24,IIB,IC2,NRSET,NMHA              !  1:10
-     &,NRUN,JDISK,IDOWN,I14,I15,  KPREF,K4OUT,JBARE,NMOD,IDISK2   ! 11:20
-     &,KOLD,KVALB,KVTAU,ID24(2), KFARAC,NBKRC,NFD,NID,NLD                ! 21:30
-     &,N1M1,NLW,JJO,KKK,N1PIB,  NCASE,J2,J3,J4,     J5            ! 31:40
+      INTEGER*4 N1,N2,N3,N4,N5,  N24,IIB,IC2,NRSET,NMHA                 !  1:10
+     &,NRUN,JDISK,IDOWN,I14,I15,  KPREF,K4OUT,JBARE,NMOD,IDISK2         ! 11:20
+     &,KOLD,KVALB,KVTAU,ID24,NUMVER,KFARAC,NBKRC,NFD,NID,NLD            ! 21:30
+     &,N1M1,NLW,JJO,KKK,N1PIB,  NCASE,J2,J3,J4,J5        ! 31:40
 
-      REAL*8 ALB,EMIS,SKRC,COND2,DENS2, PERIOD,SPHT,DENS,CABR,AMW          ! 1:10
-     2,ABRPHA,PTOTAL,FANON,TATM,TDEEP, SPHT2,TAUD,DUSTA,TAURAT,TWILI ! 11:20
-     3,ARC2,ARC3,SLOPE,SLOAZI,TFROST, CFROST,AFROST,FEMIS,AF1,AF2    !   :30
-     4,FROEXT,FD32,RLAY,FLAY,CONVF, DEPTH,DRSET,PHOG,GGT,DTMAX        !   :40
-     5,DJUL,DELJUL,SDEC,DAU,SUBS, SOLCON,GRAV,ATMCP ! :48
-     &,HUGE,TINY,EXPMIN,FSPARE,FLOST,RGAS,TATMIN,PRES,OPACITY,TAUIR  ! :74
-     &,TAUEFF,TATMJ,SKYFAC,TFNOW,AFNOW,PZREF,SUMF,TEQUIL,TBLOW,HOURO ! :84
-     &,SCALEH,BETA,DJU5,DAM,EFROST,DLAT,COND,DIFFU,SCALE ! :93
-     &,PIVAL,SIGSB,RADC      ! :96
+      REAL*8 ALB,EMIS,SKRC,COND2,DENS2, PERIOD,SPHT,DENS,CABR,AMW       ! 1:10
+     2,ABRPHA,PTOTAL,FANON,TATM,TDEEP, SPHT2,TAUD,DUSTA,TAURAT,TWILI    ! 11:20
+     3,ARC2,ARC3,SLOPE,SLOAZI,TFROST, CFROST,AFROST,FEMIS,AF1,AF2       !   :30
+     4,FROEXT,FD32,RLAY,FLAY,CONVF, DEPTH,DRSET,PHOG,GGT,DTMAX          !   :40
+     5,DJUL,DELJUL,SDEC,DAU,SUBS, SOLCON,GRAV,ATMCP                     ! :48
+     &,HUGE,TINY,EXPMIN,YRIDAY,FLOST,RGAS,TATMIN,PRES,OPACITY,TAUIR     ! :74
+     &,TAUEFF,TATMJ,SKYFAC,TFNOW,AFNOW,PZREF,SUMF,TEQUIL,TBLOW,HOURO    ! :84
+     &,SCALEH,BETA,DJU5,DAM,EFROST,DLAT,COND,DIFFU,SCALE                ! :93
+     &,PIVAL,SIGSB,RADC                       ! :96
 
-      LOGICAL*4 LP1,LP2,LP3,LP4,LP5,  LP6,LPGLOB,LVFA,LVFT,LKOFT     !  1:10
-     &,LPORB,LKEY,LSC,LZONE,LOCAL,   LD16,LD17,LD18,LD19,LONE        ! 11:20
+      LOGICAL*4 LP1,LP2,LP3,LP4,LP5,  LP6,LPGLOB,LVFA,LVFT,LKOFT        !  1:10
+     &,LPORB,LKEY,LSC,LZONE,LOCAL,   LD16,LD17,LD18,LD19,LONE ! 11:20
+     &,LATM,LSPARE
 
       REAL*8 CCKU(4),CCKL(4),CCPU(4),CCPL(4) ! coef of K & Cp, Upper/Lower layers
 C      INTEGER*1  KITLE(84),DAYTIM(20) ! Sum= 104 bytes MUST be multiple of 8
@@ -60,30 +62,30 @@ C       B-C = logical: input via  TCARD
 C       D   = title (input via tcard) and run_time (transfer)
 
       COMMON /KRCCOM/
-     1 ALB,EMIS,SKRC,COND2,DENS2, PERIOD,SPHT,DENS,CABR,AMW          !10 1:10
-     2,ABRPHA,PTOTAL,FANON,TATM,TDEEP, SPHT2,TAUD,DUSTA,TAURAT,TWILI !10 :20
-     3,ARC2,ARC3,SLOPE,SLOAZI,TFROST, CFROST,AFROST,FEMIS,AF1,AF2    !10 :30
-     4,FROEXT,FD32,RLAY,FLAY,CONVF, DEPTH,DRSET,PHOG,GGT,DTMAX        !10 :40
+     1 ALB,EMIS,SKRC,COND2,DENS2, PERIOD,SPHT,DENS,CABR,AMW             !10 1:10
+     2,ABRPHA,PTOTAL,FANON,TATM,TDEEP, SPHT2,TAUD,DUSTA,TAURAT,TWILI    !10 :20
+     3,ARC2,ARC3,SLOPE,SLOAZI,TFROST, CFROST,AFROST,FEMIS,AF1,AF2       !10 :30
+     4,FROEXT,FD32,RLAY,FLAY,CONVF, DEPTH,DRSET,PHOG,GGT,DTMAX          !10 :40
 Cset                                      *day1
-     5,DJUL,DELJUL,SDEC,DAU,SUBS, SOLCON,GRAV,ATMCP    !8   :48
+     5,DJUL,DELJUL,SDEC,DAU,SUBS, SOLCON,GRAV,ATMCP                     !8  :48
 Cset     4   4     4    4                            v
-     5,CCKU,CCKL,CCPU,CCPL,   HUGE,TINY          ! 4*4+2=18  :66
-     &,EXPMIN,FSPARE,FLOST,RGAS,TATMIN,PRES,OPACITY,TAUIR,TAUEFF,TATMJ  !10 :76
+     5,CCKU,CCKL,CCPU,CCPL,   HUGE,TINY                         ! 4*4+2=18  :66
+     &,EXPMIN,YRIDAY,FLOST,RGAS,TATMIN,PRES,OPACITY,TAUIR,TAUEFF,TATMJ  !10 :76
 Cset   *seas       ----seas-------
-     6,SKYFAC,TFNOW,AFNOW,PZREF,SUMF, TEQUIL,TBLOW, HOURO,SCALEH,BETA !10 :86
+     6,SKYFAC,TFNOW,AFNOW,PZREF,SUMF, TEQUIL,TBLOW, HOURO,SCALEH,BETA  !10 :86
 Cset   -----------lats--------- tint ---lats-------      ---lats----
-     6,DJU5,DAM,EFROST,DLAT,COND,  DIFFU,SCALE,PIVAL,SIGSB,RADC       !10 :96
+     6,DJU5,DAM,EFROST,DLAT,COND,  DIFFU,SCALE,PIVAL,SIGSB,RADC        !10 :96
      &,ALAT,ELEV                                       ! 2*maxn4=2*37=74 :170
 Cset   seas lat day2   lats -------day1------- --main------
-     7,N1,N2,N3,N4,N5,  N24,IIB,IC2,NRSET,NMHA                       !  1:10
-     8,NRUN,JDISK,IDOWN,I14,I15,  KPREF,K4OUT,JBARE,NMOD,IDISK2      ! 11:20
-     9,KOLD,KVALB,KVTAU,ID24, KFARAC,NBKRC,NFD,NID,NLD               ! 21:30
+     7,N1,N2,N3,N4,N5,  N24,IIB,IC2,NRSET,NMHA                          !  1:10
+     8,NRUN,JDISK,IDOWN,I14,I15,  KPREF,K4OUT,JBARE,NMOD,IDISK2         ! 11:20
+     9,KOLD,KVALB,KVTAU,ID24,NUMVER,KFARAC,NBKRC,NFD,NID,NLD            ! 21:30
 Cset             ----card---
-     A,N1M1,NLW,JJO,KKK,N1PIB,  NCASE,J2,J3,J4,     J5               ! 31:40
+     A,N1M1,NLW,JJO,KKK,N1PIB,  NCASE,J2,J3,J4,     J5                  ! 31:40
 Cset   ---day1- lat ----day1-    main -day2- lats  seas
-     B,LP1,LP2,LP3,LP4,LP5,    LP6,LPGLOB,LVFA,LVFT,LKOFT            !  1:10
-     C,LPORB,LKEY,LSC,LZONE,LOCAL,   LD16,LD17,LD18,LD19,LONE        ! 11:20
-     D, KITLE,DAYTIM  ! 
+     B,LP1,LP2,LP3,LP4,LP5,    LP6,LPGLOB,LVFA,LVFT,LKOFT               !  1:10
+     C,LPORB,LKEY,LSC,LZONE,LOCAL,   LD16,LD17,LD18,LD19,LONE           ! 11:20
+     D, KITLE,DAYTIM,LATM,LSPARE  ! 
 Cset   tcard tprint tcard tcard 
 C
       EQUIVALENCE (FD(1),ALB), (ID(1),N1), (LD(1),LP1) ! alignment
@@ -112,6 +114,8 @@ C             LNOTIF to LZONE
 C 2016aug12 HK Add NBKRC to common
 C 2016sep09 HK Add KFARAC to common  Set by TCARD 
 C 2017apr06 HK Move MAXFF here from  HATCOM
-C 2018feb01 Replace  DDT with PHOG
+C 2018feb01 HK Replace  DDT with PHOG. DDT now data statement in TDAY
+C 2018oct20 HK Use ID25 for integer version number, ID24 sets DA files bytes
+C              real(68) for year in days      Add two logical*4 to the end
 C_End _______________________________________________________________________
  

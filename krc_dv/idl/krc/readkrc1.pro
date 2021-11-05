@@ -1,22 +1,25 @@
-function readkrc1, file,fcom,icom,lcom, lsubs,ttou, vrs=vrs,ktype=ktype $
-   ,maxs=maxs,verb=verb, dates=dates ,ddd=ddd,lab=lab,desc=desc
+function readkrc1, file,fcom,icom,lcom, lsubs,ttou, vern=vern,ktype=ktype $
+   ,maxs=maxs,verb=verb, dates=dates, rtime=rtime, ddd=ddd,lab=lab,desc=desc
 ;_Titl   READKRC1  Read KRC direct access files
 ; file	in.	String. file path name
 ; fcom	out	KRCCOM floating values, first season See KRCCOMLAB.pro
 ; icom	out	KRCCOM integer  values, first season
 ; lcom	out	KRCCOM logical  values, first season
 ; lsubs	out	fltarr(seasons) L_sub_s. For type -1 computed here assuming Mars
-; ttou	out	fldarr(hour,lat,season, 1 to 3]) Temperatures defined 
+; ttou	out	fldarr(hour, lat, 1 to 3, season]) Temperatures defined 
 ;                 0]= Surface kinetic
 ;                 1]= Planetary bolometric   2]= Atmosphere kinetic 
-; vrs   in_     Integer: 2-digit KRC version that wrote the file. Default=34
+; vern both_     Integer: 3-digit KRC version that wrote the file. 
+;        in_  Default=342
 ;                 Logic here changes at: 
-;       20: by 2012nov22 had  MAXN5 =161
-;       31: 2014mar16  V3.1.1 double-precision version. Order in KRCCOM changed
+;       200: by 2012nov22 had  MAXN5 =161
+;       311: 2014mar16  V3.1.1 double-precision version. Order in KRCCOM changed
 ;          321 is last that had  MAXN5 in common
-;       34: 2016may20  V3.4.1 Types -1,2,3 redefined  new -2 was old -1
+;       341: 2016may20  V3.4.1 Types -1,2,3 redefined  new -2 was old -1
 ;              prior: logical record contained a season of 1:3 T-sets
-;              34+:   1:3 logical records per season
+;              341+:   1:3 logical records per season
+;        361+ Version number in the file. Option for R*4 seasonal records
+;       out_ will be reset only if value in file is 361:400
 ; ktype	in_	Integer: KRC disk file kode  K4OUT. Default is 0
 ;     -1,2,3: TSF[,TSP,[TA]]  With the first record being KRCCOM+filler
 ;      0: KRCCOM+LATCOM
@@ -25,6 +28,7 @@ function readkrc1, file,fcom,icom,lcom, lsubs,ttou, vrs=vrs,ktype=ktype $
 ;                if negative , will return only that 1-based season
 ; verb	in_	If set, will be verbose
 ; dates out_    Fltarr(seasons) DJUL at each season; Type -n computed here 
+; rtime out_  String  Runtime from DAYTIM in KRCCOM
 ;----- Next 3 are defined only for ktype =0
 ; ddd	out_	fltarr[ lats, seasons, 6 items]   Items are:
 ;  	            0] DTM4   = rms temperature change on last day
@@ -53,18 +57,19 @@ function readkrc1, file,fcom,icom,lcom, lsubs,ttou, vrs=vrs,ktype=ktype $
 ; 2014apr25 HK Use ktype=-2 to indicate old krc that did not have MAXN5 is in 232
 ; 2016may24 HK Add keyword VRS to accomodate KRC version 341 and several older
 ;   For type -n, use the logic from TFAR8.f to detect -1,-2 or -3
+; 2018oct26 HK Handle both R*8 and R*4 seasonal records, use 3-digit vers number
+; 2019nov11 HK Add keyword rtime, update vern if it is in file
 ;_End                .comp readkrc1   
 
-; help,file,fcom,icom,lcom,lsubs,ttou,vrs,ktype,maxs,verb,dates,ddd,lab,desc
+; help,file,fcom,icom,lcom,lsubs,ttou,vern,ktype,maxs,verb,dates,ddd,lab,desc
 
-dv2=5000. ; 2013-09-09 12:00   switch date between assumed Version 1 and 2
+dv2=5000. ; 2013-09-09 12:00  assumed date of switch between Version 1 and 2
 ;^^^^^^^^^^^ firmcode
 
-if not keyword_set(vrs) then vrs=34
+if not keyword_set(vern) then vern=342
 if not keyword_set(ktype) then ktype=0
-if vrs lt 31 then nbyt=4 else nbyt=8 ; set real word length
-if vrs lt 34 and ktype lt 0 then ktype=-2 ; old type -1
-krc1=DEFINEKRC('KRC',param,  vrs=vrs,nword=nwkrc) ; define structure == krccom
+if vern lt 342 and ktype lt 0 then ktype=-2 ; old type -1
+krc1=DEFINEKRC('KRC',param,  vern=vern,nword=nwkrc) ; define structure == krccom
 ; definition of  KRCCOM
      maxn1 =param[ 0] ;   30
      maxn2 =param[ 1] ; 1536
@@ -80,8 +85,8 @@ krc1=DEFINEKRC('KRC',param,  vrs=vrs,nword=nwkrc) ; define structure == krccom
      numld =param[10-i] ;   20
     numtit =param[11-i] ;   20
     numday =param[12-i] ;    5
-     nwkrc =param[13-i] ;  ---- 255  Num words ( of Nbytes) in KRCCOM
-
+     nwkrc =param[13-i] ;  ---- 255  Num words in KRCCOM
+    maxn4e =param[13]   ; 38
 bd=bytarr((numtit+numday)*4) ; length of TITLE + DAYTIM
 vrb=keyword_set(verb)           ; verbose flag
 operr=0
@@ -97,95 +102,106 @@ len=status.size ; length of the file in bytes.
 id=lonarr(numid) & ld=lonarr(numld)
 ;--------------------------------------------------------------------
 
-jpr=1                           ; logical records per season, default
-mint=2                          ; T-sets per season, default
+mint=1                          ; logical records per season, default
 if ktype lt 0 then begin        ; type -n
-  nwtot=maxnh*maxn4             ; words in a record
-  if vrs lt 34 then begin    ; old type -1
+  nwtot=maxnh*maxn4             ; words in a temperature-set array
+  if vern lt 340 then begin     ; old type -1
+    mint=2                      ; T-sets per season, default
     nwtot=2*nwtot               ; two T-set/record
-  endif else begin           ; one T-set/record
-    mint=(1>(-ktype))<3                
-    jpr=mint                           
+  endif else begin              ; one T-set/record
+    mint=(1>(-ktype))<3         ; records / season          
   endelse
-  ihead=1                        ; prepended records
+  ihead=1                       ; prepended records
 endif else begin                ; type 0
-  nwlat= (9+ 3*maxn1 + 2*maxnh) *maxn4 ; size of this latcom in  words
+  nwlat= (8+ 3*maxn1 + 2*maxnh)*maxn4 +maxn4e/2 ; size of latcom in  words
   nwtot=nwkrc+nwlat
   ihead=0
 endelse
 
-nrecl=nbyt*nwtot                ; expected record length in bytes
-frec=float(len)/float(nrecl)    ; should equal an integer
-numr=len/nrecl                  ; number of records
-if len mod nrecl ne 0 then print,'ALERT, non-integral records'
-if vrb then print,'File length and # records=',len,frec,numr
-nread=numr-ihead                 ; number of seasonRecords in the file
-nsea=nread/jpr         ; seasons expected based on file size, holds for 0 and -n
-if not keyword_set(maxs) then maxs=nsea
-
 ; Read the first krccom, holds for types -n, 0 and +<50
-readu,lun1,krc1
-nhour=krc1.id[5] & lasth=nhour-1      ; N24
-nlat=krc1.id[3]  & lastlat=nlat-1     ; N4
-k4out=krc1.id[16]                     ; K4OUT should contain file type
+readu,lun1,krc1                 ;### READ KRCCOM structure
+fcom=krc1.fd                    ; return KRCCOM from file
+icom=krc1.id                    ;  "
+lcom=krc1.ld                    ;  "
+rtime=string(krc1.daytim)       ; " run date/time
+
+nhour=icom[5] & lasth=nhour-1   ; N24
+nlat =icom[3] & lastlat=nlat-1  ; N4
 if vrb then print,'nhour & nlat=',nhour,nlat
 fout=reform([krc1.alat[0:lastlat],krc1.elev[0:lastlat]],nlat,2) ; lat and elevation
-fcom=krc1.fd                    ; return first season
-icom=krc1.id                    ;  "
-lcom=krc1.ld                    ; "
-ftype=icom[17-1] ; K4OUT in the file
-if vrb then help,vrs,ktype,ftype,mint,jpr,ihead,nbyt,nwtot,nrecl,len,numr,nread,nsea
-if vrs lt 34 and ftype eq -1 then ftype = -2 ; override old .tm1 type
+
+ftype=icom[17-1] ; K4OUT in the file; expect 0 or negative
+kver=vern        ; default is to use input version, or the firm-code default)
+k =icom[24]      ; ID25 is version number for 361+
+if k ge 361 and k lt 400 then begin
+  kver=k                        ; Use the version in the file
+  vern=k                        ; reset the keyword
+endif
+if kver lt 340 and ftype eq -1 then ftype = -2 ; override old .tm1 type
 if ftype ne ktype then begin
  message,'Type in file not as requested',/con
- help,vrs,ktype,ftype,mint 
- if mint ne ktype then stop
- endif
+ help,kver,ktype,ftype,mint 
+; if mint ne ktype then stop
+endif
 
-n5=krc1.id[5-1] & jdisk=krc1.id[12-1] ; number and first output season
+if kver lt 310 then nbyt=4 else nbyt=8 ; set real word length for first record
+; Version 361 and later, option for R*4 seasons; ID24 =4 is R*4, else R*8
+if kver ge 360 and icom[23] eq 4 then nbyt=4 
+nrecl=nbyt*nwtot                ; expected record length in bytes
+frec=float(len)/float(nrecl)    ; should equal an integer unless mixed R*4/R*8
+numr=len/nrecl                  ; number of records in file
+; if len mod nrecl ne 0 then print,'ALERT, non-integral records',frec
+if vrb then print,'File length and # records=',len,frec,numr
+
+; for type -n
+fsea=(len-ihead*nrecl)/(float(nwtot)*nbyt); number of seasonal arrays in file
+nread=round(fsea)
+if fsea-nread ne 0 then print,'ALERT, non-integral season records',fsea
+
+nsea=nread/mint   ; seasons expected based on file size, holds for 0 and -n
+if not keyword_set(maxs) then maxs=nsea
+if vrb then help,file,vern,ktype,kver,ftype,mint,ihead,nwtot,nbyt,nrecl,len,frec,numr,fsea,nread,nsea
+
+n5=icom[5-1] & jdisk=icom[12-1] ; number and first output season
 djul=krc1.fd[41-1] & deljul=krc1.fd[42-1] ; first and delta date
 nsx=n5-jdisk+1 ; number of seasons expected based on KRCCOM
 nread=(maxs<nsx)<nread ; number of seasons to read
-Print,'nread,nsea,nsx,maxs=',nread,nsea,nsx,maxs
+if vrb then Print,'nread,nsea,nsx,maxs,fsea=',nread,nsea,nsx,maxs,fsea
 if nsx ne nread then message,'NumSeas disagree',/con
 if !dbug ge 2 then stop
 ; dates and lsubs will be overwritten below for Type 0
-if djul gt dv2 then begin                                 ; assume version 1
+if kver lt 200 and djul gt dv2 then begin                  ; assume version 1
   dates=(djul-11545.)+ deljul*(findgen(nread)+(jdisk-1))  ; days from J2000
   lsubs=float(L_S(dates))       ; compute Ls (returns dblarr)
   print,'READKRC1: Assuming -2440000 dates'
-endif else begin                ; assume version 2
+endif else begin                ; assume version 2+
   dates=djul+ deljul*(findgen(nread)+(jdisk-1))
 ;   lsubs=LSMARS(1,dates)        ; uses MJD
 ;   lsubs=lsubs[*,0]             ; drop the A.U and sub-solar latitude
-  lsubs=LSAM(dates,myn,aud)     ; uses MJD
+  lsubs=LSAM(dates,myn,aud)     ; MARS ONLY    uses MJD
 endelse
 
-;;ts=fltarr(nhour,nlat,nread)     ; Create arrays just the right size for Tsur
-;;tp=fltarr(nhour,nlat,nread)     ;  and Tplan even if read only one
+if nbyt eq 8 then begin 
+  trec=dblarr(maxnh,maxn4,mint)     ; file array for one season
+  ttou=dblarr(nhour,nlat,mint,nsea) ; output array
+endif else begin
+  trec=fltarr(maxnh,maxn4,mint)
+  ttou=fltarr(nhour,nlat,mint,nsea)
+endelse
 
-  if nbyt eq 8 then begin 
-    ttou=dblarr(nhour,nlat,mint,nsea) ; output array
-    trec=dblarr(maxnh,maxn4,mint)      ; array for one logical record
-  endif else begin
-    ttou=fltarr(nhour,nlat,mint,nsea)
-    trec=fltarr(maxnh,maxn4,mint)
-  endelse
-if ktype lt 0 then begin ; ==============================================
+if ktype lt 0 then begin ; ====================== tmx ========================
   point_lun,lun1,nrecl   ; skip rest of first record.
 
-  if  vrs lt 34 then begin ; old type -1; TSF and TPF only
+  if  kver lt 340 then begin ; old type -1; TSF and TPF only
     for k=0,nsea-1 do begin                   ; read the seasons
-      readu,lun1,trec                         ; read one record
+      readu,lun1,trec                         ;### READ ONE SEASON
       ttou[*,*,*,k]=trec[0:lasth,0:lastlat,*] ; transfer defined temperatures
     endfor
  endif else begin ; version 34x or later
 ;   t-set=fldarr(maxnh,maxn4)  ; final hourly temperature; surf, plan or atm
-  for k=0,nsea-1 do begin                     ; read the seasons
-      readu,lun1,trec                         ; read one record
-    for j=0,mint-1 do begin                   ; each kind of temperature
-      ttou[*,*,j,k]=trec[0:lasth,0:lastlat,j] ; transfer defined temperatures
-    endfor
+  for k=0,nsea-1 do begin                     ; loop over seasons
+    readu,lun1,trec                           ;### READ ONE SEASON 
+    for j=0,mint-1 do  ttou[*,*,j,k]=trec[0:lasth,0:lastlat,j] ; each kind of T
     if !dbug ge 3 then begin 
        CLOT,reform(ttou[*,*,*,k],nhour*nlat,mint),['Ts','Tp','Ta'],locc=1 $
 ,titl=['Hour * latitude','Temperature','0_Season= '+strtrim(k,2)] 
@@ -196,7 +212,7 @@ if ktype lt 0 then begin ; ==============================================
   endfor
 endelse
 
-endif else if ktype eq 0 then begin  ; =======================================
+endif else if ktype eq 0 then begin  ; ============ type 0 ====================
    plab=['DTM4','TST4','TTS4','TTB4','FROST4','AFRO4']
    mpar=n_elements(plab)        ; number of parameters to be extracted
    if arg_present(lab) then lab=plab
@@ -205,7 +221,7 @@ endif else if ktype eq 0 then begin  ; =======================================
        ,'mean surface temperature','mean bottom temperature' $
        ,'frost amount kg/m^2','frost albedo']
    ddd=fltarr(nlat,nread,mpar)       ; to hold latcom extracts
-   latc=DEFINEKRC('LAT',nword=nword,vrs=vrs) ; define structure == latcom
+   latc=DEFINEKRC('LAT',nword=nword,vern=kver) ; define structure == latcom
 
   point_lun,lun1,0  ; start file again
    for k=0,nread-1 do begin ; each record=season

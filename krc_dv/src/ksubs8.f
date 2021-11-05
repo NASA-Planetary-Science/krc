@@ -23,10 +23,11 @@ C_Hist  86jul03  HHKieffer; revision of earlier  CFSOLAR.
 C 1987sep13  HK incorporate the 1/pi term in this routine.
 C 2010jan11  HK convert to implicit none
 C 2012feb26  HK Remove unused variables
-C 2014mar10 HK Make  REAL*8  version  
+C 2014mar10 HK Make  REAL*8  version
+C 2020apr12 HK Correct D2R from R*4 to R*8  
 C_End
-        REAL*8 PI/3.141592653589793D0/
-        REAL D2R /1.74532925199433D-2/ ! radians pre degree
+        REAL*8 PI /3.141592653589793D0/
+        REAL*8 D2R /1.74532925199433D-2/ ! radians pre degree
         REAL*8 sdecr            ! solar declination in radians
         REAL*8 xlatr            ! surface latitude, radians
         REAL*8 eta              ! length of half-day, in radians

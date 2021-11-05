@@ -1,4 +1,4 @@
-        SUBROUTINE BINF5 (ACTION,FILENAME, HEADER,ID,DDATA, IRET)
+        SUBROUTINE BINF5 (ACTION,FILENAME, HEADER,IDA,DDATA, IRET)
 C_Titl  BINF5  read/write binary file with self-describing header, sim.  IDL
         IMPLICIT NONE
 C****************************************************************************
@@ -8,7 +8,7 @@ C _Args  Type          name          i/o  Description
 ! can be either uppercase or lowercase
         CHARACTER*(*) FILENAME  ! i   input/output filename
         CHARACTER*(*) HEADER    ! b   header text data Up to 455 characters
-        INTEGER*4 ID(10)        ! b   array type and dimension
+        INTEGER*4 IDA(10)       ! b   array type and dimension
 C (1) = number of dimensions
 C (2:7) = dimensions 1:6
 C (8) = array type:  1=byte  2=I*2  3=I*4  4=R*4  5=R*8
@@ -25,7 +25,7 @@ C _Descr
 C Does all file operations during a single call;
 C open, read or write, close
 C WARNING: will overwrite existing file
-C Note: the  ID values must be set before each  W call;
+C Note: the  IDA values must be set before each  W call;
 C this routine does not remember array sizes.
 C For the read option, the dimensions will be considered for the maximum
 C room allowed for the array to be returned.  IRET >0 indicates how much
@@ -70,6 +70,8 @@ C     Always print values @99 if any error.
 C     Replace WRITE looping to determine header size with calculation 
 C 2016jan10 HK If a PIO write error, ask if keep or delete
 C 2016sep25 HK Replace B2B with FILLB call
+C 2018aug11 HK Discover that NBY was not defined for READ action. Moved it up
+C       Changed several number-of-bytes variable names to help in searches
 C_End
 
         INTEGER*4  BT2,BA1,BA2,BC1 ! fixed byte locations
@@ -84,14 +86,16 @@ C_End
         BYTE BLNK /32/          ! blank character
 
         INTEGER*4 IERR,IECL     ! return code from  PIO routines
-        INTEGER*4 NBD
+        INTEGER*4 JER           ! error code here
+        INTEGER*4 NBD           ! Num bytes PIO asked to read 
+        INTEGER*4 NBP           ! File size in bytes as transferred with PIO
+        INTEGER*4 NBF       ! Array size in bytes as specifed in IDL=fileO
+        INTEGER*4 NBY       ! Array size in bytes as specifed in IDA=arguments
+        INTEGER*4 NBW(MAXT) /1,2,4,4,8/ ! Num bytes per word for IDL types
         INTEGER*4 ND1           ! R: bytes in header. W: 1 more
-        INTEGER*4 NBYTES
 
-        INTEGER*4 FID,I,J,JOG,K,KBLOCK,LL,LOC,NBY,NBYF,NIT,PLAN
-
-        INTEGER*4 NBYPW(MAXT) /1,2,4,4,8/ ! Num bytes per word for IDL types
-        INTEGER*4 IDL(10)       ! array to contain idl size values
+        INTEGER*4 FID,I,J,JOG,K,KBLOCK,LL,LOC,NIT,PLAN
+        INTEGER*4 IDL(10)       ! array to contain idl size values from file
         CHARACTER*120 BUF       ! used for id array
         CHARACTER*22 BATE       ! used for date and time
         CHARACTER*6 ARCH(MAXARC) /'sparc ','bigend','litend','alpha '
@@ -110,28 +114,31 @@ D       print *,'BINF5: input IRET=',IRET
         DBG2=IRET.GE.2          ! set if  IRET >= 2  Report progress
         IF (DBG1.OR.DBG2) WRITE(*,*) 'BINF5 debug flags=',DBG1,DBG2
         IRET = 0                ! set return flag for no error
-        IF (DBG1) WRITE(*,*)'BINF5: INPUTS: Action=',ACTION
-        IF (DBG1) WRITE(*,*)'FILENAME=',FILENAME
-        IF (DBG1) WRITE(*,*)'ID=',ID
-        IF (DBG1) WRITE(*,*)'Header=>>',HEADER,'<<'
+        JER = 0                ! No errors yet
+        IF (DBG1)THEN
+          WRITE(*,*)'BINF5: INPUTS: Action=',ACTION
+          WRITE(*,*)'FILENAME=',FILENAME
+          WRITE(*,*)'IDA=',IDA
+          WRITE(*,*)'Header=>>',HEADER,'<<'
+          WRITE (*,*) 'BINF5: ARCH S= ', ARCH(JCPU+1),' <',JCPU
+        ENDIF
 
-        IF (ID(8).LT.1 .OR. ID(8).GT.MAXT) GOTO 85 ! invalid type
-        IF (ID(1).LT.1 .OR. ID(1).GT.MAXD) GOTO 85 ! invalid # dimensions
+        IF (IDA(8).LT.1 .OR. IDA(8).GT.MAXT) GOTO 85 ! invalid type
+        IF (IDA(1).LT.1 .OR. IDA(1).GT.MAXD) GOTO 85 ! invalid # dimensions
         J=BIGEND()              ! returns 1 if big, 0 if little. else is error
         JCPU=2-J                ! 1 if big, 2 if little
-
-        WRITE (*,*) 'BINF5: ARCH S= ', ARCH(JCPU+1),' <',JCPU
-        WRITE (*,*) 'BINF5 2013jan02 called with ID= ',ID !<<  Version
-
-        IF (ACTION .EQ. 'W' .OR. ACTION .EQ. 'w') THEN 
- !===============================  WRITE ================================
+C Only way to know size of DDATA is thru IDA
         NIT=1                   ! # items in dimensions thus far
-        DO I=1,ID(1)            ! compute total array size in items
-          J=ID(I+1)
+        DO I=1,IDA(1)            ! compute total array size in items
+          J=IDA(I+1)
           IF (J.LT.1) GOTO 85   ! invalid size
           NIT=NIT*J
         ENDDO
-        NBY=NIT*NBYPW(ID(8))    ! caller array bytes total
+        NBY=NIT*NBW(IDA(8))    ! caller array bytes total 
+        IF (DBG1) WRITE(*,*) ' Allowed bytes NBY=',NBY
+
+        IF (ACTION .EQ. 'W' .OR. ACTION .EQ. 'w') THEN 
+ !===============================  WRITE ================================
 
 C construct header 2015mar10
 Cvvvvvvvvvvvvvvvvvvvvv 2015mar10
@@ -141,12 +148,12 @@ C parts needed: ArrayDimension, HeaderLength=4:6, <<date>>=32, text, ending=14
 C need length of Array dimensions and Text to compute length of HeaderLength
 C and hence how many blocks needed.
 
-        WRITE (BUF,*) (ID(I),I=1,ID(1)+1),ID(8),NIT ! sizes and type
+        WRITE (BUF,*) (IDA(I),I=1,IDA(1)+1),IDA(8),NIT ! sizes and type
         K=WHITE1 (BUF,CC)       ! remove excess spacing; put into header
         CALL CATIME (BATE)      !hk returned string is 22 long
 C     K is last non-blank character
         J=NBH-BT2               ! used by arch+C_END
-        I=K+34+ID(9)+J          ! length without headsize
+        I=K+34+IDA(9)+J          ! length without headsize
         I=I+4                   ! for ' 512'
         IF (I.GT.508) I=I+1     ! for ' 9728'
         IF (I.GT.9723)I=I+1     ! for up to 99999
@@ -160,10 +167,10 @@ C     K is last non-blank character
         CC(K:K+34)=' <<SIZE '//BATE//' >> ' ! 8+22+4 bytes
         K=K+34                  ! current end of stuff
         IF (DBG1) WRITE(*,*)'K,CC so far',K,CC(1:K)        
-        NBYTES=ND1+NBY     ! total # bytes in file
-        IF (DBG1) WRITE(*,*) 'PLAN,NBY,NBYTES=',PLAN,NBY,NBYTES
+        NBP=ND1+NBY     ! total # bytes in file
+        IF (DBG1) WRITE(*,*) 'PLAN,NBY,NBP=',PLAN,NBY,NBP
         IF (DBG2) WRITE(*,*) '@3'
-        CALL PIO_IN (FID, FILENAME, NBYTES, 3, IERR) !  OPEN even if exists
+        CALL PIO_IN (FID, FILENAME, NBP, 3, IERR) !  OPEN even if exists
         IF (DBG2) WRITE(*,*) '@4'
         IF (DBG1.OR.DBG2) WRITE(*,*) '@5 Time=',BATE
 C     kb           call u_datime(buf) !isis
@@ -179,7 +186,7 @@ C     kb           call u_datime(buf) !isis
           I=NBH-K               ! space available to the end of the block
         ENDIF
         
-        LL=ID(9)-J              ! number of user text bytes still to write
+        LL=IDA(9)-J              ! number of user text bytes still to write
         IF (DBG1) WRITE(*,*)'KBLOCK,K,I,J,LL=',KBLOCK,K,I,J,LL !##
         IF (LL.GT.0) THEN
           I=MIN(I,LL)           ! amount to write, even if 0
@@ -222,9 +229,9 @@ C IF (ACTION .EQ. 'R' .OR. ACTION .EQ. 'r') THEN
           DO I=1,10
             IDL(I)=0            ! initiate all values
           ENDDO
-C here, nbytes should be output as the file size in bytes
-          CALL PIO_IN (FID, FILENAME, NBYTES, 0, IERR) !  OPEN existing file
-          IF (DBG2) WRITE(*,*)'@2 NBYTES,ierr=',NBYTES,IERR
+C here, NBP  should be output as the file size in bytes
+          CALL PIO_IN (FID, FILENAME, NBP, 0, IERR) !  OPEN existing file
+          IF (DBG2) WRITE(*,*)'@2 NBP,ierr=',NBP,IERR
           IF (IERR .NE. 0) GOTO 82
           LOC=1
           IF (DBG1) WRITE(*,*)'NBH=',NBH
@@ -250,15 +257,15 @@ C decode sizes in first block of header (now equivalenced into  CC)
           ENDDO
           IF (DBG2) WRITE(*,*)'NIT=',NIT
           IF (IDL(8).LT.1 .OR. IDL(8).GT.5) GOTO 89
-          NBYF=NIT*NBYPW(IDL(8)) ! array size in bytes
-          IF (NBYF.GT.NBY) THEN ! file bigger than array space
+          NBF=NIT*NBW(IDL(8)) ! array size in bytes
+          IF (NBF.GT.NBY) THEN ! file bigger than array space
             NBD=NBY             ! set read size to array space
-            IRET=NBYF-NBY       ! set number of unread bytes
+            IRET=NBF-NBY       ! set number of unread bytes
           ELSE
-            NBD=NBYF            ! set read size to file array size
-            IRET=0
+            NBD=NBF            ! set read size to file array size
           ENDIF
-          IF (DBG2) WRITE(*,*)'NBD,IRET=',NBD,IRET
+          IF (DBG2 .OR. (IRET.NE.0)) 
+     &         WRITE(*,*)'NBY,NBF,IRET=',NBY,NBF,IRET
 C read rest of header, transfering to user up to their room limit
           J=0                   ! number of text bytes transferred
           K = INDEX (CC,' >>') +2 ! end of  SIZE array
@@ -272,9 +279,9 @@ C read rest of header, transfering to user up to their room limit
               IF (DBG1)  WRITE(*,*)'CC=',CC ! ###
               IF (IERR .NE. 0) GOTO 83
             ENDIF
-            IF (ID(9).GT.0) THEN ! user asked for header, extract it
+            IF (IDA(9).GT.0) THEN ! user asked for header, extract it
               IF (KBLOCK.EQ.PLAN) LL=BT2 ! last available byte
-              I = MIN(LL-K,ID(9)-J) ! end of text, or callers room to store
+              I = MIN(LL-K,IDA(9)-J) ! end of text, or callers room to store
               IF (I.GT.0) HEADER(J+1:J+I)=CC(K+1:K+I) ! add to header
               J=J+I             ! increment # text bytes written
               IF (DBG1) WRITE(*,*)'Last byt into header  J=',J !###
@@ -283,8 +290,7 @@ C read rest of header, transfering to user up to their room limit
           ENDDO
           IDL(9)=J              ! bytes moved to caller
 
-C         call r2r (idl,id,10) !hk return file array dimensions
-          CALL U_MOVE4 (10,IDL,ID) ! return file array dimensions
+          CALL U_MOVE4 (10,IDL,IDA) ! return file array dimensions
 
           LOC=LOC+NBH           ! read data from file
           ND1= IDL(10)+1
@@ -302,7 +308,7 @@ C buf8= adjustl(buf8) !not in gfortran ! left adjust ( should not be needed)
             IF (BUF6.EQ.ARCH(I)) J=BARCH(I) ! get file archit. type
           ENDDO
           WRITE (*,*)'BINF5 Read: file arch, I,J= >',BUF8,'<',I,J
-          IF (DBG1 .OR.ID(9).GT.0) 
+          IF (DBG1 .OR.IDA(9).GT.0) 
      &       WRITE (*,*)'BINF5 Read: header= ',HEADER
 C         write (*,'(5a10)')(arch(i),i=1,3)
           IF (J.EQ.0) THEN      ! unknown type
@@ -318,11 +324,11 @@ C         write (*,'(5a10)')(arch(i),i=1,3)
               WRITE(*,*) 'BINF5 swapping bytes. # R*4 words=',NIT
             ELSEIF (IDL(8).GT.1) THEN
               WRITE(*,*) 'BINF5 fails to swap bytes'
-              IRET=-10
+              JER=10
             ENDIF
 #else
-            IF (NBYPW(IDL(8)) .GT. 1) THEN
-              CALL U_SWAPN(NIT, NBYPW(IDL(8)), DDATA, DDATA) !isis routine
+            IF (NBW(IDL(8)) .GT. 1) THEN
+              CALL U_SWAPN(NIT, NBW(IDL(8)), DDATA, DDATA) !isis routine
             ENDIF               !isis
 #endif
           ENDIF
@@ -332,28 +338,30 @@ C       successfull read or write: close the binary file and return
         IF (DBG2) WRITE(*,*) '@10'
         CALL PIO_CL (FID, 0, IERR)
         IF (DBG2) WRITE(*,*) '@11'
-        IF (IERR .NE. 0) IRET = -11 ! Error closing file
+        IF (IERR .NE. 0) JER = 11 ! Error closing file
         RETURN
 
 C       Error section: set return codes, and delete file if error writing it
- 810    IRET = IRET-1           ! -10 error converting Header prefix to integer
- 89     IRET = IRET-1           ! -9 invalid word type found in header:  IDL(8) 
- 88     IRET = IRET-2           ! -8 unknown word type upon read
- 86     IRET = IRET-1           ! -6 a dimension read in header was non-positive 
- 85     IRET = IRET-1           ! -5 invalid item in input  ID
- 84     IRET = IRET-1           ! -4 error reading data
- 83     IRET = IRET-1           ! -3 error reading some block of header
- 82     IRET = IRET-2           ! -2 error opening file to read
+ 810    JER = JER+1           ! -10 error converting Header prefix to integer
+ 89     JER = JER+1           ! -9 invalid word type found in header:  IDL(8) 
+ 88     JER = JER+2           ! -8 unknown word type upon read
+ 86     JER = JER+1           ! -6 a dimension read in header was non-positive 
+ 85     JER = JER+1           ! -5 invalid item in input  IDA
+ 84     JER = JER+1           ! -4 error reading data
+ 83     JER = JER+1           ! -3 error reading some block of header
+ 82     JER = JER+2           ! -2 error opening file to read
         GOTO 99
         RETURN
 
 C       Error during WRITE of file
- 94     IRET = IRET-1           ! -4 error writing data to file
- 93     IRET = IRET-1           ! -3 error writing a block of header
- 92     IRET = IRET-2           ! -2 error opening file for write
+ 94     JER = JER+1           ! -4 error writing data to file
+ 93     JER = JER+1           ! -3 error writing a block of header
+ 92     JER = JER+2           ! -2 error opening file for write
 
- 99     WRITE(*,*)'BINF5 error: ',action,' IRET, IERR=',IRET,IERR 
-        WRITE(*,*)'ID=',ID 
+ 99     WRITE(*,*)'BINF5 error: ',action,' JER, IERR=',JER,IERR
+        IRET=-JER ! set return code negative
+        WRITE(*,*)'IRET=',IRET,'  IDA=',IDA 
+
         IF (ACTION .EQ. 'W' .OR. ACTION .EQ. 'w') THEN 
           WRITE (6,*) 'PIO error in write, will close file'
           WRITE (6,*) '  Enter 0 to keep file, 1 to delete'

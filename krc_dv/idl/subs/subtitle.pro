@@ -14,13 +14,15 @@ pro subtitle, id=id,text=text,up=up,ytex=ytex, size=size,time=time, user=user
 ; 2000sep28 HHK add time option
 ; 2003nov16 HHK add option to change the User
 ; 2011oct02 HK Replace call to CATIME with ISOTIME
+; 2019feb27 HK Replace call to ISOTIME with [TIMECONV] systime
 ;_End
 
 if not keyword_set(id)   then id=''
 if not keyword_set(text) then text=''
 if not keyword_set(size) then size=1.0
 if keyword_set(time) then nowis=time else $
-    nowis=ISOTIME(1)         ; get date/time now as yyyymondd hh:mm:ss
+ nowis=systime()
+;    nowis=TIMECONV( form=1)         ; get date/time now as yyyymonddThh:mm:ss
 if not keyword_set(user)   then user=!outid
 xyouts,0.,0.,nowis+' '+user+' '+id+' '+text,charsize=size,/device
 
